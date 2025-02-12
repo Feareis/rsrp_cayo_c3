@@ -1,14 +1,20 @@
 import React, { useState } from "react";
 import patronImage from "../assets/profile_picture/patron.png";
+import StaticInput from "../components/pages/profile/StaticInput";
+import { ShieldHalf, User, Phone, CalendarFold } from "lucide-react";
 
 const Profile: React.FC = () => {
   const [activeTab, setActiveTab] = useState("Activité");
 
   const salesActivities = [
-    { sale: "client", saleType: "propre", type: "Client Propre", totalEmploye: "0 $", totalEntreprise: "1500 $", time: "Il y a 2 heures" },
-    { sale: "client", saleType: "sale", type: "Client Sale", totalEmploye: "3000 $", totalEntreprise: "500 $", time: "Hier" },
-    { sale: "export", saleType: "propre", type: "Export Propre", totalEmploye: "16000 $", totalEntreprise: "2500 $", time: "Il y a 3 jours" },
+    { sale: "client", saleType: "propre", type: "Client Propre", totalEmploye: "0", totalEntreprise: "1500", time: "Il y a 2 heures" },
+    { sale: "client", saleType: "sale", type: "Client Sale", totalEmploye: "3000", totalEntreprise: "500", time: "Hier" },
+    { sale: "export", saleType: "propre", type: "Export Propre", totalEmploye: "16000", totalEntreprise: "2500", time: "Il y a 3 jours" },
   ];
+
+  const formatCurrency = (value: number): string => {
+      return `${value.toLocaleString("en-EN", { minimumFractionDigits: 0 })} $`;
+    };
 
 
   return (
@@ -39,7 +45,7 @@ const Profile: React.FC = () => {
           <div className="relative p-4 rounded-lg border border-gray-500 flex flex-col items-center w-full">
 
             {/* Titre (h2 dépasse légèrement la bordure) */}
-            <div className="flex items-center gap-2 -mt-9 bg-[#37474f] px-4 py-1 rounded-md">
+            <div className="flex items-center justify-center gap-2 -mt-10 bg-[#37474f] px-4 py-1 rounded-md">
               <h2 className="text-2xl font-bold">Statistiques</h2>
               <p className="text-gray-400 text-sm font-semibold text-gray-300 mt-1">(Semaine)</p>
             </div>
@@ -47,28 +53,31 @@ const Profile: React.FC = () => {
             {/* Total Généré */}
             <div className="w-full p-6 rounded-lg text-center mb-4">
               <p className="text-lg text-gray-400 font-bold">Total Argent Généré</p>
-              <p className="text-2xl font-bold text-green-400">€ 15,200</p>
+              <p className="text-2xl font-bold text-green-400">{formatCurrency(15200)}</p>
             </div>
 
             {/* Cartes secondaires */}
             <div className="grid grid-cols-3 gap-4 w-full">
 
               {/* Total Employé */}
-              <div className="bg-[#263238] p-4 rounded-lg shadow-md text-center hover:scale-105 transition-all duration-300">
+              <div className="flex flex-col justify-center bg-[#263238] p-4 rounded-lg shadow-md text-center hover:scale-105 transition-all duration-300">
                 <p className="text-base text-gray-400 font-semibold">Total Employé</p>
-                <p className="text-xl font-bold text-green-400">€ 3,700</p>
+                <p className="text-xl font-bold text-green-400">{formatCurrency(3700)}</p>
+
+                {/* Second total employé (Propre & Sale) */}
+                <p className="text-xl text-red-400 font-bold mt-1">{formatCurrency(1200)}</p>
               </div>
 
               {/* Total Entreprise */}
-              <div className="bg-[#263238] p-4 rounded-lg shadow-md text-center hover:scale-105 transition-all duration-300">
+              <div className="flex flex-col justify-center bg-[#263238] p-4 rounded-lg shadow-md text-center hover:scale-105 transition-all duration-300">
                 <p className="text-base text-gray-400 font-semibold">Total Entreprise</p>
-                <p className="text-xl font-bold text-blue-400">€ 8,000</p>
+                <p className="text-xl font-bold text-blue-400">{formatCurrency(8000)}</p>
               </div>
 
               {/* Total de la taxe */}
-              <div className="bg-[#263238] p-4 rounded-lg shadow-md text-center hover:scale-105 transition-all duration-300">
+              <div className="flex flex-col justify-center bg-[#263238] p-4 rounded-lg shadow-md text-center hover:scale-105 transition-all duration-300">
                 <p className="text-base text-gray-400 font-semibold">Total Taxe (à Payer)</p>
-                <p className="text-xl font-bold text-red-400">€ 3,500</p>
+                <p className="text-xl font-bold text-red-400">{formatCurrency(3500)}</p>
               </div>
             </div>
           </div>
@@ -130,12 +139,33 @@ const Profile: React.FC = () => {
                           {sale.sale === "client" ? "Vente Client" : "Vente Export"} - {sale.saleType === "propre" ? "Propre" : "Sale"}
                         </p>
 
-                        {/* Details */}
-                        <p className="text-sm font-semibold mt-2">
-                          <strong>Total Employé :</strong> {sale.totalEmploye}
+                        {/* Détails */}
+                        <p
+                          className={`text-sm ${
+                            (sale.sale === "export" || sale.sale === "client") && sale.totalEmploye > 0
+                              ? sale.saleType === "propre"
+                                ? "font-bold text-green-400"
+                                : sale.saleType === "sale"
+                                ? "font-bold text-red-400"
+                                : ""
+                              : "font-bold"
+                          } mt-2`}
+                        >
+                          Total Employé : {formatCurrency(sale.totalEmploye)}
                         </p>
-                        <p className="text-sm font-semibold">
-                          <strong>Total Entreprise :</strong> {sale.totalEntreprise}
+
+                        <p
+                          className={`text-sm ${
+                            (sale.sale === "export" || sale.sale === "client") && sale.totalEntreprise > 0
+                              ? sale.saleType === "propre"
+                                ? "font-bold text-green-400"
+                                : sale.saleType === "sale"
+                                ? "font-bold text-red-400"
+                                : ""
+                              : "font-bold"
+                          }`}
+                        >
+                          Total Entreprise : {formatCurrency(sale.totalEntreprise)}
                         </p>
 
                         {/* Time */}
@@ -149,11 +179,31 @@ const Profile: React.FC = () => {
 
             {/* Informations Tabs */}
             {activeTab === "Informations" && (
-                <div className="p-4 ml-4 bg-[#263238] rounded-md">
-                  <div>
-                    <p>Contenu de la Page 2</p>
-                  </div>
+              <div className="ml-4 p-4 bg-[#263238] rounded-lg shadow-md">
+                <h2 className="text-xl font-bold text-center mb-4">Informations</h2>
+
+                <div className="flex flex-col gap-4">
+                  <label className="block">
+                    <p className="text-base font-bold mb-2">Grade :</p>
+                    <StaticInput icon={ShieldHalf} text="Patron" />
+                  </label>
+
+                  <label className="block">
+                    <p className="text-base font-bold mb-2">Prénom Nom :</p>
+                    <StaticInput icon={User} text="John Doe" />
+                  </label>
+
+                  <label className="block">
+                    <p className="text-base font-bold mb-2">Téléphone :</p>
+                    <StaticInput icon={Phone} text="(001) 001-0001" />
+                  </label>
+
+                  <label className="block">
+                    <p className="text-base font-bold mb-2">Date d'embauche :</p>
+                    <StaticInput icon={CalendarFold} text="01/01/25" />
+                  </label>
                 </div>
+              </div>
             )}
 
             {/* Password Tabs */}
