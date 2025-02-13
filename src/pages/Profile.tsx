@@ -1,10 +1,15 @@
 import React, { useState } from "react";
 import patronImage from "../assets/profile_picture/patron.png";
-import StaticInput from "../components/pages/profile/StaticInput";
-import { ShieldHalf, User, Phone, CalendarFold } from "lucide-react";
+import StaticInput from "../components/core/StaticInput";
+import DynamicInput from "../components/core/DynamicInput";
+import CustomButton from "../components/core/CustomButton";
+import { ShieldHalf, User, Phone, CalendarFold, Lock, KeyRound, CheckCircle } from "lucide-react";
 
 const Profile: React.FC = () => {
   const [activeTab, setActiveTab] = useState("Activité");
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
   const salesActivities = [
     { sale: "client", saleType: "propre", type: "Client Propre", totalEmploye: "0", totalEntreprise: "1500", time: "Il y a 2 heures" },
@@ -52,32 +57,55 @@ const Profile: React.FC = () => {
 
             {/* Total Généré */}
             <div className="w-full p-6 rounded-lg text-center mb-4">
-              <p className="text-lg text-gray-400 font-bold">Total Argent Généré</p>
+              <p className="text-lg text-gray-400 font-bold">Argent Total Généré</p>
               <p className="text-2xl font-bold text-green-400">{formatCurrency(15200)}</p>
             </div>
 
             {/* Cartes secondaires */}
             <div className="grid grid-cols-3 gap-4 w-full">
 
-              {/* Total Employé */}
-              <div className="flex flex-col justify-center bg-[#263238] p-4 rounded-lg shadow-md text-center hover:scale-105 transition-all duration-300">
-                <p className="text-base text-gray-400 font-semibold">Total Employé</p>
-                <p className="text-xl font-bold text-green-400">{formatCurrency(3700)}</p>
+              {/* Conteneur avec bordure et titre qui dépasse (2/3 de la grille) */}
+              <div className="relative p-4 rounded-lg border border-gray-500 col-span-2">
 
-                {/* Second total employé (Propre & Sale) */}
-                <p className="text-xl text-red-400 font-bold mt-1">{formatCurrency(1200)}</p>
+                {/* Titre flottant */}
+                <div className="absolute -top-5 left-1/2 transform -translate-x-1/2 px-4 py-1 bg-[#37474f] rounded-md">
+                  <h2 className="text-xl font-bold text-center">Total généré</h2>
+                </div>
+
+                <div className="grid grid-cols-2 gap-6 mt-6">
+                  {/* Total Employé */}
+                  <div className="flex flex-col justify-center bg-[#263238] p-4 rounded-lg shadow-md text-center hover:scale-103 transition-all duration-300">
+                    <p className="text-base text-gray-400 font-semibold mb-2">Pour l'employé</p>
+                    <div className="flex flex-row justify-center">
+                      <p className="text-xl font-bold text-green-400">{formatCurrency(3700)}</p>
+                      <p className="text-base ml-1 mt-0.5 mr-1">|</p>
+                      <p className="text-xl text-red-400 font-bold">{formatCurrency(1200)}</p>
+                    </div>
+                  </div>
+
+                  {/* Total Entreprise */}
+                  <div className="flex flex-col justify-center bg-[#263238] p-4 rounded-lg shadow-md text-center hover:scale-103 transition-all duration-300">
+                    <p className="text-base text-gray-400 font-semibold mb-2">Pour l'entreprise</p>
+                    <p className="text-xl font-bold text-blue-400">{formatCurrency(8000)}</p>
+                  </div>
+                </div>
               </div>
 
-              {/* Total Entreprise */}
-              <div className="flex flex-col justify-center bg-[#263238] p-4 rounded-lg shadow-md text-center hover:scale-105 transition-all duration-300">
-                <p className="text-base text-gray-400 font-semibold">Total Entreprise</p>
-                <p className="text-xl font-bold text-blue-400">{formatCurrency(8000)}</p>
-              </div>
+              {/* Conteneur avec bordure et titre qui dépasse (1/3 de la grille) */}
+              <div className="relative p-4 rounded-lg border border-gray-500 col-span-1">
 
-              {/* Total de la taxe */}
-              <div className="flex flex-col justify-center bg-[#263238] p-4 rounded-lg shadow-md text-center hover:scale-105 transition-all duration-300">
-                <p className="text-base text-gray-400 font-semibold">Total Taxe (à Payer)</p>
-                <p className="text-xl font-bold text-red-400">{formatCurrency(3500)}</p>
+                {/* Titre flottant */}
+                <div className="absolute -top-5 left-1/2 transform -translate-x-1/2 px-4 py-1 bg-[#37474f] rounded-md">
+                  <h2 className="text-xl font-bold text-center">Taxe</h2>
+                </div>
+
+              {/* Total de la taxe (1/3 de la grille) */}
+              <div className="gap-6 mt-6">
+                <div className="flex flex-col justify-center bg-[#263238] p-4 rounded-lg shadow-md text-center hover:scale-103 transition-all duration-300">
+                  <p className="text-base text-gray-400 font-semibold mb-2">(à Payer)</p>
+                  <p className="text-xl font-bold text-red-400">{formatCurrency(3500)}</p>
+                </div>
+              </div>
               </div>
             </div>
           </div>
@@ -121,10 +149,10 @@ const Profile: React.FC = () => {
 
             {/* Activity Tabs */}
             {activeTab === "Activité" && (
-              <div className="p-4">
+              <div className="px-4">
                 <ul className="relative border-l-2 border-gray-500">
                   {salesActivities.map((sale, index) => (
-                    <li key={index} className="mb-6 ml-4">
+                    <li key={index} className="mb-4 ml-4">
 
                       {/* Render Timeline */}
                       <div className="absolute -left-3 w-6 h-6 bg-gray-400 rounded-full border-6 border-[#37474f]"></div>
@@ -165,7 +193,7 @@ const Profile: React.FC = () => {
                               : "font-bold"
                           }`}
                         >
-                          Total Entreprise : {formatCurrency(sale.totalEntreprise)}
+                          {sale.saleType === "sale" ? "Taxe Entreprise" : "Total Entreprise"} : {formatCurrency(sale.totalEntreprise)}
                         </p>
 
                         {/* Time */}
@@ -180,39 +208,58 @@ const Profile: React.FC = () => {
             {/* Informations Tabs */}
             {activeTab === "Informations" && (
               <div className="ml-4 p-4 bg-[#263238] rounded-lg shadow-md">
-                <h2 className="text-xl font-bold text-center mb-4">Informations</h2>
+                <h2 className="ml-2 text-xl font-bold mb-8">Informations du profil</h2>
 
-                <div className="flex flex-col gap-4">
-                  <label className="block">
-                    <p className="text-base font-bold mb-2">Grade :</p>
-                    <StaticInput icon={ShieldHalf} text="Patron" />
-                  </label>
-
-                  <label className="block">
-                    <p className="text-base font-bold mb-2">Prénom Nom :</p>
-                    <StaticInput icon={User} text="John Doe" />
-                  </label>
-
-                  <label className="block">
-                    <p className="text-base font-bold mb-2">Téléphone :</p>
-                    <StaticInput icon={Phone} text="(001) 001-0001" />
-                  </label>
-
-                  <label className="block">
-                    <p className="text-base font-bold mb-2">Date d'embauche :</p>
-                    <StaticInput icon={CalendarFold} text="01/01/25" />
-                  </label>
+                <div className="flex flex-col gap-6 p-4">
+                  <StaticInput icon={ShieldHalf} label="Grade" text="Patron" />
+                  <StaticInput icon={User} label="Prénom Nom" text="John Doe" />
+                  <StaticInput icon={Phone} label="Téléphone" text="(001) 001-0001" />
+                  <StaticInput icon={CalendarFold} label="Date d'embauche" text="01/01/25" />
                 </div>
               </div>
             )}
 
             {/* Password Tabs */}
             {activeTab === "Mot de passe" && (
-                <div className="p-4 ml-4 bg-[#263238] rounded-md">
-                  <div>
-                    <p>Contenu de la Page 3</p>
+              <div className="ml-4 p-4 bg-[#263238] rounded-lg shadow-md">
+                <h2 className="ml-2 text-xl font-bold mb-8">Modifier son mot de passe</h2>
+
+                <div className="flex flex-col gap-6 p-4">
+                  <DynamicInput
+                    icon={Lock}
+                    label="Ancien mot de passe *"
+                    value={currentPassword}
+                    onChange={setCurrentPassword}
+                    placeholder="Entrez votre ancien mot de passe"
+                  />
+
+                  <DynamicInput
+                    icon={KeyRound}
+                    label="Nouveau mot de passe *"
+                    value={newPassword}
+                    onChange={setNewPassword}
+                    placeholder="Entrez votre nouveau mot de passe"
+                  />
+
+                  <DynamicInput
+                    icon={KeyRound}
+                    label="Confirmer le mot de passe *"
+                    value={confirmPassword}
+                    onChange={setConfirmPassword}
+                    placeholder="Confirmez votre nouveau mot de passe"
+                  />
+
+                  {/* Conteneur pour aligner le bouton à droite */}
+                  <div className="flex justify-end">
+                    <CustomButton
+                      label="Mettre à jour"
+                      onClick={() => console.log("Mot de passe mis à jour")}
+                      icon={CheckCircle}
+                      className="bg-blue-500 hover:bg-blue-600 text-white mt-4 w-1/4"
+                    />
                   </div>
                 </div>
+              </div>
             )}
           </div>
         </div>

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import CustomInput from "../components/pages/sale/CustomInput";
-import CustomButton from "../components/pages/sale/CustomButton";
+import CustomInput from "../components/core/CustomInput";
+import CustomButton from "../components/core/CustomButton";
 import { BadgeDollarSign, ArrowUpNarrowWide, Salad } from "lucide-react";
 
 const ExportSales: React.FC = () => {
