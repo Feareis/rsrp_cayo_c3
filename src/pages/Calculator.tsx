@@ -12,7 +12,7 @@ const Calculator: React.FC = () => {
   const resetAll = () => setCounts({ quota: 0, quotaPlus: 0, quotaFull: 0 });
 
   return (
-    <div className="w-full flex items-center gap-4 px-6">
+    <div className="w-full flex items-center gap-4 px-4">
       {/* Boutons visibles avec effet Glow */}
       <CustomCalculatorButton
         label="Quota"

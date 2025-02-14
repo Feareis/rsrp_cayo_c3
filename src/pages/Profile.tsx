@@ -56,7 +56,7 @@ const Profile: React.FC = () => {
             </div>
 
             {/* Total Généré */}
-            <div className="w-full p-6 rounded-lg text-center mb-4">
+            <div className="w-full p-6 rounded-lg text-center mb-6">
               <p className="text-lg text-gray-400 font-bold">Argent Total Généré</p>
               <p className="text-2xl font-bold text-green-400">{formatCurrency(15200)}</p>
             </div>
