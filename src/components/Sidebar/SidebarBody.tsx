@@ -16,13 +16,13 @@ export default function SidebarBody() {
   };
 
   return (
-    <nav className="flex flex-col h-full p-6 pt-6">
+    <nav className="flex flex-col h-full p-4 pt-6">
       <ul className="flex flex-col gap-4 flex-grow">
         {/* Dashboard */}
         <li>
           <Link
             to="/"
-            className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 ${
+            className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-all duration-300 ${
               location.pathname === "/"
                 ? "bg-[#3e4d56] text-[#cfd8dc] font-semibold"
                 : "text-[#cfd8dc] hover:bg-[#3e4d56]"
@@ -37,7 +37,7 @@ export default function SidebarBody() {
         <li>
           <Link
             to="/calculator"
-            className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 ${
+            className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-all duration-300 ${
               location.pathname === "/calculator"
                 ? "bg-[#3e4d56] text-[#cfd8dc] font-semibold"
                 : "text-[#cfd8dc] hover:bg-[#3e4d56]"
@@ -52,7 +52,7 @@ export default function SidebarBody() {
         <li>
           <button
             onClick={() => toggleSection("vente")}
-            className="flex items-center justify-between w-full px-4 py-3 text-[#cfd8dc] hover:bg-[#3e4d56] rounded-lg transition-all duration-300"
+            className="flex items-center justify-between w-full px-3 py-3 text-[#cfd8dc] hover:bg-[#3e4d56] rounded-lg transition-all duration-300"
           >
             <div className="flex items-center gap-3">
               <Receipt size={22} />
@@ -65,7 +65,7 @@ export default function SidebarBody() {
               openSection === "vente" ? "max-h-40 opacity-100" : "max-h-0 opacity-0"
             }`}
           >
-            <ul className="mt-2 ml-8 flex flex-col gap-2">
+            <ul className="mt-2 ml-5 flex flex-col gap-2">
               <li>
                 <Link
                   to="/sale/export"
@@ -100,7 +100,7 @@ export default function SidebarBody() {
         <li>
           <Link
             to="/price"
-            className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 ${
+            className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-all duration-300 ${
               location.pathname === "/price"
                 ? "bg-[#3e4d56] text-[#cfd8dc] font-semibold"
                 : "text-[#cfd8dc] hover:bg-[#3e4d56]"
@@ -117,7 +117,7 @@ export default function SidebarBody() {
         <li>
           <button
             onClick={() => toggleSection("admin")}
-            className="flex items-center justify-between w-full px-4 py-3 text-[#cfd8dc] hover:bg-[#3e4d56] rounded-lg transition-all duration-300"
+            className="flex items-center justify-between w-full px-3 py-3 text-[#cfd8dc] hover:bg-[#3e4d56] rounded-lg transition-all duration-300"
           >
             <div className="flex items-center gap-3">
               <Shield size={22} />
@@ -130,18 +130,18 @@ export default function SidebarBody() {
               openSection === "admin" ? "max-h-40 opacity-100" : "max-h-0 opacity-0"
             }`}
           >
-            <ul className="mt-2 ml-8 flex flex-col gap-2">
+            <ul className="mt-2 ml-5 flex flex-col gap-2">
               <li>
                 <Link
-                  to="/admin/test1"
+                  to="/admin/user-management"
                   className={`flex items-center gap-3 px-2 py-2 rounded-lg transition-all duration-300 ${
-                    location.pathname === "/admin/test1"
+                    location.pathname === "/admin/user-management"
                       ? "bg-[#3e4d56] text-[#cfd8dc] font-semibold"
                       : "text-[#cfd8dc] hover:bg-[#3e4d56]"
                   }`}
                 >
-                  <Settings size={20} />
-                  Test1
+                  <Users size={20} />
+                  Gestion Employés
                 </Link>
               </li>
               <li>
@@ -166,7 +166,7 @@ export default function SidebarBody() {
       <div className="mt-auto">
         <Link
           to="/help-center"
-            className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 ${
+            className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-all duration-300 ${
               location.pathname === "/help-center"
                 ? "bg-[#3e4d56] text-[#cfd8dc] font-semibold"
                 : "text-[#cfd8dc] hover:bg-[#3e4d56]"

@@ -28,7 +28,7 @@ const Profile: React.FC = () => {
       <div className="flex gap-12 w-full">
 
         {/* Section Gauche */}
-        <div className="flex flex-col w-1/3 gap-6">
+        <div className="flex flex-col w-1/2 gap-6">
 
           {/* Display Section */}
           <div className="p-6 rounded-lg flex flex-col items-center">
@@ -58,7 +58,7 @@ const Profile: React.FC = () => {
             {/* Total Généré */}
             <div className="w-full p-6 rounded-lg text-center mb-6">
               <p className="text-lg text-gray-400 font-bold">Argent Total Généré</p>
-              <p className="text-2xl font-bold text-green-400">{formatCurrency(15200)}</p>
+              <p className="text-2xl font-bold text-green-400">{formatCurrency(1500000)}</p>
             </div>
 
             {/* Cartes secondaires */}
@@ -75,18 +75,22 @@ const Profile: React.FC = () => {
                 <div className="grid grid-cols-2 gap-6 mt-6">
                   {/* Total Employé */}
                   <div className="flex flex-col justify-center bg-[#263238] p-4 rounded-lg shadow-md text-center hover:scale-103 transition-all duration-300">
-                    <p className="text-base text-gray-400 font-semibold mb-2">Pour l'employé</p>
+                    <p className="text-base text-gray-400/70 font-semibold mb-2">Pour l'employé</p>
                     <div className="flex flex-row justify-center">
-                      <p className="text-xl font-bold text-green-400">{formatCurrency(3700)}</p>
+                      <p className="text-lg font-bold text-green-400/90">{formatCurrency(1000000)}</p>
                       <p className="text-base ml-1 mt-0.5 mr-1">|</p>
-                      <p className="text-xl text-red-400 font-bold">{formatCurrency(1200)}</p>
+                      <p className="text-lg font-bold text-red-400/90">{formatCurrency(120000)}</p>
                     </div>
                   </div>
 
                   {/* Total Entreprise */}
                   <div className="flex flex-col justify-center bg-[#263238] p-4 rounded-lg shadow-md text-center hover:scale-103 transition-all duration-300">
-                    <p className="text-base text-gray-400 font-semibold mb-2">Pour l'entreprise</p>
-                    <p className="text-xl font-bold text-blue-400">{formatCurrency(8000)}</p>
+                    <p className="text-base text-gray-400/70 font-semibold mb-2">Pour l'entreprise</p>
+                    <div className="flex flex-row justify-center">
+                      <p className="text-lg font-bold text-green-400/90">{formatCurrency(200000)}</p>
+                      <p className="text-base ml-1 mt-0.5 mr-1">|</p>
+                      <p className="text-lg font-bold text-red-400/90">{formatCurrency(120000)}</p>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -99,13 +103,13 @@ const Profile: React.FC = () => {
                   <h2 className="text-xl font-bold text-center">Taxe</h2>
                 </div>
 
-              {/* Total de la taxe (1/3 de la grille) */}
-              <div className="gap-6 mt-6">
-                <div className="flex flex-col justify-center bg-[#263238] p-4 rounded-lg shadow-md text-center hover:scale-103 transition-all duration-300">
-                  <p className="text-base text-gray-400 font-semibold mb-2">(à Payer)</p>
-                  <p className="text-xl font-bold text-red-400">{formatCurrency(3500)}</p>
+                {/* Total de la taxe (1/3 de la grille) */}
+                <div className="gap-6 mt-6">
+                  <div className="flex flex-col justify-center bg-[#263238] p-4 rounded-lg shadow-md text-center hover:scale-103 transition-all duration-300">
+                    <p className="text-base text-gray-400/70 font-semibold mb-2">(à Payer)</p>
+                    <p className="text-lg font-bold text-red-400/90">{formatCurrency(3500)}</p>
+                  </div>
                 </div>
-              </div>
               </div>
             </div>
           </div>
@@ -172,9 +176,9 @@ const Profile: React.FC = () => {
                           className={`text-sm ${
                             (sale.sale === "export" || sale.sale === "client") && sale.totalEmploye > 0
                               ? sale.saleType === "propre"
-                                ? "font-bold text-green-400"
+                                ? "font-bold text-green-400/90"
                                 : sale.saleType === "sale"
-                                ? "font-bold text-red-400"
+                                ? "font-bold text-red-400/90"
                                 : ""
                               : "font-bold"
                           } mt-2`}
@@ -186,9 +190,9 @@ const Profile: React.FC = () => {
                           className={`text-sm ${
                             (sale.sale === "export" || sale.sale === "client") && sale.totalEntreprise > 0
                               ? sale.saleType === "propre"
-                                ? "font-bold text-green-400"
+                                ? "font-bold text-green-400/90"
                                 : sale.saleType === "sale"
-                                ? "font-bold text-red-400"
+                                ? "font-bold text-red-400/90"
                                 : ""
                               : "font-bold"
                           }`}
