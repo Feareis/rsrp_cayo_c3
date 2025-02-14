@@ -14,7 +14,7 @@ const DynamicInput: React.FC<DynamicInputProps> = ({
   label,
   value,
   onChange,
-  bgColor = "bg-[#263238]",
+  bgColor = "bg-gray-800/20",
   textColor = "text-gray-400",
   placeholder = "Saisir une valeur...",
 }) => {

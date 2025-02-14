@@ -12,9 +12,9 @@ const Profile: React.FC = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
 
   const salesActivities = [
-    { sale: "client", saleType: "propre", type: "Client Propre", totalEmploye: 0, totalEntreprise: 1500, time: "Il y a 2 heures" },
-    { sale: "client", saleType: "sale", type: "Client Sale", totalEmploye: 3000, totalEntreprise: 500, time: "Hier" },
-    { sale: "export", saleType: "propre", type: "Export Propre", totalEmploye: 16000, totalEntreprise: 2500, time: "Il y a 3 jours" },
+    { sale: "client", saleType: "propre", totalEmploye: 0, totalEntreprise: 1500, time: "Il y a 2 heures" },
+    { sale: "client", saleType: "sale", totalEmploye: 3000, totalEntreprise: 500, time: "Hier" },
+    { sale: "export", saleType: "propre", totalEmploye: 16000, totalEntreprise: 2500, time: "Il y a 3 jours" },
   ];
 
   const formatCurrency = (value: number): string => {

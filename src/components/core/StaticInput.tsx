@@ -13,7 +13,7 @@ const StaticInput: React.FC<StaticInputProps> = ({
   icon: Icon,
   label,
   text,
-  bgColor = "bg-[#263238]",
+  bgColor = "bg-gray-800/10",
   textColor = "text-gray-400",
 }) => {
   return (
