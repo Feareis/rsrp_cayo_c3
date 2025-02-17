@@ -13,13 +13,18 @@ export default function Header() {
     "/sale/client": "Vente Client",
     "/price": "Prix",
     "/admin/user-management": "Gestion des employés",
-    "/admin/test2": "Admin / Test2",
+    "/admin/stock/product": "Gestion Produits",
+    "/admin/stock/raw-material": "Gestion Matières Premières",
     "/help-center": "Centre d'aide",
     "/help-center/faq": "FAQ",
     "/profile": "Profil",
   };
 
   const pageTitle = pageNames[location.pathname] || "Page Inconnue";
+
+  // Vérifie si on est dans un chemin commençant par "/admin/"
+  const isAdminPage = location.pathname.startsWith("/admin/");
+  const isUserManagement = location.pathname === "/admin/user-management";
 
   // Fonction pour gérer l’animation et la console log
   const handleClick = () => {
@@ -30,12 +35,11 @@ export default function Header() {
 
   return (
     <header className="h-21 flex items-center justify-between bg-[#37474f] text-[#cfd8dc] px-6">
-
       {/* Titre de la page */}
       <h2 className="text-2xl font-bold">{pageTitle}</h2>
 
       {/* Si on est sur "admin/user-management", afficher le bouton "Nouvel employé" avec animation */}
-      {location.pathname === "/admin/user-management" ? (
+      {isUserManagement ? (
         <button
           className={`bg-red-500 text-white px-4 py-2 rounded-md transition-all duration-300 ease-in-out
             ${clicked ? "scale-110 rotate-2 shadow-lg" : "hover:scale-105 hover:shadow-md"}`}
@@ -44,8 +48,10 @@ export default function Header() {
           Nouvel employé
         </button>
       ) : (
-        /* Afficher le bouton profil sauf sur /profile et /help-center/faq */
-        (location.pathname !== "/profile" && location.pathname !== "/help-center/faq") && (
+        /* Afficher le profil SEULEMENT si on n'est PAS dans /admin/, sauf pour /admin/user-management */
+        (!isAdminPage || location.pathname === "/admin/user-management") &&
+        location.pathname !== "/profile" &&
+        location.pathname !== "/help-center/faq" && (
           <div className="flex items-center gap-3">
             <ProfileRedirect />
           </div>

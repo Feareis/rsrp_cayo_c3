@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
-  Home, Calculator, Tag, Receipt, Package, Users, Shield, Settings, FileQuestion, ChevronDown, ChevronRight
+  Home, Calculator, Tag, Receipt, Package, Layers, ScanBarcode, Anvil, Users, Shield, Settings, FileQuestion, ChevronDown, ChevronRight, BookHeart, ChartNoAxesCombined
 } from "lucide-react";
 
 export default function SidebarBody() {
@@ -111,54 +111,129 @@ export default function SidebarBody() {
           </Link>
         </li>
 
-        <li className="border-t border-gray-700 mt-2"></li>
-
         {/* Section Admin */}
+        <li className="relative flex items-center justify-center my-2">
+          <span className="absolute w-[95%] h-[1px] bg-gray-600"></span>
+          <span className="relative bg-[#263238] px-3 text-[#90a4ae] font-bold text-sm uppercase">
+            Admin
+          </span>
+        </li>
+        <li>
+          <Link
+            to="/admin/user-management"
+            className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-all duration-300 ${
+              location.pathname === "/admin/user-management"
+                ? "bg-[#3e4d56] text-[#cfd8dc] font-semibold"
+                : "text-[#cfd8dc] hover:bg-[#3e4d56]"
+            }`}
+          >
+            <Users size={22} />
+            Gestion Employés
+          </Link>
+        </li>
+        <li>
+          <Link
+            to="/admin/employee-options"
+            className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-all duration-300 ${
+              location.pathname === "/admin/employee-options"
+                ? "bg-[#3e4d56] text-[#cfd8dc] font-semibold"
+                : "text-[#cfd8dc] hover:bg-[#3e4d56]"
+            }`}
+          >
+            <Settings size={22} />
+            Option Employés
+          </Link>
+        </li>
+        <li>
+          <Link
+            to="/admin/site-access"
+            className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-all duration-300 ${
+              location.pathname === "/admin/site-access"
+                ? "bg-[#3e4d56] text-[#cfd8dc] font-semibold"
+                : "text-[#cfd8dc] hover:bg-[#3e4d56]"
+            }`}
+          >
+            <Shield size={22} />
+            Accès Site
+          </Link>
+        </li>
+
+        {/* Produits */}
         <li>
           <button
-            onClick={() => toggleSection("admin")}
+            onClick={() => toggleSection("stock")}
             className="flex items-center justify-between w-full px-3 py-3 text-[#cfd8dc] hover:bg-[#3e4d56] rounded-lg transition-all duration-300"
           >
             <div className="flex items-center gap-3">
-              <Shield size={22} />
-              <span>Admin</span>
+              <Layers size={22} />
+              <span>Stock</span>
             </div>
-            {openSection === "admin" ? <ChevronDown size={20} /> : <ChevronRight size={20} />}
+            {openSection === "stock" ? <ChevronDown size={20} /> : <ChevronRight size={20} />}
           </button>
           <div
             className={`overflow-hidden transition-all duration-300 ${
-              openSection === "admin" ? "max-h-40 opacity-100" : "max-h-0 opacity-0"
+              openSection === "stock" ? "max-h-40 opacity-100" : "max-h-0 opacity-0"
             }`}
           >
             <ul className="mt-2 ml-5 flex flex-col gap-2">
               <li>
                 <Link
-                  to="/admin/user-management"
+                  to="/stock/products"
                   className={`flex items-center gap-3 px-2 py-2 rounded-lg transition-all duration-300 ${
-                    location.pathname === "/admin/user-management"
+                    location.pathname === "/stock/products"
                       ? "bg-[#3e4d56] text-[#cfd8dc] font-semibold"
                       : "text-[#cfd8dc] hover:bg-[#3e4d56]"
                   }`}
                 >
-                  <Users size={20} />
-                  Gestion Employés
+                  <ScanBarcode size={20} />
+                    Produits
                 </Link>
               </li>
               <li>
                 <Link
-                  to="/admin/test2"
+                  to="/stock/raw-materials"
                   className={`flex items-center gap-3 px-2 py-2 rounded-lg transition-all duration-300 ${
-                    location.pathname === "/admin/test2"
+                    location.pathname === "/stock/raw-materials"
                       ? "bg-[#3e4d56] text-[#cfd8dc] font-semibold"
                       : "text-[#cfd8dc] hover:bg-[#3e4d56]"
                   }`}
                 >
-                  <Settings size={20} />
-                  Test2
+                  <Anvil size={20} />
+                    Matières Premières
                 </Link>
               </li>
             </ul>
           </div>
+        </li>
+
+        {/* Analytics */}
+        <li>
+          <Link
+            to="/admin/analytics"
+            className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-all duration-300 ${
+              location.pathname === "/admin/analytics"
+                ? "bg-[#3e4d56] text-[#cfd8dc] font-semibold"
+                : "text-[#cfd8dc] hover:bg-[#3e4d56]"
+            }`}
+          >
+            <ChartNoAxesCombined size={22} />
+              Analytics
+          </Link>
+        </li>
+
+        {/* Autre */}
+        <li>
+          <Link
+            to="/admin/other"
+            className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-all duration-300 ${
+              location.pathname === "/admin/other"
+                ? "bg-[#3e4d56] text-[#cfd8dc] font-semibold"
+                : "text-[#cfd8dc] hover:bg-[#3e4d56]"
+            }`}
+          >
+            <FileQuestion size={22} />
+            Autre
+          </Link>
         </li>
       </ul>
 
@@ -172,7 +247,7 @@ export default function SidebarBody() {
                 : "text-[#cfd8dc] hover:bg-[#3e4d56]"
             }`}
         >
-          <FileQuestion size={22} />
+          <BookHeart size={22} />
           Aide
         </Link>
       </div>

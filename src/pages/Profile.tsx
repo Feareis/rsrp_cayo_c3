@@ -21,6 +21,16 @@ const Profile: React.FC = () => {
       return `${value.toLocaleString("en-EN", { minimumFractionDigits: 0 })} $`;
     };
 
+  const formatCompactCurrency = (value: number): string => {
+    if (value >= 1_000_000) {
+      return `${(value / 1_000_000).toLocaleString("en-EN", { maximumFractionDigits: 1 })} M$`;
+    } else if (value >= 1_000) {
+      return `${(value / 1_000).toLocaleString("en-EN", { maximumFractionDigits: 0 })} k$`;
+    } else {
+      return `${value.toLocaleString("en-EN", { minimumFractionDigits: 0 })} $`;
+    }
+  };
+
 
   return (
     <div className="flex justify-center items-center bg-[#37474f] text-[#cfd8dc] px-4">
@@ -230,6 +240,7 @@ const Profile: React.FC = () => {
 
                 <div className="flex flex-col gap-6 p-4">
                   <DynamicInput
+                    type="password"
                     icon={Lock}
                     label="Ancien mot de passe *"
                     value={currentPassword}
@@ -238,6 +249,7 @@ const Profile: React.FC = () => {
                   />
 
                   <DynamicInput
+                    type="password"
                     icon={KeyRound}
                     label="Nouveau mot de passe *"
                     value={newPassword}
@@ -246,6 +258,7 @@ const Profile: React.FC = () => {
                   />
 
                   <DynamicInput
+                    type="password"
                     icon={KeyRound}
                     label="Confirmer le mot de passe *"
                     value={confirmPassword}

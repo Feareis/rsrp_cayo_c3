@@ -1,0 +1,25 @@
+.smoke {
+  stroke-dasharray: 0, 10;
+  animation: smoke 6s ease infinite;
+}
+
+@keyframes smoke {
+  0% { stroke-dasharray: 0, 10; }
+  50% { stroke-dasharray: 10, 0; }
+  100% { stroke-dasharray: 10, 0; opacity: 0; }
+}
+
+.writing {
+  opacity: 0;
+  animation: writing 0.5s linear forwards;
+}
+
+.writing:nth-child(1) { animation-delay: 0s; }
+.writing:nth-child(2) { animation-delay: 1s; }
+.writing:nth-child(3) { animation-delay: 1.5s; }
+.writing:nth-child(4) { animation-delay: 2s; }
+
+@keyframes writing {
+  0% { width: 0px; opacity: 1; }
+  100% { width: 14px; opacity: 1; }
+}
