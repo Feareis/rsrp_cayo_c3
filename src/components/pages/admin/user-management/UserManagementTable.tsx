@@ -155,7 +155,7 @@ const UserTable = ({ users = [], selected, onSelectedChange, onDelete, onEdit, p
           <div className="text-center py-4">Aucun utilisateur trouvé.</div>
         ) : (
           filteredUsers.slice(page * rowsPerPage, rowsPerPage === users.length ? users.length : page * rowsPerPage + rowsPerPage).map((user) => (
-            <div key={user.id} className="bg-[#263238] text-base p-4 rounded-lg flex items-center">
+            <div key={user.id} className="bg-[#263238] text-base border border-gray-600 p-4 rounded-lg flex items-center">
               <button
                 onClick={() => handleSelectOne(user.id)}
                 className={`w-5 h-5 rounded-full border-1 transition-all flex items-center justify-center
@@ -165,7 +165,7 @@ const UserTable = ({ users = [], selected, onSelectedChange, onDelete, onEdit, p
                 {selected.includes(user.id) && <Check className="w-4 h-4 text-white" />}
               </button>
 
-              <div className="w-[15%] text-center">{user.grade}</div>
+              <div className="w-[15%] text-center font-semibold">{user.grade}</div>
               <div className="w-[15%]">{`${user.firstName} ${user.lastName}`}</div>
               <div className="w-[15%] text-center">{user.phone}</div>
               <div className="w-[15%] text-center">{new Date(user.hireDate).toLocaleDateString("fr-FR")}</div>
@@ -237,7 +237,7 @@ const UserTable = ({ users = [], selected, onSelectedChange, onDelete, onEdit, p
           Suivant
         </button>
         <select
-          className="bg-gray-700 text-white px-2 py-1 rounded"
+          className="bg-[#263238] text-white pl-2 pr-4 py-2 rounded"
           value={rowsPerPage === users.length ? "all" : "10"}
           onChange={handleChangeRowsPerPage}
         >
