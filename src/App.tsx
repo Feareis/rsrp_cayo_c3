@@ -19,6 +19,7 @@ import ClientsSale from "./pages/ClientsSale";
 // Import Admin Pages
 import UserManagement from "./pages/admin/UserManagement";
 import AdminStockProduct from "./pages/admin/stock/AdminStockProduct";
+import AdminAnalytics from "./pages/admin/AdminAnalytics";
 
 // Import Help Section Pages
 import HelpCenter from "./pages/help-center/HelpCenter";
@@ -38,6 +39,7 @@ export default function AppRouter() {
           {/* Admin Pages */}
           <Route path="/admin/user-management" element={<UserManagement />} />
           <Route path="/admin/stock/product" element={<AdminStockProduct />} />
+          <Route path="/admin/analytics" element={<AdminAnalytics />} />
 
           {/* Help Section Pages */}
           <Route path="/help-center" element={<HelpCenter />} />

@@ -4,11 +4,6 @@ import { X, Trash2 } from "lucide-react";
 import ProfileRedirect from "./ProfileRedirect";
 
 
-interface HeaderProps {
-  selectedUsers?: string[];
-  onDelete?: () => void;
-}
-
 export default function Header({ selectedUsers = [], onDelete }: HeaderProps) {
   const location = useLocation();
   const [clicked, setClicked] = useState(false);
@@ -22,24 +17,14 @@ export default function Header({ selectedUsers = [], onDelete }: HeaderProps) {
     "/admin/user-management": "Gestion des employés",
     "/admin/stock/product": "Gestion Produits",
     "/admin/stock/raw-material": "Gestion Matières Premières",
+    "/admin/analytics": "Analytics",
     "/help-center": "Centre d'aide",
     "/help-center/faq": "FAQ",
     "/profile": "Profil",
   };
 
-  const isUserManagement = location.pathname === "/admin/user-management";
-  const pageTitle = isUserManagement && selectedUsers.length > 0
-    ? `${selectedUsers.length} sélectionné(s)`
-    : pageNames[location.pathname] || "Page Inconnue";
-
-  // Vérifie si on est dans un chemin commençant par "/admin/"
+  const pageTitle = pageNames[location.pathname] || "Page Inconnue";
   const isAdminPage = location.pathname.startsWith("/admin/");
-
-  // Fonction pour gérer l’animation et la console log
-  const handleClick = () => {
-    setClicked(true);
-    setTimeout(() => setClicked(false), 300);
-  };
 
   return (
     <header className="h-21 flex items-center justify-between bg-[#37474f] text-[#cfd8dc] px-6">
