@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import CustomInput from "../components/core/CustomInput";
 import CustomButton from "../components/core/CustomButton";
-import { BrowserWarning } from "../components/core/BrowserWarning";
+import { BrowserWarn } from "../components/core/BrowserWarn";
 import SaladeCayo from "../assets/raw_material/cantina_cayo/salade_cayo.png";
 import { BadgeDollarSign, ArrowUpNarrowWide, Salad, AlertCircle, CircleCheck } from "lucide-react";
 import { showToast } from "../components/core/toast/CustomToast";
@@ -71,7 +71,7 @@ const ExportSales: React.FC = () => {
         {/* Formulaire */}
         <div className="flex flex-col w-1/2 p-6 gap-6 bg-[#263238] border border-gray-600 rounded-xl shadow-lg">
           <h2 className="text-gray-400 text-xl font-semibold text-center">Saisie des Données</h2>
-          <BrowserWarning
+          <BrowserWarn
             color="yellow"
             icon={<AlertCircle size={20} />}
             message="Niveau d'expertise :"
@@ -107,8 +107,8 @@ const ExportSales: React.FC = () => {
         <div className="flex flex-col w-1/2 gap-6 p-6 bg-[#263238] border border-gray-600 rounded-xl shadow-lg">
           <h2 className="text-gray-400 text-xl font-semibold text-center">Visualisation & Totaux</h2>
 
-          <BrowserWarning
-            color="green"
+          <BrowserWarn
+            color="blue"
             icon={<CircleCheck size={20} />}
             message="-"
             details={["La Part employé est envoyé directement dans votre inventaire (F2).", "La Part Entreprise est envoyé directement dans le coffre de l'entreprise."]}

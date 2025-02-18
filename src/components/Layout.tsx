@@ -5,10 +5,7 @@ import MainContent from "./MainContent";
 export default function Layout() {
   return (
     <div className="flex h-screen min-h-screen bg-[#37474f]">
-      {/* Sidebar toujours fixe */}
       <Sidebar className="h-full" />
-
-      {/* Contenu principal adaptable */}
       <div className="flex flex-col flex-1 h-full min-h-screen bg-[#37474f] mx-auto">
         <Header />
         <MainContent />

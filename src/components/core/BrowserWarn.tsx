@@ -1,13 +1,13 @@
 import { FC, ReactNode } from "react";
 
-interface BrowserWarningProps {
+interface BrowserWarnProps {
   color?: "yellow" | "red" | "green" | "blue" | "gray"; // Couleurs autorisées
   icon?: ReactNode; // Icône personnalisée
   message: string; // Message principal
   details?: string[]; // Liste d'infos sous le message
 }
 
-export const BrowserWarning: FC<BrowserWarningProps> = ({
+export const BrowserWarn: FC<BrowserWarnProps> = ({
   color = "yellow",
   icon,
   message,
@@ -17,35 +17,35 @@ export const BrowserWarning: FC<BrowserWarningProps> = ({
   const colorClasses: Record<string, { bg: string; border: string; text: string; list: string; icon: string }> = {
     yellow: {
       bg: "bg-yellow-500/10",
-      border: "border-yellow-500/20",
+      border: "border-l-4 border-yellow-500/20",
       text: "text-yellow-200/90",
       list: "text-yellow-200/70",
       icon: "text-yellow-500",
     },
     red: {
       bg: "bg-red-500/10",
-      border: "border-red-500/20",
+      border: "border-l-4 border-red-500/20",
       text: "text-red-200/90",
       list: "text-red-200/70",
       icon: "text-red-500",
     },
     green: {
       bg: "bg-green-500/10",
-      border: "border-green-500/20",
+      border: "border-l-4 border-green-500/20",
       text: "text-green-200/90",
       list: "text-green-200/70",
       icon: "text-green-500",
     },
     blue: {
       bg: "bg-blue-500/10",
-      border: "border-blue-500/20",
+      border: "border-l-4 border-blue-500/20",
       text: "text-blue-200/90",
       list: "text-blue-200/70",
       icon: "text-blue-500",
     },
     gray: {
       bg: "bg-gray-500/10",
-      border: "border-gray-500/20",
+      border: "border-l-4 border-gray-500/20",
       text: "text-gray-200/90",
       list: "text-gray-200/70",
       icon: "text-gray-500",

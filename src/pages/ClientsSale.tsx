@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import CustomButton from "../components/core/CustomButton";
 import { BadgeDollarSign, RefreshCw, ArrowUpNarrowWide, Salad, AlertCircle, CircleCheck } from "lucide-react";
-import { BrowserWarning } from "../components/core/BrowserWarning";
+import { BrowserWarn } from "../components/core/BrowserWarn";
 import { showToast } from "../components/core/toast/CustomToast";
 import toast, { Toaster } from 'react-hot-toast';
 
@@ -13,7 +13,7 @@ const staticProducts = [
 ];
 
 const ClientsSales: React.FC = () => {
-  const [activeTab, setActiveTab] = useState("Activité");
+  const [activeTab, setActiveTab] = useState("Nourriture");
   const [quantities, setQuantities] = useState<{ [key: string]: number }>({});
   const [selectedCategory, setSelectedCategory] = useState("Food");
 
@@ -67,46 +67,46 @@ const ClientsSales: React.FC = () => {
         </div>
       </div>
 
-        {/* Tabs en haut */}
-        <div className="flex gap-16 mb-6">
-          <button
-            onClick={() => setActiveTab("Activité")}
-            className={`px-4 py-2 rounded-full transition-all duration-300 ${
-              activeTab === "Activité" ? "bg-[#263238] text-white" : "text-gray-400 hover:text-white"
-            }`}
-          >
-            Activité
-          </button>
-
-          <button
-            onClick={() => setActiveTab("Informations")}
-            className={`px-4 py-2 rounded-full transition-all duration-300 ${
-              activeTab === "Informations" ? "bg-[#263238] text-white" : "text-gray-400 hover:text-white"
-            }`}
-          >
-            Informations
-          </button>
-
-          <button
-            onClick={() => setActiveTab("Mot de passe")}
-            className={`px-4 py-2 rounded-full transition-all duration-300 ${
-              activeTab === "Mot de passe" ? "bg-[#263238] text-white" : "text-gray-400 hover:text-white"
-            }`}
-          >
-            Mot de passe
-          </button>
-        </div>
-
       <div className="flex flex-row gap-8 w-full">
         {/* Formulaire */}
         <div className="flex flex-col w-2/3 p-6 gap-6 bg-[#263238] border border-gray-600 rounded-xl shadow-lg">
           <h2 className="text-gray-400 text-xl font-semibold text-center">Saisie des Données</h2>
-          <BrowserWarning
+          <BrowserWarn
             color="yellow"
             icon={<AlertCircle size={20} />}
             message="Niveau d'expertise :"
             details={["Le niveau d'expertise correspond à votre niveau dans l'entreprise et est calculer comme tel : pourcentage bonus * 2."]}
           />
+
+          {/* Tabs */}
+          <div className="flex gap-16 mb-6">
+            <button
+              onClick={() => setActiveTab("Nourriture")}
+              className={`px-4 py-2 rounded-xl transition-all duration-300 ${
+                activeTab === "Nourriture" ? "bg-[#37474f] text-white" : "text-gray-400 hover:text-white"
+              }`}
+            >
+              Nourriture
+            </button>
+
+            <button
+              onClick={() => setActiveTab("Boisson")}
+              className={`px-4 py-2 rounded-xl transition-all duration-300 ${
+                activeTab === "Boisson" ? "bg-[#37474f] text-white" : "text-gray-400 hover:text-white"
+              }`}
+            >
+              Boisson
+            </button>
+
+            <button
+              onClick={() => setActiveTab("Alcool")}
+              className={`px-4 py-2 rounded-xl transition-all duration-300 ${
+                activeTab === "Alcool" ? "bg-[#37474f] text-white" : "text-gray-400 hover:text-white"
+              }`}
+            >
+              Alcool
+            </button>
+          </div>
           <p>tet</p>
 
           <p>tat</p>
@@ -120,7 +120,7 @@ const ClientsSales: React.FC = () => {
         <div className="flex flex-col w-1/3 gap-6 p-6 bg-[#263238] border border-gray-600 rounded-xl shadow-lg">
           <h2 className="text-gray-400 text-xl font-semibold text-center">Visualisation & Totaux</h2>
 
-          <BrowserWarning
+          <BrowserWarn
             color="green"
             icon={<CircleCheck size={20} />}
             message="-"
