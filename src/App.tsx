@@ -12,6 +12,7 @@ import UnderConstruction from "./pages/core/UnderConstruction";
 
 // Import Primary Pages
 import Dashboard from "./pages/Dashboard";
+import AdminDashboard from "./pages/AdminDashboard";
 import Calculator from "./pages/Calculator";
 import ExportSale from "./pages/ExportSale";
 import ClientsSale from "./pages/ClientsSale";
@@ -32,6 +33,7 @@ export default function AppRouter() {
         <Route path="/" element={<Layout />}>
           {/* Primary Pages */}
           <Route index element={<Dashboard />} />
+          <Route path="/admin-dashboard" element={<AdminDashboard />} />
           <Route path="/calculator" element={<Calculator />} />
           <Route path="/sale/export" element={<ExportSale />} />
           <Route path="/sale/client" element={<ClientsSale />} />

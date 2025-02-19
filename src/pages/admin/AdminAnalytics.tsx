@@ -27,7 +27,7 @@ const AdminAnalytics = () => {
       </div>
 
       {/* 📌 Contenu dynamique */}
-      <div className="bg-[#263238] p-6 rounded-lg shadow-lg transition-all duration-500">
+      <div className="bg-[#263238] min-h-screen p-6 rounded-lg shadow-lg transition-all duration-500">
         {activeTab === "Résumé" ? <Résumé /> : <Simulateur />}
       </div>
     </div>

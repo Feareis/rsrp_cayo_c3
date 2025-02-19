@@ -12,7 +12,7 @@ export interface User {
 
 
 export const initialUsers: User[] = [
-  { id: "1", firstName: "Alice", lastName: "Dupont", phone: "(123) 456-7890", hireDate: "2020-03-15", grade: "Patron", leaves: false, firstWarning: false, secondWarning: false },
+  { id: "1", firstName: "Alice", lastName: "Dupont", vep: 100000, vcp: 120000, vcs: 10000, quota: true, quota_bonus: false, employee_prime_s1: 122000, employee_taxe_s1: 12000 },
   { id: "2", firstName: "Bob", lastName: "Martin", phone: "(234) 567-8901", hireDate: "2019-07-22", grade: "Co-Patron", leaves: true, firstWarning: false, secondWarning: false },
   { id: "3", firstName: "Charlie", lastName: "Durand", phone: "(345) 678-9012", hireDate: "2021-01-10", grade: "RH", leaves: false, firstWarning: true, secondWarning: false },
   { id: "4", firstName: "David", lastName: "Lemoine", phone: "(456) 789-0123", hireDate: "2022-05-18", grade: "RH", leaves: false, firstWarning: false, secondWarning: true },

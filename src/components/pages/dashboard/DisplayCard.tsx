@@ -5,14 +5,12 @@ interface CardProps {
   icon: Icon;
   text1: string;
   text2: string;
+  option?: string;
 }
 
-export default function Card({ title, icon, text1, text2 }: CardProps) {
+export default function Card({ title, icon, text1, text2, option }: CardProps) {
   return (
-    <div
-      className="bg-[#263238] text-[#cfd8dc] border border-gray-600 shadow-md rounded-lg px-4 pt-4 pb-2 w-full
-                 transition-transform duration-300 ease-in-out hover:scale-101"
-    >
+    <div className={`flex flex-col justify-center bg-[#263238] text-[#cfd8dc] border border-gray-600 shadow-md rounded-xl px-4 pt-4 pb-2 w-full ${option || ""}`}>
       <div className="flex justify-between items-center">
         <h3 className="text-xl font-semibold">{title}</h3>
         <div className="text-2xl">{icon}</div>

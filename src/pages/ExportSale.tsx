@@ -32,10 +32,10 @@ const ExportSales: React.FC = () => {
 
   const handleSaleSubmit = () => {
     if (!expertise || !nbSalade) {
-      showToast("error", "Une erreur est survenue !");
+      showToast("error", "Erreur : vérifier vos entrées !");
       return;
     }
-    showToast("success", "Opération réussie !");
+    showToast("success", "Vente ajoutée !");
   };
 
   const currentDate = new Date().toLocaleDateString('fr-FR');

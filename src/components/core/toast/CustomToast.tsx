@@ -25,5 +25,5 @@ export const showToast = (type: ToastType, message: string, details?: string[]) 
     >
       <BrowserWarn color={toastColors[type]} icon={toastIcons[type]} message={message} details={details} />
     </div>
-  ), { duration: 500 });
+  ), { duration: 1000 });
 };

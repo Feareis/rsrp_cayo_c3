@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
-  Home, Calculator, Tag, Receipt, Package, Layers, ScanBarcode, Anvil, Users, Shield, Settings, FileQuestion, ChevronDown, ChevronRight, BookHeart, ChartNoAxesCombined
+  Home, Calculator, Tag, ShoppingCart, Package, Layers, ScanBarcode, Anvil, Users, Shield, Settings, FileQuestion, ChevronDown, ChevronRight, BookHeart, ChartArea, ChartScatter
 } from "lucide-react";
 
 export default function SidebarBody() {
@@ -33,6 +33,36 @@ export default function SidebarBody() {
           </Link>
         </li>
 
+        {/* Dashboard -> vision Admin */}
+        <li>
+          <Link
+            to="/admin-dashboard"
+            className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-all duration-300 ${
+              location.pathname === "/admin-dashboard"
+                ? "bg-[#3e4d56] text-[#cfd8dc] font-semibold"
+                : "text-[#cfd8dc] hover:bg-[#3e4d56]"
+            }`}
+          >
+            <Home size={22} />
+              Dashboard Admin
+          </Link>
+        </li>
+
+        {/* Statistiques */}
+        <li>
+          <Link
+            to="/stats"
+            className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-all duration-300 ${
+              location.pathname === "/stats"
+                ? "bg-[#3e4d56] text-[#cfd8dc] font-semibold"
+                : "text-[#cfd8dc] hover:bg-[#3e4d56]"
+            }`}
+          >
+            <ChartArea size={22} />
+              Statistiques
+          </Link>
+        </li>
+
         {/* Calculateur */}
         <li>
           <Link
@@ -55,7 +85,7 @@ export default function SidebarBody() {
             className="flex items-center justify-between w-full px-3 py-3 text-[#cfd8dc] hover:bg-[#3e4d56] rounded-lg transition-all duration-300"
           >
             <div className="flex items-center gap-3">
-              <Receipt size={22} />
+              <ShoppingCart size={22} />
               <span>Vente</span>
             </div>
             {openSection === "vente" ? <ChevronDown size={20} /> : <ChevronRight size={20} />}
@@ -112,12 +142,14 @@ export default function SidebarBody() {
         </li>
 
         {/* Section Admin */}
-        <li className="relative flex items-center justify-center my-2">
+        <li className="relative flex items-center justify-center my-1">
           <span className="absolute w-[95%] h-[1px] bg-gray-600"></span>
           <span className="relative bg-[#263238] px-3 text-[#90a4ae] font-bold text-sm uppercase">
             Admin
           </span>
         </li>
+
+        {/* Admin: Gestion Utilisateurs */}
         <li>
           <Link
             to="/admin/user-management"
@@ -131,6 +163,8 @@ export default function SidebarBody() {
             Gestion Employés
           </Link>
         </li>
+
+        {/* Admin: Options Utilisateurs */}
         <li>
           <Link
             to="/admin/employee-options"
@@ -144,6 +178,8 @@ export default function SidebarBody() {
             Option Employés
           </Link>
         </li>
+
+        {/* Admin: Accès Site */}
         <li>
           <Link
             to="/admin/site-access"
@@ -158,7 +194,7 @@ export default function SidebarBody() {
           </Link>
         </li>
 
-        {/* Produits */}
+        {/* Admin: Stock */}
         <li>
           <button
             onClick={() => toggleSection("stock")}
@@ -176,6 +212,8 @@ export default function SidebarBody() {
             }`}
           >
             <ul className="mt-2 ml-5 flex flex-col gap-2">
+
+              {/* Admin: Stock: Produits */}
               <li>
                 <Link
                   to="/stock/products"
@@ -189,6 +227,8 @@ export default function SidebarBody() {
                     Produits
                 </Link>
               </li>
+
+              {/* Admin: Stock: Matières Premières */}
               <li>
                 <Link
                   to="/stock/raw-materials"
@@ -206,7 +246,7 @@ export default function SidebarBody() {
           </div>
         </li>
 
-        {/* Analytics */}
+        {/* Admin: Analytics */}
         <li>
           <Link
             to="/admin/analytics"
@@ -216,28 +256,13 @@ export default function SidebarBody() {
                 : "text-[#cfd8dc] hover:bg-[#3e4d56]"
             }`}
           >
-            <ChartNoAxesCombined size={22} />
+            <ChartScatter size={22} />
               Analytics
-          </Link>
-        </li>
-
-        {/* Autre */}
-        <li>
-          <Link
-            to="/admin/other"
-            className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-all duration-300 ${
-              location.pathname === "/admin/other"
-                ? "bg-[#3e4d56] text-[#cfd8dc] font-semibold"
-                : "text-[#cfd8dc] hover:bg-[#3e4d56]"
-            }`}
-          >
-            <FileQuestion size={22} />
-            Autre
           </Link>
         </li>
       </ul>
 
-      {/* Section Aide */}
+      {/* Aide */}
       <div className="mt-auto">
         <Link
           to="/help-center"
