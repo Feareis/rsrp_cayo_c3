@@ -316,6 +316,7 @@ const UserTable = ({ users = [], selected, onSelectedChange, onDelete, onEdit, p
             setIsDeleteModalOpen(false);
           }}
           userName={`${selectedUser.firstName} ${selectedUser.lastName}`}
+          grade={selectedUser.grade}
         />
       )}
 
@@ -328,10 +329,12 @@ const UserTable = ({ users = [], selected, onSelectedChange, onDelete, onEdit, p
             console.log("Supprimés :", selectedUsers);
             setIsDeleteMultipleModalOpen(false);
           }}
-          userNames={selectedUsers.map((userId) => {
-            const user = users.find((u) => u.id === userId);
-            return user ? `${user.firstName} ${user.lastName}` : "Inconnu";
-          })}
+          users={selectedUsers
+            .map((userId) => {
+              const user = users.find((u) => u.id === userId);
+              return user ? { grade: user.grade, name: `${user.firstName} ${user.lastName}` } : null;
+            })
+            .filter(Boolean)} // Filtrer pour éviter les valeurs null
         />
       )}
     </div>
