@@ -20,7 +20,7 @@ export default function Card({ title, icon, text1, text2, option }: CardProps) {
           <p className="text-center font-bold text-xl">{text1}</p>
         </div>
       </div>
-      <p className="text-center font-semibold text-lg px-8">{text2}</p>
+      <p className="text-center font-bold text-gray-400 text-lg px-8">{text2}</p>
     </div>
   );
 }

@@ -20,7 +20,7 @@ const CustomInput: React.FC<CustomInputProps> = ({ label, icon: Icon, value, onC
           value={value}
           onChange={onChange}
           placeholder={placeholder}
-          className="w-full pl-10 pr-4 py-2 rounded-lg bg-[#1E2A30] text-white border border-gray-600 focus:border-gray-400 outline-none transition-all duration-200"
+          className="w-full pl-10 pr-4 py-2 rounded-lg bg-[#1E2A30] border border-gray-600 focus:border-gray-400 outline-none transition-all duration-200"
         />
       </div>
     </div>

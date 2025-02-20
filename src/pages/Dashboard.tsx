@@ -98,7 +98,7 @@ export default function Dashboard() {
 
           {/* Info + Display Card Section */}
           <div className="flex flex-row gap-6 w-full flex-grow">
-            <div className={`flex flex-col w-[75%] p-4 bg-[#263238] border border-gray-600 rounded-xl shadow-lg flex-grow ${transitionHover101}`}>
+            <div className={`flex flex-col w-[75%] p-4 bg-[#263238] border border-gray-600 rounded-xl shadow-lg flex-grow`}>
 
               {/* Section principale (80%) */}
               <div className="flex flex-grow rounded-lg p-4">
@@ -156,7 +156,7 @@ export default function Dashboard() {
         </div>
 
         {/* Right Section - Redistribution Rates */}
-        <div className={`flex flex-col w-[25%] flex-grow ${transitionHover101}`}>
+        <div className={`flex flex-col w-[25%] flex-grow`}>
           <RedistributionTable className="h-full"/>
         </div>
       </div>

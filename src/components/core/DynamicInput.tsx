@@ -23,7 +23,7 @@ const DynamicInput: React.FC<DynamicInputProps> = ({
   placeholder = "Saisir une valeur...",
 }) => {
   return (
-    <div className="relative w-1/2">
+    <div className="relative">
       {/* Label flottant */}
       <div className={`absolute -top-3 left-4 px-2 bg-gradient-to-b from-[#263238] to-${bgColor} text-base font-bold text-gray-300 rounded-md`}>
         {label}

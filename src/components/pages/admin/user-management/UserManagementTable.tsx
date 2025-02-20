@@ -1,6 +1,11 @@
 import React, { useState } from "react";
-import { Check, Minus, EllipsisVertical, Plus, X, Trash2 } from "lucide-react";
+import AddUserModal from "../modal/AddUserModal";
+import EditUserModal from "../modal/EditUserModal";
+import DeleteUserModal from "../modal/DeleteUserModal";
+import DeleteUsersModal from "../modal/DeleteUsersModal";
+import { Check, Minus, EllipsisVertical, Plus, X, Pencil, Trash2 } from "lucide-react";
 import CustomSwitch from "../../../../components/core/CustomSwitch";
+
 
 interface User {
   id: string;
@@ -29,6 +34,12 @@ const UserTable = ({ users = [], selected, onSelectedChange, onDelete, onEdit, p
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [menuOpen, setMenuOpen] = useState<string | null>(null);
   const [isChecked, setIsChecked] = useState(false);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isDeleteMultipleModalOpen, setIsDeleteMultipleModalOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
   const [switchStates, setSwitchStates] = useState<Record<string, { leaves: boolean; firstWarning: boolean; secondWarning: boolean }>>(
     Object.fromEntries(users.map(user => [user.id, { leaves: user.leaves, firstWarning: user.firstWarning, secondWarning: user.secondWarning }]))
   );
@@ -87,6 +98,7 @@ const UserTable = ({ users = [], selected, onSelectedChange, onDelete, onEdit, p
       .includes(searchQuery.toLowerCase())
   );
 
+
   return (
     <div className="overflow-x-auto text-[#cfd8dc] rounded-lg px-2">
       <div className="flex justify-between items-center">
@@ -113,14 +125,17 @@ const UserTable = ({ users = [], selected, onSelectedChange, onDelete, onEdit, p
             {selected.length > 0 ? (
               <button
                 className="bg-red-500 px-4 py-2 rounded-md transition hover:scale-105"
-                onClick={() => onDelete(selected)}
+                onClick={() => {
+                  setSelectedUsers(selected);
+                  setIsDeleteMultipleModalOpen(true);
+                }}
               >
                 <Trash2 size={26} />
               </button>
             ) : (
               <button
                 className="bg-blue-500 px-4 py-2 rounded-md transition hover:scale-105"
-                onClick={handleClick}
+                onClick={() => setIsAddModalOpen(true)}
               >
                 <Plus size={26} />
               </button>
@@ -165,7 +180,21 @@ const UserTable = ({ users = [], selected, onSelectedChange, onDelete, onEdit, p
                 {selected.includes(user.id) && <Check className="w-4 h-4 text-white" />}
               </button>
 
-              <div className="w-[15%] text-center font-semibold">{user.grade}</div>
+              <div className={`w-[15%] text-center font-semibold ${
+                user.grade === "Patron" || user.grade === "Co-Patron"
+                  ? "text-red-400"
+                  : user.grade === "RH"
+                  ? "text-violet-400"
+                  : user.grade === "Responsable"
+                  ? "text-yellow-400"
+                  : user.grade === "CDI"
+                  ? "text-blue-400"
+                  : user.grade === "CDD"
+                  ? "text-cyan-400"
+                  : "text-white"
+              }`}>
+                {user.grade}
+              </div>
               <div className="w-[15%]">{`${user.firstName} ${user.lastName}`}</div>
               <div className="w-[15%] text-center">{user.phone}</div>
               <div className="w-[15%] text-center">{new Date(user.hireDate).toLocaleDateString("fr-FR")}</div>
@@ -173,7 +202,7 @@ const UserTable = ({ users = [], selected, onSelectedChange, onDelete, onEdit, p
                 <label className="flex items-center justify-center cursor-pointer">
                   <input type="checkbox" className="hidden" checked={switchStates[user.id]?.leaves || false} onChange={() => toggleSwitch(user.id, "leaves")} />
                   <div className={`w-12 h-6 rounded-full p-1 transition ${switchStates[user.id]?.leaves ? "bg-gradient-to-r from-blue-500 to-blue-700" : "bg-[#37474f]"}`}>
-                    <div className={`w-4 h-4 bg-white rounded-full shadow-md transform transition ${switchStates[user.id]?.leaves ? "translate-x-6" : ""}`} />
+                    <div className={`w-4 h-4 bg-[#263238] rounded-full shadow-md transform transition ${switchStates[user.id]?.leaves ? "translate-x-6" : ""}`} />
                   </div>
                 </label>
               </div>
@@ -182,7 +211,7 @@ const UserTable = ({ users = [], selected, onSelectedChange, onDelete, onEdit, p
                 <label className="flex items-center justify-center cursor-pointer">
                   <input type="checkbox" className="hidden" checked={switchStates[user.id]?.firstWarning || false} onChange={() => toggleSwitch(user.id, "firstWarning")} />
                   <div className={`w-12 h-6 rounded-full p-1 transition ${switchStates[user.id]?.firstWarning ? "bg-gradient-to-r from-yellow-500 to-yellow-700" : "bg-[#37474f]"}`}>
-                    <div className={`w-4 h-4 bg-white rounded-full shadow-md transform transition ${switchStates[user.id]?.firstWarning ? "translate-x-6" : ""}`} />
+                    <div className={`w-4 h-4 bg-[#263238] rounded-full shadow-md transform transition ${switchStates[user.id]?.firstWarning ? "translate-x-6" : ""}`} />
                   </div>
                 </label>
               </div>
@@ -191,24 +220,32 @@ const UserTable = ({ users = [], selected, onSelectedChange, onDelete, onEdit, p
                 <label className="flex items-center justify-center cursor-pointer">
                   <input type="checkbox" className="hidden" checked={switchStates[user.id]?.secondWarning || false} onChange={() => toggleSwitch(user.id, "secondWarning")} />
                   <div className={`w-12 h-6 rounded-full p-1 transition ${switchStates[user.id]?.secondWarning ? "bg-gradient-to-r from-red-500 to-red-700" : "bg-[#37474f]"}`}>
-                    <div className={`w-4 h-4 bg-white rounded-full shadow-md transform transition ${switchStates[user.id]?.secondWarning ? "translate-x-6" : ""}`} />
+                    <div className={`w-4 h-4 bg-[#263238] rounded-full shadow-md transform transition ${switchStates[user.id]?.secondWarning ? "translate-x-6" : ""}`} />
                   </div>
                 </label>
               </div>
-              <div className="w-[10%] text-center relative">
-                <button className="px-2 py-1" onClick={() => setMenuOpen(menuOpen === user.id ? null : user.id)}>
-                  <EllipsisVertical size={20} />
+              <div className="w-[10%] text-center flex gap-2 justify-center">
+                {/* Bouton Modifier */}
+                <button
+                  className="p-1 rounded-md border border-gray-600 bg-gray-700 hover:bg-gray-600"
+                  onClick={() => {
+                    setSelectedUser(user);
+                    setIsEditModalOpen(true);
+                  }}
+                >
+                  <Pencil size={22} className="text-blue-400" />
                 </button>
-                {menuOpen === user.id && (
-                  <div className="absolute left-0 bg-gray-700 rounded shadow-md z-20">
-                    <button className="block px-4 py-2 hover:bg-gray-600 w-full" onClick={() => onEdit(user)}>
-                      Modifier
-                    </button>
-                    <button className="block px-4 py-2 hover:bg-gray-600 w-full" onClick={() => onDelete([user.id])}>
-                      Supprimer
-                    </button>
-                  </div>
-                )}
+
+                {/* Bouton Supprimer */}
+                <button
+                  className="p-1 rounded-md border border-gray-600 bg-gray-700 hover:bg-gray-600"
+                  onClick={() => {
+                    setSelectedUser(user);
+                    setIsDeleteModalOpen(true);
+                  }}
+                >
+                  <Trash2 size={22} className="text-red-400" />
+                </button>
               </div>
             </div>
           ))
@@ -245,6 +282,58 @@ const UserTable = ({ users = [], selected, onSelectedChange, onDelete, onEdit, p
           <option value="all">Tous</option>
         </select>
       </div>
+
+      {/* Modal Ajouter un employé */}
+      <AddUserModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        onAdd={(user) => {
+          console.log("Ajouté :", user);
+          setIsAddModalOpen(false);
+        }}
+      />
+
+      {/* Modal Modifier un employé */}
+      {selectedUser && (
+        <EditUserModal
+          isOpen={isEditModalOpen}
+          onClose={() => setIsEditModalOpen(false)}
+          onEdit={(updatedUser) => {
+            console.log("Modifié :", updatedUser);
+            setIsEditModalOpen(false);
+          }}
+          userData={selectedUser}
+        />
+      )}
+
+      {/* Modal Supprimer un employé */}
+      {selectedUser && (
+        <DeleteUserModal
+          isOpen={isDeleteModalOpen}
+          onClose={() => setIsDeleteModalOpen(false)}
+          onConfirm={() => {
+            console.log("Supprimé :", selectedUser);
+            setIsDeleteModalOpen(false);
+          }}
+          userName={`${selectedUser.firstName} ${selectedUser.lastName}`}
+        />
+      )}
+
+      {/* Modal Supprimer plusieurs employés */}
+      {selectedUsers.length > 0 && (
+        <DeleteUsersModal
+          isOpen={isDeleteMultipleModalOpen}
+          onClose={() => setIsDeleteMultipleModalOpen(false)}
+          onConfirm={() => {
+            console.log("Supprimés :", selectedUsers);
+            setIsDeleteMultipleModalOpen(false);
+          }}
+          userNames={selectedUsers.map((userId) => {
+            const user = users.find((u) => u.id === userId);
+            return user ? `${user.firstName} ${user.lastName}` : "Inconnu";
+          })}
+        />
+      )}
     </div>
   );
 };
