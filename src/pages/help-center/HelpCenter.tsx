@@ -13,7 +13,7 @@ const HelpCenter = () => {
 
       {/* Contenu des cartes */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-8 w-full px-8">
-        <HelpCard title="Guide" description="Bientôt disponible" icon={<Book size={32} />} disabled />
+        <HelpCard title="Guide" description="Tips & Astuces" icon={<Book size={32} />} link="/help-center/guide" />
         <HelpCard title="FAQ" description="Trouvez les réponses à vos questions" icon={<HelpCircle size={32} />} link="/help-center/faq" />
         <HelpCard title="Support" description="Bientôt disponible" icon={<LifeBuoy size={32} />} disabled />
       </div>

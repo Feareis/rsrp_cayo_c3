@@ -14,9 +14,9 @@ interface User {
   phone: string;
   hireDate: string;
   grade: "Patron" | "Co-Patron" | "RH" | "Responsable" | "CDI" | "CDD";
-  leaves: boolean;
-  firstWarning: boolean;
-  secondWarning: boolean;
+  holidays: boolean;
+  warning1: boolean;
+  warning2: boolean;
 }
 
 type UserTableProps = {
@@ -40,8 +40,8 @@ const UserTable = ({ users = [], selected, onSelectedChange, onDelete, onEdit, p
   const [isDeleteMultipleModalOpen, setIsDeleteMultipleModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
-  const [switchStates, setSwitchStates] = useState<Record<string, { leaves: boolean; firstWarning: boolean; secondWarning: boolean }>>(
-    Object.fromEntries(users.map(user => [user.id, { leaves: user.leaves, firstWarning: user.firstWarning, secondWarning: user.secondWarning }]))
+  const [switchStates, setSwitchStates] = useState<Record<string, { leaves: boolean; warning1: boolean; warning2: boolean }>>(
+    Object.fromEntries(users.map(user => [user.id, { leaves: user.leaves, warning1: user.warning1, warning2: user.warning2 }]))
   );
 
   const totalEmployees = users.length;
@@ -52,7 +52,7 @@ const UserTable = ({ users = [], selected, onSelectedChange, onDelete, onEdit, p
   const isAllSelected = selected.length === users.length && users.length > 0;
   const isPartiallySelected = selected.length > 0 && !isAllSelected;
 
-  const toggleSwitch = (userId: string, field: "leaves" | "firstWarning" | "secondWarning") => {
+  const toggleSwitch = (userId: string, field: "leaves" | "warning1" | "warning2") => {
     setSwitchStates(prev => ({
       ...prev,
       [userId]: {
@@ -97,6 +97,18 @@ const UserTable = ({ users = [], selected, onSelectedChange, onDelete, onEdit, p
       .toLowerCase()
       .includes(searchQuery.toLowerCase())
   );
+
+  const formatPhoneNumber = (phone: string | number | null): string => {
+    if (!phone) return "";
+
+    const cleaned = phone.toString().replace(/\D/g, "");
+
+    if (cleaned.length !== 10) {
+      return phone.toString();
+    }
+
+    return `(${cleaned.slice(0, 3)}) ${cleaned.slice(3, 6)}-${cleaned.slice(6)}`;
+  };
 
 
   return (
@@ -195,32 +207,32 @@ const UserTable = ({ users = [], selected, onSelectedChange, onDelete, onEdit, p
               }`}>
                 {user.grade}
               </div>
-              <div className="w-[15%]">{`${user.firstName} ${user.lastName}`}</div>
-              <div className="w-[15%] text-center">{user.phone}</div>
-              <div className="w-[15%] text-center">{new Date(user.hireDate).toLocaleDateString("fr-FR")}</div>
+              <div className="w-[15%]">{`${user.first_name} ${user.last_name}`}</div>
+              <div className="w-[15%] text-center">{formatPhoneNumber(user.phone_number)}</div>
+              <div className="w-[15%] text-center">{new Date(user.hire_date).toLocaleDateString("fr-FR")}</div>
               <div className="w-[10%] text-center">
                 <label className="flex items-center justify-center cursor-pointer">
-                  <input type="checkbox" className="hidden" checked={switchStates[user.id]?.leaves || false} onChange={() => toggleSwitch(user.id, "leaves")} />
-                  <div className={`w-12 h-6 rounded-full p-1 transition ${switchStates[user.id]?.leaves ? "bg-gradient-to-r from-blue-500 to-blue-700" : "bg-[#37474f]"}`}>
-                    <div className={`w-4 h-4 bg-[#263238] rounded-full shadow-md transform transition ${switchStates[user.id]?.leaves ? "translate-x-6" : ""}`} />
+                  <input type="checkbox" className="hidden" checked={switchStates[user.id]?.holidays || false} onChange={() => toggleSwitch(user.id, "holidays")} />
+                  <div className={`w-12 h-6 rounded-full p-1 transition ${switchStates[user.id]?.holidays ? "bg-gradient-to-r from-blue-500 to-blue-700" : "bg-[#37474f]"}`}>
+                    <div className={`w-4 h-4 bg-[#263238] rounded-full shadow-md transform transition ${switchStates[user.id]?.holidays ? "translate-x-6" : ""}`} />
                   </div>
                 </label>
               </div>
 
               <div className="w-[10%] text-center">
                 <label className="flex items-center justify-center cursor-pointer">
-                  <input type="checkbox" className="hidden" checked={switchStates[user.id]?.firstWarning || false} onChange={() => toggleSwitch(user.id, "firstWarning")} />
-                  <div className={`w-12 h-6 rounded-full p-1 transition ${switchStates[user.id]?.firstWarning ? "bg-gradient-to-r from-yellow-500 to-yellow-700" : "bg-[#37474f]"}`}>
-                    <div className={`w-4 h-4 bg-[#263238] rounded-full shadow-md transform transition ${switchStates[user.id]?.firstWarning ? "translate-x-6" : ""}`} />
+                  <input type="checkbox" className="hidden" checked={switchStates[user.id]?.warning1 || false} onChange={() => toggleSwitch(user.id, "warning1")} />
+                  <div className={`w-12 h-6 rounded-full p-1 transition ${switchStates[user.id]?.warning1 ? "bg-gradient-to-r from-yellow-500 to-yellow-700" : "bg-[#37474f]"}`}>
+                    <div className={`w-4 h-4 bg-[#263238] rounded-full shadow-md transform transition ${switchStates[user.id]?.warning1 ? "translate-x-6" : ""}`} />
                   </div>
                 </label>
               </div>
 
               <div className="w-[10%] text-center">
                 <label className="flex items-center justify-center cursor-pointer">
-                  <input type="checkbox" className="hidden" checked={switchStates[user.id]?.secondWarning || false} onChange={() => toggleSwitch(user.id, "secondWarning")} />
-                  <div className={`w-12 h-6 rounded-full p-1 transition ${switchStates[user.id]?.secondWarning ? "bg-gradient-to-r from-red-500 to-red-700" : "bg-[#37474f]"}`}>
-                    <div className={`w-4 h-4 bg-[#263238] rounded-full shadow-md transform transition ${switchStates[user.id]?.secondWarning ? "translate-x-6" : ""}`} />
+                  <input type="checkbox" className="hidden" checked={switchStates[user.id]?.warning2 || false} onChange={() => toggleSwitch(user.id, "warning2")} />
+                  <div className={`w-12 h-6 rounded-full p-1 transition ${switchStates[user.id]?.warning2 ? "bg-gradient-to-r from-red-500 to-red-700" : "bg-[#37474f]"}`}>
+                    <div className={`w-4 h-4 bg-[#263238] rounded-full shadow-md transform transition ${switchStates[user.id]?.warning2 ? "translate-x-6" : ""}`} />
                   </div>
                 </label>
               </div>
@@ -315,7 +327,7 @@ const UserTable = ({ users = [], selected, onSelectedChange, onDelete, onEdit, p
             console.log("Supprimé :", selectedUser);
             setIsDeleteModalOpen(false);
           }}
-          userName={`${selectedUser.firstName} ${selectedUser.lastName}`}
+          userName={`${selectedUser.first_name} ${selectedUser.last_name}`}
           grade={selectedUser.grade}
         />
       )}
@@ -332,7 +344,7 @@ const UserTable = ({ users = [], selected, onSelectedChange, onDelete, onEdit, p
           users={selectedUsers
             .map((userId) => {
               const user = users.find((u) => u.id === userId);
-              return user ? { grade: user.grade, name: `${user.firstName} ${user.lastName}` } : null;
+              return user ? { grade: user.grade, name: `${user.first_name} ${user.last_name}` } : null;
             })
             .filter(Boolean)} // Filtrer pour éviter les valeurs null
         />

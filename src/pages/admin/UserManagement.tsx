@@ -1,28 +1,38 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import UserTable from "../../components/pages/admin/user-management/UserManagementTable.tsx";
-import { initialUsers, User } from "../../components/pages/admin/user-management/usersData.ts";
+import { useFetchEmployees } from "../../hooks/useFetchEmployees";
 
 const UserManagement = () => {
-  const [users, setUsers] = useState<User[]>(initialUsers);
-  const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
-  const [loading, setLoading] = useState(false);
+  const { employees, loading, error } = useFetchEmployees("La Cantina");
+  const [users, setUsers] = useState([]);
 
-  // 📌 Calcul des statistiques des employés
+  // Met à jour `users` dès que `employees` est chargé
+  useEffect(() => {
+    if (employees) {
+      setUsers(employees);
+    }
+  }, [employees]);
+
+  const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
+
+  // Calcul des statistiques des employés
   const totalEmployees = useMemo(() => users.length, [users]);
   const totalRh = useMemo(() => users.filter(user => user.grade === "RH").length, [users]);
   const totalManagers = useMemo(() => users.filter(user => user.grade === "Responsable").length, [users]);
   const totalCDI = useMemo(() => users.filter(user => user.grade === "CDI").length, [users]);
   const totalCDD = useMemo(() => users.filter(user => user.grade === "CDD").length, [users]);
 
-  // 📌 Tri des utilisateurs par Grade -> Prénom -> Date d'embauche
+  // Tri des utilisateurs par Grade -> Prénom -> Date d'embauche
   const sortedUsers = useMemo(() => {
     return [...users].sort((a, b) => {
       const gradeOrder = ["Patron", "Co-Patron", "RH", "Responsable", "CDI", "CDD"];
       const gradeComparison = gradeOrder.indexOf(a.grade) - gradeOrder.indexOf(b.grade);
       if (gradeComparison !== 0) return gradeComparison;
-      const firstNameComparison = a.firstName.localeCompare(b.firstName);
+
+      const firstNameComparison = a.first_name.localeCompare(b.first_name);
       if (firstNameComparison !== 0) return firstNameComparison;
-      return new Date(a.hireDate).getTime() - new Date(b.hireDate).getTime();
+
+      return new Date(a.hire_date).getTime() - new Date(b.hire_date).getTime();
     });
   }, [users]);
 
@@ -35,18 +45,19 @@ const UserManagement = () => {
     setSelectedUsers([]);
   };
 
-  const handleEdit = (user: User) => {
-    const newGrade = prompt(`Modifier le grade de ${user.firstName}:`, user.grade);
+  const handleEdit = (user) => {
+    const newGrade = prompt(`Modifier le grade de ${user.first_name}:`, user.grade);
     if (newGrade) {
       setUsers((prev) =>
-        prev.map((u) => (u.id === user.id ? { ...u, grade: newGrade as User["grade"] } : u))
+        prev.map((u) => (u.id === user.id ? { ...u, grade: newGrade } : u))
       );
     }
   };
 
   return (
     <div className="text-[#cfd8dc]">
-      {/* 📌 Section des statistiques */}
+
+      {/* Section des statistiques */}
       <div className="flex justify-between mb-6 gap-4">
         <div className="bg-[#37474f] border border-gray-600 p-4 rounded-lg shadow-lg w-[23%] text-center">
           <p className="text-lg font-semibold">Total Employés</p>
@@ -70,7 +81,7 @@ const UserManagement = () => {
         </div>
       </div>
 
-      {/* 📌 Table des utilisateurs */}
+      {/* Table des utilisateurs */}
       <UserTable
         users={sortedUsers}
         selected={selectedUsers}

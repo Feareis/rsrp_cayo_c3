@@ -50,13 +50,13 @@ const ExportSales: React.FC = () => {
       <div className="flex flex-row gap-8 w-full">
 
         {/* Employee Information */}
-        <div className="flex flex-col w-1/2 p-4 bg-[#263238] justify-center border border-gray-600 rounded-xl shadow-lg">
+        <div className="flex flex-col w-[50%] p-4 bg-[#263238] justify-center border border-gray-600 rounded-xl shadow-lg">
           <p className="ml-6 text-xl font-bold">Nom Employé : John Doe</p>
           <p className="ml-6 text-md text-gray-400">Date : {currentDate}</p>
         </div>
 
         {/* Stats render */}
-        <div className="flex flex-col w-1/2 p-4 bg-[#263238] items-center border border-gray-600 rounded-xl shadow-lg gap-2">
+        <div className="flex flex-col w-[50%] p-4 bg-[#263238] items-center border border-gray-600 rounded-xl shadow-lg gap-2">
           <p className="text-xl font-bold">Grade : Patron</p>
           <p className="text-lg font-semibold">
             Taux de redistribution :
@@ -69,7 +69,7 @@ const ExportSales: React.FC = () => {
 
       <div className="flex flex-row gap-8 w-full">
         {/* Formulaire */}
-        <div className="flex flex-col w-1/2 p-6 gap-6 bg-[#263238] border border-gray-600 rounded-xl shadow-lg">
+        <div className="flex flex-col w-[50%] p-6 gap-8 bg-[#263238] border border-gray-600 rounded-xl shadow-lg">
           <h2 className="text-gray-400 text-xl font-semibold text-center">Saisie des Données</h2>
           <BrowserWarn
             color="yellow"
@@ -83,6 +83,7 @@ const ExportSales: React.FC = () => {
             value={expertise}
             onChange={(e) => setExpertise(Number(e.target.value) || "")}
             placeholder="Entrez votre niveau d'expertise"
+            width="w-[60%]"
           />
 
           <CustomInput
@@ -91,20 +92,22 @@ const ExportSales: React.FC = () => {
             value={nbSalade}
             onChange={(e) => setNbSalade(Number(e.target.value) || "")}
             placeholder="Entrez le nombre de salades"
+            width="w-[60%]"
           />
 
-          <div className="flex justify-center mt-4">
+          <div className="flex justify-center gap-8">
+            <div className="w-[70%]"></div>
             <CustomButton
               label="Ajouter la Vente"
               onClick={handleSaleSubmit}
               icon={BadgeDollarSign}
-              className="w-2/3 bg-green-700 hover:bg-green-700/80"
+              className="w-[30%] bg-green-700 hover:bg-green-700/80"
             />
           </div>
         </div>
 
         {/* Totaux */}
-        <div className="flex flex-col w-1/2 gap-6 p-6 bg-[#263238] border border-gray-600 rounded-xl shadow-lg">
+        <div className="flex flex-col w-[50%] gap-8 p-6 bg-[#263238] border border-gray-600 rounded-xl shadow-lg">
           <h2 className="text-gray-400 text-xl font-semibold text-center">Visualisation & Totaux</h2>
 
           <BrowserWarn

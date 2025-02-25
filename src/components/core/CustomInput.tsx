@@ -7,9 +7,10 @@ interface CustomInputProps {
   value: string | number;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   placeholder: string;
+  width?: string;
 }
 
-const CustomInput: React.FC<CustomInputProps> = ({ label, icon: Icon, value, onChange, placeholder }) => {
+const CustomInput: React.FC<CustomInputProps> = ({ label, icon: Icon, value, onChange, placeholder, width = "w-full" }) => {
   return (
     <div className="w-full">
       <p className="text-base font-semibold mb-2">{label}</p>
@@ -20,7 +21,7 @@ const CustomInput: React.FC<CustomInputProps> = ({ label, icon: Icon, value, onC
           value={value}
           onChange={onChange}
           placeholder={placeholder}
-          className="w-full pl-10 pr-4 py-2 rounded-lg bg-[#1E2A30] border border-gray-600 focus:border-gray-400 outline-none transition-all duration-200"
+          className={`${width} pl-10 pr-4 py-2 rounded-lg bg-[#1E2A30] border border-gray-600 focus:border-gray-400 outline-none transition-all duration-200`}
         />
       </div>
     </div>

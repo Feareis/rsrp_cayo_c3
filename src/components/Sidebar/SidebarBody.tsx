@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
-  Home, Calculator, Tag, ShoppingCart, Package, Layers, ScanBarcode, Anvil, Users, Shield, Settings, FileQuestion, ChevronDown, ChevronRight, BookHeart, ChartArea, ChartScatter
+  Home, Calculator, Tag, ShoppingCart, Package, Layers, ScanBarcode, Anvil, Users, Shield, Settings, FileQuestion, ChevronDown, ChevronRight, BookHeart, ChartArea, ChartScatter, DatabaseZap, TicketCheck
 } from "lucide-react";
 
 export default function SidebarBody() {
@@ -51,9 +51,9 @@ export default function SidebarBody() {
         {/* Statistiques */}
         <li>
           <Link
-            to="/stats"
+            to="/statistics"
             className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-all duration-300 ${
-              location.pathname === "/stats"
+              location.pathname === "/statistics"
                 ? "bg-[#3e4d56] text-[#cfd8dc] font-semibold"
                 : "text-[#cfd8dc] hover:bg-[#3e4d56]"
             }`}
@@ -164,18 +164,18 @@ export default function SidebarBody() {
           </Link>
         </li>
 
-        {/* Admin: Options Utilisateurs */}
+        {/* Admin: Gestion des quota utilisateurs */}
         <li>
           <Link
-            to="/admin/employee-options"
+            to="/admin/quota-management"
             className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-all duration-300 ${
-              location.pathname === "/admin/employee-options"
+              location.pathname === "/admin/quota-management"
                 ? "bg-[#3e4d56] text-[#cfd8dc] font-semibold"
                 : "text-[#cfd8dc] hover:bg-[#3e4d56]"
             }`}
           >
-            <Settings size={22} />
-            Option Employés
+            <TicketCheck size={22} />
+            Gestion Quota
           </Link>
         </li>
 
@@ -258,6 +258,21 @@ export default function SidebarBody() {
           >
             <ChartScatter size={22} />
               Analytics
+          </Link>
+        </li>
+
+        {/* Admin: Analytics */}
+        <li>
+          <Link
+            to="/admin/reboot-accounting"
+            className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-all duration-300 ${
+              location.pathname === "/admin/reboot-accounting"
+                ? "bg-[#3e4d56] text-[#cfd8dc] font-semibold"
+                : "text-[#cfd8dc] hover:bg-[#3e4d56]"
+            }`}
+          >
+            <DatabaseZap size={22} />
+              Reboot Comptabilité
           </Link>
         </li>
       </ul>

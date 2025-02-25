@@ -7,9 +7,17 @@ interface CustomSelectProps {
   options: string[];
   value: string;
   onChange: (value: string) => void;
+  padding?: string;
 }
 
-const CustomSelect: React.FC<CustomSelectProps> = ({ icon: Icon, label, options, value, onChange }) => {
+const CustomSelect: React.FC<CustomSelectProps> = ({
+  icon: Icon,
+  label,
+  options,
+  value,
+  onChange,
+  padding = "p-5",
+}) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -27,15 +35,15 @@ const CustomSelect: React.FC<CustomSelectProps> = ({ icon: Icon, label, options,
   }, []);
 
   return (
-    <div ref={dropdownRef} className="relative w-full border border-gray-600 rounded-md">
+    <div ref={dropdownRef} className="relative w-full border border-gray-600 bg-[#263238] rounded-md">
       {/* Label flottant */}
-      <div className="absolute -top-3 left-4 px-2 bg-[#263238] text-base font-bold text-gray-300 rounded-md">
+      <div className="absolute -top-3 left-4 px-2 text-base font-bold text-gray-300 rounded-md">
         {label}
       </div>
 
-      {/* Bouton principal */}
+      {/* Bouton principal avec padding dynamique */}
       <div
-        className="flex items-center gap-4 p-5 rounded-lg w-full bg-[#263238] cursor-pointer"
+        className={`flex items-center gap-4 rounded-lg w-full cursor-pointer ${padding}`}
         onClick={() => setIsOpen(!isOpen)}
       >
         <Icon size={22} className="text-gray-500" />

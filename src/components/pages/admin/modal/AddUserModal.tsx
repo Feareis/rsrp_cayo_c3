@@ -48,7 +48,7 @@ const AddUserModal: React.FC<AddUserModalProps> = ({ isOpen, onClose, onAdd }) =
               label="Prénom"
               bgColor="bg-[#263238]"
               textColor="text-[#cfd8dc]"
-              value={user.firstName}
+              value={user.first_name}
               onChange={(value) => setUser({ ...user, firstName: value })}
             />
             <DynamicInput
@@ -57,7 +57,7 @@ const AddUserModal: React.FC<AddUserModalProps> = ({ isOpen, onClose, onAdd }) =
               label="Nom"
               bgColor="bg-[#263238]"
               textColor="text-[#cfd8dc]"
-              value={user.lastName}
+              value={user.last_name}
               onChange={(value) => setUser({ ...user, lastName: value })}
             />
           </div>
@@ -69,7 +69,7 @@ const AddUserModal: React.FC<AddUserModalProps> = ({ isOpen, onClose, onAdd }) =
             placeholder="Téléphone format 0000000000 (eg. 4809765435)"
             bgColor="bg-[#263238]"
             textColor="text-[#cfd8dc]"
-            value={user.phone}
+            value={user.phone_number}
             onChange={(value) => setUser({ ...user, phone: value })}
           />
           <DynamicInput
@@ -78,7 +78,7 @@ const AddUserModal: React.FC<AddUserModalProps> = ({ isOpen, onClose, onAdd }) =
             label="Date d'embauche"
             bgColor="bg-[#263238]"
             textColor="text-[#cfd8dc]"
-            value={user.hireDate}
+            value={user.hire_date}
             onChange={(value) => setUser({ ...user, hireDate: value })}
           />
         </div>

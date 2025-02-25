@@ -48,7 +48,7 @@ const EditUserModal: React.FC<EditUserModalProps> = ({ isOpen, onClose, onEdit, 
               label="Prénom"
               bgColor="bg-[#263238]"
               textColor="text-[#cfd8dc]"
-              value={editedUser?.firstName || ""}
+              value={editedUser?.first_name || ""}
               onChange={(value) => setEditedUser({ ...editedUser, firstName: value })}
             />
             <DynamicInput
@@ -57,7 +57,7 @@ const EditUserModal: React.FC<EditUserModalProps> = ({ isOpen, onClose, onEdit, 
               label="Nom"
               bgColor="bg-[#263238]"
               textColor="text-[#cfd8dc]"
-              value={editedUser?.lastName || ""}
+              value={editedUser?.last_name || ""}
               onChange={(value) => setEditedUser({ ...editedUser, lastName: value })}
             />
           </div>
@@ -69,7 +69,7 @@ const EditUserModal: React.FC<EditUserModalProps> = ({ isOpen, onClose, onEdit, 
             placeholder="Téléphone format 0000000000 (eg. 4809765435)"
             bgColor="bg-[#263238]"
             textColor="text-[#cfd8dc]"
-            value={editedUser?.phone || ""}
+            value={editedUser?.phone_number || ""}
             onChange={(value) => setEditedUser({ ...editedUser, phone: value })}
           />
           <DynamicInput
@@ -78,7 +78,7 @@ const EditUserModal: React.FC<EditUserModalProps> = ({ isOpen, onClose, onEdit, 
             label="Date d'embauche"
             bgColor="bg-[#263238]"
             textColor="text-[#cfd8dc]"
-            value={editedUser?.hireDate || ""}
+            value={editedUser?.hire_date || ""}
             onChange={(value) => setEditedUser({ ...editedUser, hireDate: value })}
           />
         </div>

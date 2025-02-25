@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import CustomButton from "../components/core/CustomButton";
-import { BadgeDollarSign, RefreshCw, ArrowUpNarrowWide, Salad, AlertCircle, CircleCheck } from "lucide-react";
+import { BadgeDollarSign, RefreshCw, ArrowUpNarrowWide, Salad, AlertCircle, CircleCheck, CircleAlert } from "lucide-react";
 import { BrowserWarn } from "../components/core/BrowserWarn";
 import { showToast } from "../components/core/toast/CustomToast";
 import toast, { Toaster } from 'react-hot-toast';
@@ -69,20 +69,14 @@ const ClientsSales: React.FC = () => {
 
       <div className="flex flex-row gap-8 w-full">
         {/* Formulaire */}
-        <div className="flex flex-col w-2/3 p-6 gap-6 bg-[#263238] border border-gray-600 rounded-xl shadow-lg">
+        <div className="flex flex-col w-[70%] p-6 gap-6 bg-[#263238] border border-gray-600 rounded-xl shadow-lg">
           <h2 className="text-gray-400 text-xl font-semibold text-center">Saisie des Données</h2>
-          <BrowserWarn
-            color="yellow"
-            icon={<AlertCircle size={20} />}
-            message="Niveau d'expertise :"
-            details={["Le niveau d'expertise correspond à votre niveau dans l'entreprise et est calculer comme tel : pourcentage bonus * 2."]}
-          />
 
           {/* Tabs */}
-          <div className="flex gap-16 mb-6">
+          <div className="flex flex-row items-center gap-8 mb-6">
             <button
               onClick={() => setActiveTab("Nourriture")}
-              className={`px-4 py-2 rounded-xl transition-all duration-300 ${
+              className={`px-4 py-2 rounded-full transition-all duration-300 ${
                 activeTab === "Nourriture" ? "bg-[#37474f] text-white" : "text-gray-400 hover:text-white"
               }`}
             >
@@ -91,7 +85,7 @@ const ClientsSales: React.FC = () => {
 
             <button
               onClick={() => setActiveTab("Boisson")}
-              className={`px-4 py-2 rounded-xl transition-all duration-300 ${
+              className={`px-4 py-2 rounded-full transition-all duration-300 ${
                 activeTab === "Boisson" ? "bg-[#37474f] text-white" : "text-gray-400 hover:text-white"
               }`}
             >
@@ -100,11 +94,20 @@ const ClientsSales: React.FC = () => {
 
             <button
               onClick={() => setActiveTab("Alcool")}
-              className={`px-4 py-2 rounded-xl transition-all duration-300 ${
+              className={`px-4 py-2 rounded-full transition-all duration-300 ${
                 activeTab === "Alcool" ? "bg-[#37474f] text-white" : "text-gray-400 hover:text-white"
               }`}
             >
               Alcool
+            </button>
+
+            <button
+              onClick={() => setActiveTab("Autre")}
+              className={`px-4 py-2 rounded-full transition-all duration-300 ${
+                activeTab === "Autre" ? "bg-[#37474f] text-white" : "text-gray-400 hover:text-white"
+              }`}
+            >
+              Autre
             </button>
           </div>
           <p>tet</p>
@@ -117,24 +120,19 @@ const ClientsSales: React.FC = () => {
         </div>
 
         {/* Totaux */}
-        <div className="flex flex-col w-1/3 gap-6 p-6 bg-[#263238] border border-gray-600 rounded-xl shadow-lg">
+        <div className="flex flex-col w-[30%] gap-6 p-6 bg-[#263238] border border-gray-600 rounded-xl shadow-lg">
           <h2 className="text-gray-400 text-xl font-semibold text-center">Visualisation & Totaux</h2>
 
           <BrowserWarn
             color="green"
             icon={<CircleCheck size={20} />}
-            message="-"
-            details={["La Part employé est envoyé directement dans votre inventaire (F2).", "La Part Entreprise est envoyé directement dans le coffre de l'entreprise."]}
+            message="Vente en Propre"
+            details={["Faites une facture (F2)"]}
           />
 
           <div className="bg-[#37474f] p-4 rounded-lg text-center border border-gray-600">
-            <p className="text-lg font-semibold">Part Employé</p>
-            <p className="text-green-400 text-2xl font-bold mt-2"></p>
-          </div>
-
-          <div className="bg-[#37474f] p-4 rounded-lg text-center border border-gray-600">
             <p className="text-lg font-semibold">Part Entreprise</p>
-            <p className="text-blue-400 text-2xl font-bold mt-2"></p>
+            <p className="text-blue-400 text-2xl font-bold mt-2">0$</p>
           </div>
         </div>
       </div>

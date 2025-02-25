@@ -10,9 +10,13 @@ import Layout from "./components/Layout";
 import Profile from "./pages/Profile";
 import UnderConstruction from "./pages/core/UnderConstruction";
 
+// Import Auth Pages
+import Login from "./pages/auth/Login";
+
 // Import Primary Pages
 import Dashboard from "./pages/Dashboard";
 import AdminDashboard from "./pages/AdminDashboard";
+import Statistics from "./pages/Statistics";
 import Calculator from "./pages/Calculator";
 import ExportSale from "./pages/ExportSale";
 import ClientsSale from "./pages/ClientsSale";
@@ -24,16 +28,19 @@ import AdminAnalytics from "./pages/admin/AdminAnalytics";
 
 // Import Help Section Pages
 import HelpCenter from "./pages/help-center/HelpCenter";
+import Guide from "./pages/help-center/Guide";
 import Faq from "./pages/help-center/Faq";
 
 export default function AppRouter() {
   return (
     <Router>
       <Routes>
+        <Route path="/login" element={<Login />}/>
         <Route path="/" element={<Layout />}>
           {/* Primary Pages */}
           <Route index element={<Dashboard />} />
           <Route path="/admin-dashboard" element={<AdminDashboard />} />
+          <Route path="/statistics" element={<Statistics />} />
           <Route path="/calculator" element={<Calculator />} />
           <Route path="/sale/export" element={<ExportSale />} />
           <Route path="/sale/client" element={<ClientsSale />} />
@@ -45,6 +52,7 @@ export default function AppRouter() {
 
           {/* Help Section Pages */}
           <Route path="/help-center" element={<HelpCenter />} />
+          <Route path="/help-center/guide" element={<Guide />} />
           <Route path="/help-center/faq" element={<Faq />} />
 
           {/* Core Pages */}
