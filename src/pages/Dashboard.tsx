@@ -109,39 +109,54 @@ export default function Dashboard() {
     <div className="flex flex-col items-center text-[#cfd8dc] w-full gap-8">
 
       {/* High Container */}
-      <div className="flex flex-row gap-6 w-full">
+      <div className="flex flex-row w-full">
 
         {/* Left Section */}
-        <div className="flex flex-col w-full gap-6">
+        <div className="flex flex-col w-full gap-8">
 
           {/* Employee Information + Grade/Rate */}
-          <div className="flex flex-row gap-6 w-full">
+          <div className="flex flex-row gap-8 w-full">
 
             {/* Employee Information */}
-            <div className={`flex flex-col w-[50%] p-4 bg-[#263238] justify-center text-center border border-gray-600 rounded-xl shadow-lg ${transitionHover101}`}>
-              <p className="mx-6 text-2xl font-bold">Nom Employé : {userExample.firstName} {userExample.lastName}</p>
-              <p className="mx-6 text-xl font-semibold text-gray-400">Grade : {userExample.grade}</p>
+            <div className="flex flex-col w-[50%] p-6 bg-[#263238] justify-center items-center text-center border border-gray-600 rounded-xl shadow-lg gap-2">
+              <p className="text-2xl font-bold text-white">
+                Nom Employé : <span className="text-blue-400">{userExample.firstName} {userExample.lastName}</span>
+              </p>
+              <p className="text-xl font-semibold text-gray-400">
+                Grade : <span className="text-red-400">{userExample.grade}</span>
+              </p>
             </div>
 
-            {/* Grade + Rate */}
-            <div className={`flex flex-row w-[50%] p-4 bg-[#263238] justify-between items-center border border-gray-600 rounded-xl shadow-lg gap-16 ${transitionHover101}`}>
-              <div className="flex flex-col text-xl font-bold text-center ml-[10%] gap-2">
-                <p className="text-xl font-bold">
-                  Semaine en cours :
-                </p>
+            {/* Date */}
+            <div className={`flex flex-row w-[50%] p-4 bg-[#263238] justify-around items-center border border-gray-600 rounded-xl shadow-lg gap-16`}>
+
+              {/* Bloc : Semaine en cours */}
+              <div className="flex flex-col text-xl font-bold text-center gap-2">
+                <p className="text-xl font-bold">Semaine en cours :</p>
                 <span className="p-1 bg-[#37474f] border border-gray-600 rounded-md">{getCurrentWeekRange()}</span>
               </div>
-              <div className="flex flex-row items-center gap-4 mr-[10%]">
-                <p className="text-2xl font-bold">Reboot Compta :</p>
-                <div className="relative border border-gray-600 rounded-lg p-3 text-center items-center text-md text-gray-400">
-                  <CountdownTimer targetDate={getLastOrNextSunday19h()} />
+
+              {/* Bloc : Date du jour */}
+              <div className="flex flex-col text-xl font-bold text-center gap-2">
+                <p className="text-xl font-bold">Date du jour :</p>
+                <span className="p-1 bg-[#37474f] border border-gray-600 rounded-md">
+                  {new Date().toISOString().split("T")[0].split("-").reverse().join("/")}
+                </span>
+              </div>
+
+              {/* Bloc : CountdownTimer avec titre flottant */}
+              <div className="relative border border-gray-600 rounded-lg p-3 text-center items-center text-md text-gray-400">
+                {/* Titre flottant sur la bordure */}
+                <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-[#263238] text-white text-sm font-bold px-3 py-1">
+                  Reboot Compta
                 </div>
+                <CountdownTimer targetDate={getLastOrNextSunday19h()} />
               </div>
             </div>
           </div>
 
           {/* Info + Display Card Section */}
-          <div className="flex flex-row gap-6 w-full">
+          <div className="flex flex-row gap-8 w-full">
             <div className={`flex flex-col w-[70%] h-200 p-4 bg-[#263238] border border-gray-600 rounded-xl shadow-lg gap-4`}>
 
               {/* Tabs en haut */}
@@ -170,15 +185,12 @@ export default function Dashboard() {
                 <>
                   {/* Section principale (avec justify-between) */}
                   <div className="flex flex-col h-[90%] items-center p-4">
-                    <div className="flex flex-row gap-2">
-                      <p>test1</p>
-                      <p>test2</p>
-                    </div>
+                    <p className="text-center text-gray-400">Contenu principal 1 ici...</p>
                   </div>
 
                   {/* Section inférieure (20%) */}
                   <div className="flex h-[10%] justify-center gap-2">
-                    <p className="text-center text-gray-400">Bottom 10% height</p>
+                    <p className="text-center text-gray-400">Bottom 1 (10% height)</p>
                   </div>
                 </>
               )}
@@ -193,12 +205,12 @@ export default function Dashboard() {
 
                   {/* Section inférieure (20%) */}
                   <div className="flex h-[10%] justify-center gap-2">
-                    <p className="text-center text-gray-400">Bottom 10% height</p>
+                    <p className="text-center text-gray-400">Bottom 2 (10% height)</p>
                   </div>
                 </>
               )}
             </div>
-            <div className="flex flex-col w-[30%] gap-6 justify-center">
+            <div className="flex flex-col w-[30%] gap-8 justify-center">
               <DisplayCard
                 title="Quota de la Semaine"
                 icon={<DollarSign className="text-green-500/70" size={24} />}

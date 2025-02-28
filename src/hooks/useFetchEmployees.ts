@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabaseClient";
 
-export function useFetchEmployees(companyName: string) {
+export function useFetchEmployees() {
   const [employees, setEmployees] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -11,22 +11,9 @@ export function useFetchEmployees(companyName: string) {
       setLoading(true);
       setError(null);
 
-      const { data: company, error: companyError } = await supabase
-        .from("companies")
-        .select("id")
-        .eq("name", companyName)
-        .single();
-
-      if (companyError || !company) {
-        setError("Impossible de trouver la compagnie.");
-        setLoading(false);
-        return;
-      }
-
       const { data: employees, error: employeesError } = await supabase
         .from("employees")
-        .select("*")
-        .eq("company_id", company.id);
+        .select("*");
 
       if (employeesError) {
         setError("Erreur lors de la récupération des employés.");
@@ -39,7 +26,7 @@ export function useFetchEmployees(companyName: string) {
     };
 
     fetchEmployees();
-  }, [companyName]);
+  }, []);
 
   return { employees, loading, error };
 }

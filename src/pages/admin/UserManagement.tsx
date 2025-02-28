@@ -3,7 +3,7 @@ import UserTable from "../../components/pages/admin/user-management/UserManageme
 import { useFetchEmployees } from "../../hooks/useFetchEmployees";
 
 const UserManagement = () => {
-  const { employees, loading, error } = useFetchEmployees("La Cantina");
+  const { employees, loading, error } = useFetchEmployees();
   const [users, setUsers] = useState([]);
 
   // Met à jour `users` dès que `employees` est chargé
@@ -17,7 +17,6 @@ const UserManagement = () => {
 
   // Calcul des statistiques des employés
   const totalEmployees = useMemo(() => users.length, [users]);
-  const totalRh = useMemo(() => users.filter(user => user.grade === "RH").length, [users]);
   const totalManagers = useMemo(() => users.filter(user => user.grade === "Responsable").length, [users]);
   const totalCDI = useMemo(() => users.filter(user => user.grade === "CDI").length, [users]);
   const totalCDD = useMemo(() => users.filter(user => user.grade === "CDD").length, [users]);
@@ -59,23 +58,19 @@ const UserManagement = () => {
 
       {/* Section des statistiques */}
       <div className="flex justify-between mb-6 gap-4">
-        <div className="bg-[#37474f] border border-gray-600 p-4 rounded-lg shadow-lg w-[23%] text-center">
+        <div className="bg-[#37474f] border border-gray-600 p-4 rounded-lg shadow-lg w-full text-center">
           <p className="text-lg font-semibold">Total Employés</p>
           <p className="text-2xl font-bold text-green-400">{totalEmployees}</p>
         </div>
-        <div className="bg-[#37474f] border border-gray-600 p-4 rounded-lg shadow-lg w-[23%] text-center">
-          <p className="text-lg font-semibold">Total RH</p>
-          <p className="text-2xl font-bold text-violet-400">{totalRh}</p>
-        </div>
-        <div className="bg-[#37474f] border border-gray-600 p-4 rounded-lg shadow-lg w-[23%] text-center">
+        <div className="bg-[#37474f] border border-gray-600 p-4 rounded-lg shadow-lg w-full text-center">
           <p className="text-lg font-semibold">Total Responsables</p>
           <p className="text-2xl font-bold text-yellow-400">{totalManagers}</p>
         </div>
-        <div className="bg-[#37474f] border border-gray-600 p-4 rounded-lg shadow-lg w-[23%] text-center">
+        <div className="bg-[#37474f] border border-gray-600 p-4 rounded-lg shadow-lg w-full text-center">
           <p className="text-lg font-semibold">Total CDI</p>
           <p className="text-2xl font-bold text-blue-400">{totalCDI}</p>
         </div>
-        <div className="bg-[#37474f] border border-gray-600 p-4 rounded-lg shadow-lg w-[23%] text-center">
+        <div className="bg-[#37474f] border border-gray-600 p-4 rounded-lg shadow-lg w-full text-center">
           <p className="text-lg font-semibold">Total CDD</p>
           <p className="text-2xl font-bold text-blue-300">{totalCDD}</p>
         </div>

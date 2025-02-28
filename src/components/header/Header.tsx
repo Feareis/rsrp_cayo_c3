@@ -11,7 +11,7 @@ export default function Header({ selectedUsers = [], onDelete }: HeaderProps) {
   const pageNames: Record<string, string> = {
     // Root Section
     "/": "Dashboard",
-    "/admin-dashboard": "Dashboard (Vue admin)",
+    "/admin-dashboard": "Dashboard (Vue admin, limited_admin)",
     "/stats": "Statistiques",
     "/calculator": "Calculateur",
     "/sale/export": "Vente Exportateur",

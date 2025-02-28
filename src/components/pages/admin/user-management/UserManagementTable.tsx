@@ -93,7 +93,7 @@ const UserTable = ({ users = [], selected, onSelectedChange, onDelete, onEdit, p
   const [clicked, setClicked] = useState(false);
 
   const filteredUsers = users.filter(user =>
-    `${user.firstName} ${user.lastName} ${user.grade} ${user.phone}`
+    `${user.first_name} ${user.last_name} ${user.grade} ${user.phone_number}`
       .toLowerCase()
       .includes(searchQuery.toLowerCase())
   );

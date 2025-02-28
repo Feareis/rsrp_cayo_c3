@@ -164,21 +164,6 @@ export default function SidebarBody() {
           </Link>
         </li>
 
-        {/* Admin: Gestion des quota utilisateurs */}
-        <li>
-          <Link
-            to="/admin/quota-management"
-            className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-all duration-300 ${
-              location.pathname === "/admin/quota-management"
-                ? "bg-[#3e4d56] text-[#cfd8dc] font-semibold"
-                : "text-[#cfd8dc] hover:bg-[#3e4d56]"
-            }`}
-          >
-            <TicketCheck size={22} />
-            Gestion Quota
-          </Link>
-        </li>
-
         {/* Admin: Accès Site */}
         <li>
           <Link

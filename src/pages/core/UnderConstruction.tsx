@@ -1,5 +1,5 @@
 import React from "react";
-import Animated2DDesktop from "../../components/core/animated-2d-desktop/Animated2DDesktop";
+import Animated2DDesktop from "../../components/core/loader/animated-2d-desktop/Animated2DDesktop";
 
 export default function UnderConstruction() {
   return (

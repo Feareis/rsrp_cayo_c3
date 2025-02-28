@@ -5,6 +5,8 @@
  */
 
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { AuthProvider } from "./context/AuthContext";
+
 // Import Core Pages
 import Layout from "./components/Layout";
 import Profile from "./pages/Profile";
@@ -34,6 +36,7 @@ import Faq from "./pages/help-center/Faq";
 export default function AppRouter() {
   return (
     <Router>
+    <AuthProvider>
       <Routes>
         <Route path="/login" element={<Login />}/>
         <Route path="/" element={<Layout />}>
@@ -62,6 +65,7 @@ export default function AppRouter() {
           <Route path="*" element={<UnderConstruction />} />
         </Route>
       </Routes>
+      </AuthProvider>
     </Router>
   );
 }
