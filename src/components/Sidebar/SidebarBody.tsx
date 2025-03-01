@@ -58,7 +58,7 @@ export default function SidebarBody() {
         <SidebarLink key="dashboard" to="/" label="Home" icon={Home} />
 
         {user?.role === "admin" || user?.role === "limited_admin" && (
-          <SidebarLink key="dashboard" to="/admin-dashboard" label="Gestion Quota" icon={Layers} />
+          <SidebarLink key="admin-dashboard" to="/admin-dashboard" label="Gestion Quota" icon={Layers} />
         )}
 
         <SidebarLink key="statistics" to="/statistics" label="Statistiques" icon={ChartArea} />
