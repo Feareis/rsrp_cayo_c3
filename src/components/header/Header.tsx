@@ -1,12 +1,8 @@
 import { useLocation } from "react-router-dom";
-import { useState } from "react";
-import { X, Trash2 } from "lucide-react";
 import ProfileRedirect from "./ProfileRedirect";
 
-
-export default function Header({ selectedUsers = [], onDelete }: HeaderProps) {
+export default function Header() {
   const location = useLocation();
-  const [clicked, setClicked] = useState(false);
 
   const pageNames: Record<string, string> = {
     // Root Section
@@ -39,16 +35,8 @@ export default function Header({ selectedUsers = [], onDelete }: HeaderProps) {
 
   return (
     <header className="h-21 flex items-center justify-between bg-[#37474f] text-[#cfd8dc] px-6">
-      {/* Titre de la page */}
       <h2 className="text-2xl font-bold">{pageTitle}</h2>
-
-      {/* Afficher le profil SEULEMENT si on n'est PAS dans /admin/, sauf pour /admin/user-management */}
-      {!isAdminPage &&
-        location.pathname !== "/profile" && (
-          <div className="flex items-center gap-3">
-            <ProfileRedirect />
-          </div>
-      )}
+      {!isAdminPage && location.pathname !== "/profile" && <ProfileRedirect />}
     </header>
   );
 }

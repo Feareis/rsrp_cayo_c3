@@ -3,23 +3,25 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabaseClient";
 import bcrypt from "bcryptjs";
 
-interface User {
+// User interface
+type User = {
   id: string;
   employee_id: string;
   username: string;
   role: string;
-}
+};
 
-interface AuthContextType {
+// Authentication context interface
+type AuthContextType = {
   isAuthenticated: boolean;
   user: User | null;
   login: (username: string, password: string) => Promise<void>;
-  logout: () => Promise<void>;
-}
+  logout: () => void;
+};
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Mode test (passer à false pour réactiver l'authentification normale)
+// Test mode (set to false for normal authentication)
 const TEST_MODE = true;
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -29,7 +31,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   useEffect(() => {
     if (TEST_MODE) {
-      const testUser = {
+      const testUser: User = {
         id: "test-id",
         employee_id: "test-employee",
         username: "testuser",
@@ -44,21 +46,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     const storedUser = localStorage.getItem("user");
     const storedAuth = localStorage.getItem("isAuthenticated");
-
     if (storedUser && storedAuth === "true") {
       setUser(JSON.parse(storedUser));
       setIsAuthenticated(true);
     } else {
-      setUser(null);
-      setIsAuthenticated(false);
+      logout();
       navigate("/login");
     }
-  }, []); // Supprimé `isAuthenticated` pour éviter les boucles infinies
+  }, []);
 
+  // Login function
   const login = async (username: string, password: string) => {
     if (TEST_MODE) {
-      // Connexion automatique en mode test
-      const testUser = {
+      const testUser: User = {
         id: "test-id",
         employee_id: "test-employee",
         username: "testuser",
@@ -77,21 +77,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       .eq("username", username)
       .single();
 
-    if (error || !data) {
-      throw new Error("Utilisateur introuvable.");
-    }
+    if (error || !data) throw new Error("User not found.");
+    if (!data.is_active) throw new Error("Account disabled.");
 
-    if (!data.is_active) {
-      throw new Error("Compte désactivé.");
-    }
-
-    // Vérification du mot de passe avec bcrypt
+    // Password validation
     const isValidPassword = await bcrypt.compare(password, data.password_hash);
-    if (!isValidPassword) {
-      throw new Error("Mot de passe incorrect.");
-    }
+    if (!isValidPassword) throw new Error("Incorrect password.");
 
-    // Stocker l'utilisateur en session
     const userData: User = {
       id: data.id,
       employee_id: data.employee_id,
@@ -105,7 +97,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     localStorage.setItem("isAuthenticated", "true");
   };
 
-  const logout = async () => {
+  // Logout function
+  const logout = () => {
     setUser(null);
     setIsAuthenticated(false);
     localStorage.removeItem("user");
@@ -119,11 +112,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   );
 };
 
-// Hook personnalisé pour utiliser le contexte
+// Custom hook to use authentication context
 export const useAuth = (): AuthContextType => {
   const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error("useAuth must be used within an AuthProvider");
-  }
+  if (!context) throw new Error("useAuth must be used within an AuthProvider");
   return context;
 };

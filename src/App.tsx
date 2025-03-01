@@ -4,13 +4,13 @@
  * SPDX-License-Identifier: Proprietary
  */
 
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { AuthProvider } from "./context/AuthContext";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { AuthProvider, useAuth } from "./context/AuthContext";
 
 // Import Core Pages
 import Layout from "./components/Layout";
 import Profile from "./pages/Profile";
-import UnderConstruction from "./pages/core/UnderConstruction";
+import NotFound from "./pages/core/NotFound";
 
 // Import Auth Pages
 import Login from "./pages/auth/Login";
@@ -33,38 +33,43 @@ import HelpCenter from "./pages/help-center/HelpCenter";
 import Guide from "./pages/help-center/Guide";
 import Faq from "./pages/help-center/Faq";
 
+// Protected Route Component
+function ProtectedRoute({ element }: { element: JSX.Element }) {
+  const { isAuthenticated } = useAuth();
+  return isAuthenticated ? element : <Navigate to="/login" replace />;
+}
+
 export default function AppRouter() {
   return (
     <Router>
-    <AuthProvider>
-      <Routes>
-        <Route path="/login" element={<Login />}/>
-        <Route path="/" element={<Layout />}>
-          {/* Primary Pages */}
-          <Route index element={<Dashboard />} />
-          <Route path="/admin-dashboard" element={<AdminDashboard />} />
-          <Route path="/statistics" element={<Statistics />} />
-          <Route path="/calculator" element={<Calculator />} />
-          <Route path="/sale/export" element={<ExportSale />} />
-          <Route path="/sale/client" element={<ClientsSale />} />
+      <AuthProvider>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/" element={<Layout />}>
+            <Route index element={<ProtectedRoute element={<Dashboard />} />} />
+            <Route path="/admin-dashboard" element={<ProtectedRoute element={<AdminDashboard />} />} />
+            <Route path="/statistics" element={<ProtectedRoute element={<Statistics />} />} />
+            <Route path="/calculator" element={<ProtectedRoute element={<Calculator />} />} />
+            <Route path="/sale/export" element={<ProtectedRoute element={<ExportSale />} />} />
+            <Route path="/sale/client" element={<ProtectedRoute element={<ClientsSale />} />} />
 
-          {/* Admin Pages */}
-          <Route path="/admin/user-management" element={<UserManagement />} />
-          <Route path="/admin/stock/product" element={<AdminStockProduct />} />
-          <Route path="/admin/analytics" element={<AdminAnalytics />} />
+            {/* Admin Pages */}
+            <Route path="/admin/user-management" element={<ProtectedRoute element={<UserManagement />} />} />
+            <Route path="/admin/stock/product" element={<ProtectedRoute element={<AdminStockProduct />} />} />
+            <Route path="/admin/analytics" element={<ProtectedRoute element={<AdminAnalytics />} />} />
 
-          {/* Help Section Pages */}
-          <Route path="/help-center" element={<HelpCenter />} />
-          <Route path="/help-center/guide" element={<Guide />} />
-          <Route path="/help-center/faq" element={<Faq />} />
+            {/* Help Section Pages */}
+            <Route path="/help-center" element={<HelpCenter />} />
+            <Route path="/help-center/guide" element={<Guide />} />
+            <Route path="/help-center/faq" element={<Faq />} />
 
-          {/* Core Pages */}
-          <Route path="/profile" element={<Profile />} />
+            {/* Profile Page */}
+            <Route path="/profile" element={<ProtectedRoute element={<Profile />} />} />
 
-          {/* Pages 404 - All undefined routes are redirected here */}
-          <Route path="*" element={<UnderConstruction />} />
-        </Route>
-      </Routes>
+            {/* 404 Not Found */}
+            <Route path="*" element={<NotFound />} />
+          </Route>
+        </Routes>
       </AuthProvider>
     </Router>
   );
