@@ -3,18 +3,20 @@ import CustomInput from "../components/core/CustomInput";
 import CustomButton from "../components/core/CustomButton";
 import { BrowserWarn } from "../components/core/BrowserWarn";
 import SaladeCayo from "../assets/raw_material/cantina_cayo/salade_cayo.png";
-import { BadgeDollarSign, ArrowUpNarrowWide, Salad, AlertCircle, CircleCheck } from "lucide-react";
+import { BadgeDollarSign, ArrowUpNarrowWide, Beer, AlertCircle, CircleCheck } from "lucide-react";
 import { showToast } from "../components/core/toast/CustomToast";
 import toast, { Toaster } from 'react-hot-toast';
+import { useAuth } from "../context/AuthContext";
 
 const ExportSales: React.FC = () => {
+  const { user } = useAuth();
   const [expertise, setExpertise] = useState<number | "">("");
-  const [nbSalade, setNbSalade] = useState<number | "">("");
+  const [nbBiere, setNbBiere] = useState<number | "">("");
 
   const calculateEmployeesTotal = (): number => {
-    if (!expertise || !nbSalade) return 0;
+    if (!expertise || !nbBiere) return 0;
     const adjustedExpertise = Math.min(Math.max(Number(expertise), 1), 100);
-    return (36 + 36 * ((Number(adjustedExpertise) || 0) * 0.003)) * (Number(nbSalade) || 0);
+    return (36 + 36 * ((Number(adjustedExpertise) || 0) * 0.003)) * (Number(nbBiere) || 0);
   };
 
   const calculateCompanyTotal = (): number => {
@@ -31,7 +33,7 @@ const ExportSales: React.FC = () => {
   };
 
   const handleSaleSubmit = () => {
-    if (!expertise || !nbSalade) {
+    if (!expertise || !nbBiere) {
       showToast("error", "Erreur : vérifier vos entrées !");
       return;
     }
@@ -51,13 +53,34 @@ const ExportSales: React.FC = () => {
 
         {/* Employee Information */}
         <div className="flex flex-col w-[50%] p-4 bg-[#263238] justify-center border border-gray-600 rounded-xl shadow-lg">
-          <p className="ml-6 text-xl font-bold">Nom Employé : John Doe</p>
-          <p className="ml-6 text-md text-gray-400">Date : {currentDate}</p>
+          <p className={`ml-6 text-xl font-bold`}>
+            Nom Employé : <span className={`text-purple-400`}>{user?.employee?.first_name} {user?.employee?.last_name}</span>
+          </p>
+          <p className="ml-6 text-md font-semibold text-gray-400">Date : {currentDate}</p>
         </div>
 
         {/* Stats render */}
         <div className="flex flex-col w-[50%] p-4 bg-[#263238] items-center border border-gray-600 rounded-xl shadow-lg gap-2">
-          <p className="text-xl font-bold">Grade : Patron</p>
+          <p className="text-xl font-bold text-gray-400">
+            Grade :{" "}
+            <span
+              className={`${
+                user?.employee?.grade === "Patron" || user?.employee?.grade === "Co-Patron"
+                  ? "text-red-400"
+                  : user?.employee?.grade === "RH"
+                  ? "text-violet-400"
+                  : user?.employee?.grade === "Responsable"
+                  ? "text-yellow-400"
+                  : user?.employee?.grade === "CDI"
+                  ? "text-blue-400"
+                  : user?.employee?.grade === "CDD"
+                  ? "text-cyan-400"
+                  : "text-white"
+              }`}
+            >
+              {user?.employee?.grade}
+            </span>
+          </p>
           <p className="text-lg font-semibold">
             Taux de redistribution :
             <span className="ml-2 px-1 py-0.5 text-white bg-green-700 rounded-md">
@@ -87,11 +110,11 @@ const ExportSales: React.FC = () => {
           />
 
           <CustomInput
-            label="Nombre de salades"
-            icon={Salad}
-            value={nbSalade}
-            onChange={(e) => setNbSalade(Number(e.target.value) || "")}
-            placeholder="Entrez le nombre de salades"
+            label="Nombre de bières"
+            icon={Beer}
+            value={nbBiere}
+            onChange={(e) => setNbBiere(Number(e.target.value) || "")}
+            placeholder="Entrez le nombre de bières"
             width="w-[60%]"
           />
 

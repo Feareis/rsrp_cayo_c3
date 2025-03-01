@@ -3,9 +3,11 @@ import { Link, useLocation } from "react-router-dom";
 import {
   Home, Calculator, Tag, ShoppingCart, Package, Layers, ScanBarcode, Anvil, Users, Shield, ChartArea, ChartScatter, DatabaseZap, BookHeart, ChevronDown, ChevronRight
 } from "lucide-react";
+import { useAuth } from "../../context/AuthContext";
 
 // Sidebar Link Component
 const SidebarLink = ({ to, label, icon: Icon }: { to: string; label: string; icon: any }) => {
+  const { user } = useAuth();
   const location = useLocation();
   return (
     <li>
@@ -20,10 +22,7 @@ const SidebarLink = ({ to, label, icon: Icon }: { to: string; label: string; ico
 };
 
 // Expandable Section Component
-const ExpandableSection = ({ title, icon: Icon, sectionKey, links }: any) => {
-  const [openSection, setOpenSection] = useState<string | null>(null);
-  const toggleSection = (section: string) => setOpenSection(prev => (prev === section ? null : section));
-
+const ExpandableSection = ({ title, icon: Icon, sectionKey, links, openSection, toggleSection }: any) => {
   return (
     <div>
       <button onClick={() => toggleSection(sectionKey)} className="flex items-center justify-between w-full px-3 py-3 text-[#cfd8dc] hover:bg-[#3e4d56] rounded-lg transition-all duration-300">
@@ -45,21 +44,28 @@ const ExpandableSection = ({ title, icon: Icon, sectionKey, links }: any) => {
 };
 
 export default function SidebarBody() {
+  const { user } = useAuth();
   const location = useLocation();
   const [openSection, setOpenSection] = useState<string | null>(null);
 
   const toggleSection = (section: string) => {
-    setOpenSection(prev => (prev === section ? null : section));
+    setOpenSection(prev => (prev === section ? null : section)); // Ferme l'ancienne section si une autre est ouverte
   };
 
   return (
     <nav className="flex flex-col h-full p-4 pt-6">
       <ul className="flex flex-col gap-4 flex-grow">
-        <SidebarLink key="dashboard" to="/" label="Dashboard" icon={Home} />
-        <SidebarLink key="admin-dashboard" to="/admin-dashboard" label="Dashboard Admin" icon={Home} />
+        {/* Dashboard (admin ou normal selon le rôle) */}
+        {user?.role === "admin" || user?.role === "limited_admin" ? (
+          <SidebarLink key="admin-dashboard" to="/admin-dashboard" label="Dashboard Admin" icon={Home} />
+        ) : (
+          <SidebarLink key="dashboard" to="/" label="Dashboard" icon={Home} />
+        )}
+
         <SidebarLink key="statistics" to="/statistics" label="Statistiques" icon={ChartArea} />
         <SidebarLink key="calculator" to="/calculator" label="Calculateur" icon={Calculator} />
 
+        {/* Sections expandables avec openSection global */}
         <ExpandableSection
           title="Vente"
           icon={ShoppingCart}
@@ -74,31 +80,36 @@ export default function SidebarBody() {
 
         <SidebarLink key="price" to="/price" label="Prix" icon={Tag} />
 
-        {/* Admin Switch */}
-        <div className="relative flex items-center justify-center my-1">
-          <span className="absolute w-[95%] h-[1px] bg-gray-600"></span>
-          <span className="relative bg-[#263238] px-3 text-[#90a4ae] font-bold text-sm uppercase">
-            Admin
-          </span>
-        </div>
+        {/* Admin Role Only */}
+        {user?.role === "admin" && (
+          <>
+            {/* Admin Switch */}
+            <div className="relative flex items-center justify-center my-1">
+              <span className="absolute w-[95%] h-[1px] bg-gray-600"></span>
+              <span className="relative bg-[#263238] px-3 text-[#90a4ae] font-bold text-sm uppercase">
+                Admin
+              </span>
+            </div>
 
-        <SidebarLink key="admin-user-management" to="/admin/user-management" label="Gestion Employés" icon={Users} />
-        <SidebarLink key="admin-site-access" to="/admin/site-access" label="Accès Site" icon={Shield} />
+            <SidebarLink key="admin-user-management" to="/admin/user-management" label="Gestion Employés" icon={Users} />
+            <SidebarLink key="admin-site-access" to="/admin/site-access" label="Accès Site" icon={Shield} />
 
-        <ExpandableSection
-          title="Stock"
-          icon={Layers}
-          sectionKey="stock"
-          openSection={openSection}
-          toggleSection={toggleSection}
-          links={[
-            { to: "/stock/products", label: "Produits", icon: ScanBarcode },
-            { to: "/stock/raw-materials", label: "Matières Premières", icon: Anvil }
-          ]}
-        />
+            <ExpandableSection
+              title="Stock"
+              icon={Layers}
+              sectionKey="stock"
+              openSection={openSection}
+              toggleSection={toggleSection}
+              links={[
+                { to: "/stock/products", label: "Produits", icon: ScanBarcode },
+                { to: "/stock/raw-materials", label: "Matières Premières", icon: Anvil }
+              ]}
+            />
 
-        <SidebarLink key="admin-analytics" to="/admin/analytics" label="Analytics" icon={ChartScatter} />
-        <SidebarLink key="admin-reboot-accounting" to="/admin/reboot-accounting" label="Reboot Comptabilité" icon={DatabaseZap} />
+            <SidebarLink key="admin-analytics" to="/admin/analytics" label="Analytics" icon={ChartScatter} />
+            <SidebarLink key="admin-reboot-accounting" to="/admin/reboot-accounting" label="Reboot Comptabilité" icon={DatabaseZap} />
+          </>
+        )}
       </ul>
 
       <ul className="mt-auto">

@@ -22,7 +22,7 @@ type AuthContextType = {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 // Test mode (set to false for normal authentication)
-const TEST_MODE = true;
+const TEST_MODE = false;
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const navigate = useNavigate();
@@ -62,7 +62,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         id: "test-id",
         employee_id: "test-employee",
         username: "testuser",
-        role: "Admin",
+        role: "admin",
       };
       setUser(testUser);
       setIsAuthenticated(true);
@@ -84,12 +84,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const isValidPassword = await bcrypt.compare(password, data.password_hash);
     if (!isValidPassword) throw new Error("Incorrect password.");
 
-    const userData: User = {
-      id: data.id,
-      employee_id: data.employee_id,
-      username: data.username,
-      role: data.role,
+    const { data: employeeData, error: employeeError } = await supabase
+      .from("employees")
+      .select("*")
+      .eq("id", data.employee_id)
+      .single();
+
+    if (employeeError || !employeeData) throw new Error("Employee data not found.");
+
+    // Merge Data Access + Employees
+    const userData = {
+      ...data, // Access Data
+      employee: employeeData, // Employees Data
     };
+    console.log(userData)
 
     setUser(userData);
     setIsAuthenticated(true);

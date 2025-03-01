@@ -46,7 +46,7 @@ const AdminDashboardManagementTable = ({ users = [] }: AdminDashboardProps) => {
   };
 
   const filteredUsers = users.filter(user =>
-    `${user.firstName} ${user.lastName} ${user.grade} ${user.phone}`
+    `${user.first_name} ${user.last_name} ${user.grade}`
       .toLowerCase()
       .includes(searchQuery.toLowerCase())
   );

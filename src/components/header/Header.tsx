@@ -7,7 +7,7 @@ export default function Header() {
   const pageNames: Record<string, string> = {
     // Root Section
     "/": "Dashboard",
-    "/admin-dashboard": "Dashboard (Vue admin, limited_admin)",
+    "/admin-dashboard": "Dashboard",
     "/stats": "Statistiques",
     "/calculator": "Calculateur",
     "/sale/export": "Vente Exportateur",
