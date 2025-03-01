@@ -55,11 +55,10 @@ export default function SidebarBody() {
   return (
     <nav className="flex flex-col h-full p-4 pt-6">
       <ul className="flex flex-col gap-4 flex-grow">
-        {/* Dashboard (admin ou normal selon le rôle) */}
-        {user?.role === "admin" || user?.role === "limited_admin" ? (
-          <SidebarLink key="admin-dashboard" to="/admin-dashboard" label="Dashboard Admin" icon={Home} />
-        ) : (
-          <SidebarLink key="dashboard" to="/" label="Dashboard" icon={Home} />
+        <SidebarLink key="dashboard" to="/" label="Home" icon={Home} />
+
+        {user?.role === "admin" || user?.role === "limited_admin" && (
+          <SidebarLink key="dashboard" to="/admin-dashboard" label="Gestion Quota" icon={Layers} />
         )}
 
         <SidebarLink key="statistics" to="/statistics" label="Statistiques" icon={ChartArea} />
