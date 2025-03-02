@@ -5,6 +5,7 @@ import DeleteUserModal from "../modal/DeleteUserModal";
 import DeleteUsersModal from "../modal/DeleteUsersModal";
 import { Check, Minus, EllipsisVertical, Plus, X, Pencil, Trash2 } from "lucide-react";
 import CustomSwitch from "../../../../components/core/CustomSwitch";
+import { supabase } from "../../../../lib/supabaseClient";
 
 
 // Define a type for user grades
@@ -47,10 +48,16 @@ const UMT = ({ users = [], setUsers, selected, onSelectedChange, onDelete, onEdi
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
   const [clicked, setClicked] = useState(false);
 
-  // Initialize switch states (leaves, warning1, warning2)
-  const [switchStates, setSwitchStates] = useState<Record<string, { leaves: boolean; warning1: boolean; warning2: boolean }>>(
-    () => Object.fromEntries(users.map(user => [user.id, { leaves: user.holidays, warning1: user.warning1, warning2: user.warning2 }]))
-  );
+  // Store the state of each user's holidays switches
+  const [switchStates, setSwitchStates] = useState<{ [key: string]: { holidays: boolean } }>(() => {
+    const initialState: { [key: string]: { holidays: boolean } } = {};
+    users.forEach(user => {
+      initialState[user.id] = {
+        holidays: user.holidays,
+      };
+    });
+    return initialState;
+  });
 
   // Global statistics
   const totalEmployees = users.length;
@@ -62,16 +69,83 @@ const UMT = ({ users = [], setUsers, selected, onSelectedChange, onDelete, onEdi
   const isAllSelected = selected.length === users.length && users.length > 0;
   const isPartiallySelected = selected.length > 0 && !isAllSelected;
 
-  // Toggle switch (leaves, warning1, warning2)
-  const toggleSwitch = (userId: string, field: "leaves" | "warning1" | "warning2") => {
-    setSwitchStates(prev => ({
-      ...prev,
-      [userId]: {
-        ...prev[userId],
-        [field]: !prev[userId][field],
+  // Fetch users' switch states from Supabase on mount
+  useEffect(() => {
+    const fetchUsers = async () => {
+      const { data, error } = await supabase
+        .from("employees")
+        .select("*");
+
+      if (error) {
+        console.error("❌ Error fetching access:", error.message);
+        return;
       }
-    }));
+
+      setSwitchStates(
+        Object.fromEntries(data.map(user => [user.id, {
+          holidays: user.holidays
+        }]))
+      );
+    };
+
+    fetchUsers();
+  }, []);
+
+  // Toggle switch state and update Supabase
+  const toggleSwitch = async (userId: string, field: "holidays") => {
+
+    // Ensure the new state is based on the current state
+    setSwitchStates(prev => {
+      const newState = !prev[userId][field];
+
+      // Update Supabase
+      supabase
+        .from("employees")
+        .update({ [field]: newState })
+        .eq("id", userId)
+        .then(({ error }) => {
+          if (error) {
+            console.error("❌ Error updating switch:", error.message);
+          }
+        });
+
+      return {
+        ...prev,
+        [userId]: {
+          ...prev[userId],
+          [field]: newState
+        }
+      };
+    });
+
+    // Update users state without affecting pagination
+    setUsers(prevUsers => prevUsers.map(user =>
+      user.id === userId ? { ...user, [field]: !user[field] } : user
+    ));
   };
+  
+  // Real-time updates from Supabase when users' holidays changes
+  useEffect(() => {
+    const channel = supabase
+      .channel("employees-realtime")
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "employees" },
+        (payload) => {
+          setSwitchStates(prev => ({
+            ...prev,
+            [payload.new.id]: {
+              holidays: payload.new.holidays,
+            }
+          }));
+        }
+      )
+      .subscribe();
+
+    return () => {
+      channel.unsubscribe();
+    };
+  }, []);
 
   // Select all users
   const handleSelectAll = () => {
@@ -265,17 +339,27 @@ const UMT = ({ users = [], setUsers, selected, onSelectedChange, onDelete, onEdi
                 {/* Hire Date */}
                 <div className="font-semibold text-center">{new Date(user.hire_date).toLocaleDateString("fr-FR")}</div>
       
-                {/* Holidays Toggle */}
-                <div className="font-semibold text-center">
+                {/* Holidays Switch */}
+                <div className="text-center">
                   <label className="flex items-center justify-center cursor-pointer">
-                    <input 
-                      type="checkbox" 
-                      className="hidden" 
-                      checked={switchStates[user.id]?.holidays || false} 
-                      onChange={() => toggleSwitch(user.id, "holidays")} 
+                    <input
+                      type="checkbox"
+                      className="hidden"
+                      checked={switchStates[user.id]?.holidays || false}
+                      onChange={() => toggleSwitch(user.id, "holidays")}
                     />
-                    <div className={`w-12 h-6 rounded-full p-1 transition ${switchStates[user.id]?.holidays ? "bg-gradient-to-r from-blue-500 to-blue-700" : "bg-[#37474f]"}`}>
-                      <div className={`w-4 h-4 bg-[#263238] rounded-full shadow-md transform transition ${switchStates[user.id]?.holidays ? "translate-x-6" : ""}`} />
+                    <div
+                      className={`w-12 h-6 rounded-full p-1 transition ${
+                        switchStates[user.id]?.holidays
+                          ? "bg-gradient-to-r from-blue-500 to-blue-700"
+                          : "bg-[#37474f]"
+                      }`}
+                    >
+                      <div
+                        className={`w-4 h-4 bg-[#263238] rounded-full shadow-md transform transition ${
+                          switchStates[user.id]?.holidays ? "translate-x-6" : ""
+                        }`}
+                      />
                     </div>
                   </label>
                 </div>

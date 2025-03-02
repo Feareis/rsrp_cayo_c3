@@ -138,7 +138,7 @@ const SiteAccessTable: React.FC<SiteAccessProps> = ({ users, setUsers }) => {
       : "text-white";
   };
 
-  // Real-time updates from Supabase when users' weekly_quota or bonus changes
+  // Real-time updates from Supabase when users' is_active changes
   useEffect(() => {
     const channel = supabase
       .channel("access-realtime")
