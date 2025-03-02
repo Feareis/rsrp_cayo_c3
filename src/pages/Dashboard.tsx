@@ -35,11 +35,12 @@ export default function Dashboard() {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState("Semaine en cours");
 
-  const formatCurrency = (value: number): string => {
-    return `${value.toLocaleString("en-EN", { minimumFractionDigits: 0 })} $`;
+  // Format numbers into currency format
+  const formatCurrency = (value?: number): string => {
+    return `${(value ?? 0).toLocaleString("en-EN", { minimumFractionDigits: 0 })} $`;
   };
 
-  const currentDate = new Date().toLocaleDateString('fr-FR');
+  const currentDate = new Date().toLocaleDateString("fr-FR", {day: "2-digit", month: "2-digit", year: "numeric",});
 
   const getCurrentWeekRange = () => {
     const today = new Date();
@@ -117,7 +118,7 @@ export default function Dashboard() {
           <div className={`flex flex-row gap-8 w-full`}>
 
             {/* Employee Information */}
-            <div className={`flex flex-col w-[50%] p-6 bg-[#263238] justify-center items-center text-center border border-gray-600 rounded-xl shadow-lg gap-2`}>
+            <div className={`flex flex-col w-[50%] p-6 bg-[#263238] justify-center items-center text-center border border-gray-500 rounded-xl shadow-2xl gap-2`}>
               <p className={`text-2xl font-bold text-gray-400`}>
                 Nom Employé : <span className={`text-purple-400`}>{user?.employee?.first_name} {user?.employee?.last_name}</span>
               </p>
@@ -144,7 +145,7 @@ export default function Dashboard() {
             </div>
 
             {/* Date */}
-            <div className={`flex flex-row w-[50%] p-4 bg-[#263238] justify-around items-center border border-gray-600 rounded-xl shadow-lg gap-16`}>
+            <div className={`flex flex-row w-[50%] p-4 bg-[#263238] justify-around items-center border border-gray-500 rounded-xl shadow-2xl gap-16`}>
 
               {/* Bloc : Semaine en cours */}
               <div className={`flex flex-col text-xl font-bold text-center gap-2`}>
@@ -156,7 +157,7 @@ export default function Dashboard() {
               <div className={`flex flex-col text-xl font-bold text-center gap-2`}>
                 <p className={`text-xl font-bold`}>Date du jour :</p>
                 <span className={`p-1 bg-[#37474f] border border-gray-600 rounded-md`}>
-                  {new Date().toISOString().split("T")[0].split("-").reverse().join("/")}
+                  {currentDate}
                 </span>
               </div>
 
@@ -173,7 +174,7 @@ export default function Dashboard() {
 
           {/* Info + Display Card Section */}
           <div className={`flex flex-row gap-8 w-full`}>
-            <div className={`flex flex-col w-[70%] h-200 p-4 bg-[#263238] border border-gray-600 rounded-xl shadow-lg gap-4`}>
+            <div className={`flex flex-col w-[70%] h-200 p-4 bg-[#263238] border border-gray-500 rounded-xl shadow-2xl gap-4`}>
 
               {/* Tabs en haut */}
               <div className={`flex gap-2 mb-6`}>
@@ -200,21 +201,21 @@ export default function Dashboard() {
               {activeTab === "Semaine en cours" && (
                 <div className="flex flex-col justify-around items-center gap-16 p-4">
                   {/* Section des Totaux & Quotas */}
-                  <div className="relative flex flex-col w-full gap-4 bg-[#37474f] border border-gray-500 p-2 py-4 rounded-xl">
+                  <div className="relative flex flex-col w-full gap-4 bg-[#37474f] border border-gray-500/60 p-2 py-4 rounded-xl">
                     {/* Titre flottant */}
                     <p className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#263238] border border-gray-500 rounded-xl shadow-xl px-3 py-1 text-gray-400 text-xl font-bold">
-                      Totaux & Quotas
+                      Paye
                     </p>
 
                     {/* Contenu */}
                     <div className="flex flex-row justify-between gap-8 w-full p-4 py-4">
                       {/* Section Prime & Taxe */}
-                        <div className="flex flex-col bg-[#263238] gap-2 border border-gray-600 p-4 rounded-xl shadow-xl text-center w-full">
+                        <div className="flex flex-col bg-[#263238] gap-2 border border-gray-500/70 p-4 rounded-xl shadow-xl text-center w-full">
                           <p className="text-gray-400/90 text-lg font-bold">Prime</p>
                           <p className="text-xl font-bold text-green-500/80">{formatCurrency(50000)}</p>
                         </div>
 
-                        <div className="flex flex-col bg-[#263238] gap-2 border border-gray-600 p-4 rounded-xl shadow-xl text-center w-full">
+                        <div className="flex flex-col bg-[#263238] gap-2 border border-gray-500/70 p-4 rounded-xl shadow-xl text-center w-full">
                           <p className="text-gray-400/90 text-lg font-bold">Taxe</p>
                           <p className="text-xl font-bold text-red-400/80">{formatCurrency(2000)}</p>
                         </div>
@@ -222,42 +223,42 @@ export default function Dashboard() {
                   </div>
 
                   {/* Section Détails + Prime & Taxe */}
-                  <div className="relative flex flex-col w-full gap-4 bg-[#37474f] border border-gray-500 p-2 py-4 rounded-xl">
+                  <div className="relative flex flex-col w-full gap-4 bg-[#37474f] border border-gray-500/60 p-2 py-4 rounded-xl">
                     {/* Titre flottant */}
                     <p className="absolute top-0 left-1/8 -translate-x-1/2 -translate-y-1/2 bg-[#263238] border border-gray-500 rounded-xl shadow-xl px-3 py-1 text-gray-400 text-xl font-bold">
-                      Détails & Paye
+                      Détails & Totaux
                     </p>
 
                     {/* Contenu global */}
                     <div className="flex flex-col gap-16 justify-between w-full p-8">
                       {/* Section Détails */}
                       <div className="flex flex-row justify-between gap-6 w-full">
-                        <div className="flex flex-col bg-[#263238] gap-2 border border-gray-600 p-4 rounded-xl shadow-xl text-center w-1/3">
+                        <div className="flex flex-col bg-[#263238] gap-2 border border-gray-500/70 p-4 rounded-xl shadow-xl text-center w-1/3">
                           <p className="text-gray-400/90 text-lg font-bold">Vente Export Propre</p>
-                          <p className="text-xl font-bold text-green-500/80">{formatCurrency(20000)}</p>
+                          <p className="text-xl font-bold text-green-500/80">{formatCurrency(user?.employee?.clean_export_sales)}</p>
                         </div>
 
-                        <div className="flex flex-col bg-[#263238] gap-2 border border-gray-600 p-4 rounded-xl shadow-xl text-center w-1/3">
+                        <div className="flex flex-col bg-[#263238] gap-2 border border-gray-500/70 p-4 rounded-xl shadow-xl text-center w-1/3">
                           <p className="text-gray-400/90 text-lg font-bold">Vente Client Propre</p>
-                          <p className="text-xl font-bold text-green-500/80">{formatCurrency(30000)}</p>
+                          <p className="text-xl font-bold text-green-500/80">{formatCurrency(user?.employee?.clean_client_sales)}</p>
                         </div>
 
-                        <div className="flex flex-col bg-[#263238] gap-2 border border-gray-600 p-4 rounded-xl shadow-xl text-center w-1/3">
+                        <div className="flex flex-col bg-[#263238] gap-2 border border-gray-500/70 p-4 rounded-xl shadow-xl text-center w-1/3">
                           <p className="text-gray-400/90 text-lg font-bold">Vente Client Sale</p>
-                          <p className="text-xl font-bold text-red-400/80">{formatCurrency(20000)}</p>
+                          <p className="text-xl font-bold text-red-400/80">{formatCurrency(user?.employee?.dirty_client_sales)}</p>
                         </div>
                       </div>
 
                       {/* Total empoché + Total généré */}
                       <div className="flex flex-row justify-between gap-6 w-full">
-                        <div className="flex flex-col bg-[#263238] border border-gray-600 p-4 rounded-xl shadow-xl text-center w-full gap-2">
+                        <div className="flex flex-col bg-[#263238] border border-gray-500/70 p-4 rounded-xl shadow-xl text-center w-full gap-2">
                           <p className="text-gray-400/90 text-lg font-bold">Total Empoché - Employé(e)</p>
-                          <p className="text-xl font-bold text-green-500/80">{formatCurrency(10000)}</p>
+                          <p className="text-xl font-bold text-green-500/80">{formatCurrency(user?.employee?.total_clean_money_employee)}</p>
                         </div>
 
-                        <div className="flex flex-col bg-[#263238] border border-gray-600 p-4 rounded-xl shadow-xl text-center w-full gap-2">
+                        <div className="flex flex-col bg-[#263238] border border-gray-500/70 p-4 rounded-xl shadow-xl text-center w-full gap-2">
                           <p className="text-gray-400/90 text-lg font-bold">Total Généré - Entreprise</p>
-                          <p className="text-xl font-bold text-green-500/80">{formatCurrency(50000)}</p>
+                          <p className="text-xl font-bold text-green-500/80">{formatCurrency(user?.employee?.total_clean_money_enterprise)}</p>
                         </div>
                       </div>
                     </div>
@@ -267,50 +268,90 @@ export default function Dashboard() {
 
               {/* Second Tabs */}
               {activeTab === "Semaine passée" && (
-                <>
-                  {/* Section principale (avec justify-between) */}
-                  <div className={`flex flex-col h-[90%] justify-between p-4`}>
-                    <p className={`text-center text-gray-400`}>Contenu principal 2 ici...</p>
-                  </div>
+                <div className="flex flex-col justify-around items-center gap-16 p-4">
+                  {/* Section des Totaux & Quotas */}
+                  <div className="relative flex flex-col w-full gap-4 bg-[#37474f] border border-gray-500/60 p-2 py-4 rounded-xl">
+                    {/* Titre flottant */}
+                    <p className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#263238] border border-gray-500 rounded-xl shadow-xl px-3 py-1 text-gray-400 text-xl font-bold">
+                      Paye
+                    </p>
 
-                  {/* Section inférieure (20%) */}
-                  <div className={`flex h-[10%] justify-center gap-2`}>
-                    <p className={`text-center text-gray-400`}>Bottom 2 (10% height)</p>
+                    {/* Contenu */}
+                    <div className="flex flex-row justify-between gap-8 w-full p-4 py-4">
+                      {/* Section Prime & Taxe */}
+                        <div className="flex flex-col bg-[#263238] gap-2 border border-gray-500/70 p-4 rounded-xl shadow-xl text-center w-full">
+                          <p className="text-gray-400/90 text-lg font-bold">Prime</p>
+                          <p className="text-xl font-bold text-green-500/80">{formatCurrency(user?.employee?.last_weekly_prime)}</p>
+                        </div>
+
+                        <div className="flex flex-col bg-[#263238] gap-2 border border-gray-500/70 p-4 rounded-xl shadow-xl text-center w-full">
+                          <p className="text-gray-400/90 text-lg font-bold">Taxe</p>
+                          <p className="text-xl font-bold text-red-400/80">{formatCurrency(user?.employee?.last_weekly_tax)}</p>
+                        </div>
+                    </div>
                   </div>
-                </>
+                </div>
               )}
             </div>
-            <div className="flex flex-col w-[30%] gap-8">
-              {/* Cartes de quotas */}
-              <DisplayCard
-                title="Quota de la Semaine"
-                icon={<DollarSign className="text-green-500/70" size={24} />}
-                text1={formatCurrency(43000)}
-                text2="250 Plateau"
-              />
-              <DisplayCard
-                title="Quota Bonus"
-                icon={<Coffee className="text-orange-400/70" size={24} />}
-                text1={formatCurrency(63000)}
-                text2="300 Plateau"
-              />
-              <div className="flex flex-row gap-6">
-                <div className="flex flex-col bg-[#263238] gap-2 border border-gray-600 p-4 rounded-lg shadow-xl text-center items-center w-full">
-                  <p className="text-gray-400/90 text-lg font-bold">Quota</p>
-                    {userExample.weeklyQuota ? (
-                      <CircleCheck className="text-green-500/70" size={24} />
-                    ) : (
-                      <CircleX className="text-red-400/70" size={24} />
-                    )}
-                </div>
+            <div className="flex flex-col justify-between w-[30%] gap-8">
 
-                <div className="flex flex-col bg-[#263238] gap-2 border border-gray-600 p-4 rounded-lg shadow-xl text-center items-center w-full">
-                  <p className="text-gray-400/90 text-lg font-bold">Quota Bonus</p>
-                    {userExample.weeklyQuotaBonus ? (
+              {/* Cartes de quotas */}
+              <div className="flex flex-col gap-8">
+                <DisplayCard
+                  title="Quota de la Semaine"
+                  icon={<DollarSign className="text-green-500/70" size={24} />}
+                  text1={formatCurrency(43000)}
+                  text2="250 Plateau"
+                />
+                <DisplayCard
+                  title="Quota Bonus"
+                  icon={<Coffee className="text-orange-400/70" size={24} />}
+                  text1={formatCurrency(63000)}
+                  text2="300 Plateau"
+                />
+
+                {/* Quota & Quota Bonus Checkout */}
+                <div className="flex flex-row gap-6">
+                  <div className="flex flex-col bg-[#263238] gap-2 border border-gray-500 p-4 rounded-lg shadow-2xl text-center items-center w-full">
+                    <p className="text-gray-400/90 text-lg font-bold">Quota</p>
+                    {user?.employee?.weekly_quota ? (
                       <CircleCheck className="text-green-500/70" size={24} />
                     ) : (
                       <CircleX className="text-red-400/70" size={24} />
                     )}
+                  </div>
+
+                  <div className="flex flex-col bg-[#263238] gap-2 border border-gray-500 p-4 rounded-lg shadow-2xl text-center items-center w-full">
+                    <p className="text-gray-400/90 text-lg font-bold">Quota Bonus</p>
+                    {user?.employee?.weekly_quota_bonus ? (
+                      <CircleCheck className="text-green-500/70" size={24} />
+                    ) : (
+                      <CircleX className="text-red-400/70" size={24} />
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Centre Warning Checkout verticalement */}
+              <div className="flex flex-1 items-center justify-center">
+                <div className="flex flex-col w-[50%] gap-6">
+                  <div className="flex flex-col bg-[#263238] gap-2 border border-gray-500/70 p-4 rounded-lg shadow-2xl text-center items-center w-full">
+                    <p className="text-gray-400/90 text-lg font-bold">Avertissement 1</p>
+                    {user?.employee?.warning1 ? (
+                      <CircleCheck className="text-green-500/70" size={24} />
+                    ) : (
+                      <CircleX className="text-red-400/70" size={24} />
+                    )}
+                  </div>
+
+                  <div className="flex flex-col bg-[#263238] gap-2 border border-gray-500/70 p-4 rounded-lg shadow-2xl text-center items-center w-full">
+                    <p className="text-gray-400/90 text-lg font-bold">Avertissement 2</p>
+                    {user?.employee?.warning2 ? (
+                      <CircleCheck className="text-green-500/70" size={24} />
+                    ) : (
+                      <CircleX className="text-red-400/70" size={24} />
+                    )}
+                  </div>
                 </div>
               </div>
             </div>

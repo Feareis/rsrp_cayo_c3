@@ -56,11 +56,6 @@ export default function SidebarBody() {
     <nav className="flex flex-col h-full p-4 pt-6">
       <ul className="flex flex-col gap-4 flex-grow">
         <SidebarLink key="dashboard" to="/" label="Home" icon={Home} />
-
-        {user?.role === "admin" || user?.role === "limited_admin" && (
-          <SidebarLink key="admin-dashboard" to="/admin-dashboard" label="Gestion Quota" icon={Layers} />
-        )}
-
         <SidebarLink key="statistics" to="/statistics" label="Statistiques" icon={ChartArea} />
         <SidebarLink key="calculator" to="/calculator" label="Calculateur" icon={Calculator} />
 
@@ -80,35 +75,43 @@ export default function SidebarBody() {
         <SidebarLink key="price" to="/price" label="Prix" icon={Tag} />
 
         {/* Admin Role Only */}
-        {user?.role === "admin" && (
+        {user?.role === "admin" || user?.role === "limited_admin" ? (
           <>
             {/* Admin Switch */}
             <div className="relative flex items-center justify-center my-1">
               <span className="absolute w-[95%] h-[1px] bg-gray-600"></span>
               <span className="relative bg-[#263238] px-3 text-[#90a4ae] font-bold text-sm uppercase">
-                Admin
+                Gestion
               </span>
             </div>
 
-            <SidebarLink key="admin-user-management" to="/admin/user-management" label="Gestion Employés" icon={Users} />
-            <SidebarLink key="admin-site-access" to="/admin/site-access" label="Accès Site" icon={Shield} />
+            {/* Gestion Quota accessible aux admins et limited_admin */}
+            <SidebarLink key="admin-dashboard" to="/admin-dashboard" label="Gestion Quota" icon={Layers} />
 
-            <ExpandableSection
-              title="Stock"
-              icon={Layers}
-              sectionKey="stock"
-              openSection={openSection}
-              toggleSection={toggleSection}
-              links={[
-                { to: "/stock/products", label: "Produits", icon: ScanBarcode },
-                { to: "/stock/raw-materials", label: "Matières Premières", icon: Anvil }
-              ]}
-            />
+            {/* Les autres liens sont accessibles uniquement aux admins */}
+            {user?.role === "admin" && (
+              <>
+                <SidebarLink key="admin-user-management" to="/admin/user-management" label="Gestion Employés" icon={Users} />
+                <SidebarLink key="admin-site-access" to="/admin/site-access" label="Accès Site" icon={Shield} />
 
-            <SidebarLink key="admin-analytics" to="/admin/analytics" label="Analytics" icon={ChartScatter} />
-            <SidebarLink key="admin-reboot-accounting" to="/admin/reboot-accounting" label="Reboot Comptabilité" icon={DatabaseZap} />
+                <ExpandableSection
+                  title="Stock"
+                  icon={Layers}
+                  sectionKey="stock"
+                  openSection={openSection}
+                  toggleSection={toggleSection}
+                  links={[
+                    { to: "/stock/products", label: "Produits", icon: ScanBarcode },
+                    { to: "/stock/raw-materials", label: "Matières Premières", icon: Anvil }
+                  ]}
+                />
+
+                <SidebarLink key="admin-analytics" to="/admin/analytics" label="Analytics" icon={ChartScatter} />
+                <SidebarLink key="admin-reboot-accounting" to="/admin/reboot-accounting" label="Reboot Comptabilité" icon={DatabaseZap} />
+              </>
+            )}
           </>
-        )}
+        ) : null}
       </ul>
 
       <ul className="mt-auto">

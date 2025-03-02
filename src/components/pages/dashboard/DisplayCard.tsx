@@ -10,7 +10,7 @@ interface CardProps {
 
 export default function Card({ title, icon, text1, text2, option }: CardProps) {
   return (
-    <div className={`flex flex-col justify-center bg-[#263238] text-[#cfd8dc] border border-gray-600 shadow-md rounded-xl px-4 pt-4 pb-2 w-full ${option || ""}`}>
+    <div className={`flex flex-col justify-center bg-[#263238] text-[#cfd8dc] border border-gray-500 shadow-xl rounded-xl px-4 pt-4 pb-2 w-full ${option || ""}`}>
       <div className="flex justify-between items-center">
         <h3 className="text-xl font-semibold">{title}</h3>
         <div className="text-2xl">{icon}</div>
