@@ -25,6 +25,7 @@ import ClientsSale from "./pages/ClientsSale";
 
 // Import Admin Pages
 import UserManagement from "./pages/admin/UserManagement";
+import SiteAccess from "./pages/admin/SiteAccess";
 import AdminStockProduct from "./pages/admin/stock/AdminStockProduct";
 import AdminAnalytics from "./pages/admin/AdminAnalytics";
 
@@ -55,6 +56,7 @@ export default function AppRouter() {
 
             {/* Admin Pages */}
             <Route path="/admin/user-management" element={<ProtectedRoute element={<UserManagement />} />} />
+            <Route path="/admin/site-access" element={<ProtectedRoute element={<SiteAccess />} />} />
             <Route path="/admin/stock/product" element={<ProtectedRoute element={<AdminStockProduct />} />} />
             <Route path="/admin/analytics" element={<ProtectedRoute element={<AdminAnalytics />} />} />
 

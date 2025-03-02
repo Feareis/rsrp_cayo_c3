@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import AddUserModal from "../modal/AddUserModal";
 import EditUserModal from "../modal/EditUserModal";
 import DeleteUserModal from "../modal/DeleteUserModal";
@@ -7,20 +7,26 @@ import { Check, Minus, EllipsisVertical, Plus, X, Pencil, Trash2 } from "lucide-
 import CustomSwitch from "../../../../components/core/CustomSwitch";
 
 
+// Define a type for user grades
+type Grade = "Patron" | "Co-Patron" | "RH" | "Responsable" | "CDI" | "CDD";
+
+// User Interface
 interface User {
   id: string;
-  firstName: string;
-  lastName: string;
-  phone: string;
-  hireDate: string;
-  grade: "Patron" | "Co-Patron" | "RH" | "Responsable" | "CDI" | "CDD";
+  first_name: string;
+  last_name: string;
+  phone_number: string;
+  hire_date: string;
+  grade: Grade;
   holidays: boolean;
   warning1: boolean;
   warning2: boolean;
 }
 
-type UserTableProps = {
+// Props for UserManagementTable
+type UMTProps = {
   users: User[];
+  setUsers: React.Dispatch<React.SetStateAction<User[]>>;
   selected: string[];
   onSelectedChange: (selected: string[]) => void;
   onDelete: (userIds: string[]) => void;
@@ -28,30 +34,35 @@ type UserTableProps = {
   processing: boolean;
 };
 
-const UserTable = ({ users = [], selected, onSelectedChange, onDelete, onEdit, processing }: UserTableProps) => {
+const UMT = ({ users = [], setUsers, selected, onSelectedChange, onDelete, onEdit, processing }: UMTProps) => {
   const [page, setPage] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [menuOpen, setMenuOpen] = useState<string | null>(null);
-  const [isChecked, setIsChecked] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isDeleteMultipleModalOpen, setIsDeleteMultipleModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
+  const [clicked, setClicked] = useState(false);
+
+  // Initialize switch states (leaves, warning1, warning2)
   const [switchStates, setSwitchStates] = useState<Record<string, { leaves: boolean; warning1: boolean; warning2: boolean }>>(
-    Object.fromEntries(users.map(user => [user.id, { leaves: user.leaves, warning1: user.warning1, warning2: user.warning2 }]))
+    () => Object.fromEntries(users.map(user => [user.id, { leaves: user.holidays, warning1: user.warning1, warning2: user.warning2 }]))
   );
 
+  // Global statistics
   const totalEmployees = users.length;
   const totalManagers = users.filter(user => user.grade === "Responsable").length;
   const totalCDI = users.filter(user => user.grade === "CDI").length;
   const totalCDD = users.filter(user => user.grade === "CDD").length;
 
+  // Selection management
   const isAllSelected = selected.length === users.length && users.length > 0;
   const isPartiallySelected = selected.length > 0 && !isAllSelected;
 
+  // Toggle switch (leaves, warning1, warning2)
   const toggleSwitch = (userId: string, field: "leaves" | "warning1" | "warning2") => {
     setSwitchStates(prev => ({
       ...prev,
@@ -62,67 +73,98 @@ const UserTable = ({ users = [], selected, onSelectedChange, onDelete, onEdit, p
     }));
   };
 
+  // Select all users
   const handleSelectAll = () => {
-    if (isAllSelected) {
-      onSelectedChange([]);
-    } else {
-      onSelectedChange(users.map((u) => u.id));
-    }
+    onSelectedChange(isAllSelected ? [] : users.map((u) => u.id));
   };
 
+  // Select a single user
   const handleSelectOne = (id: string) => {
-    onSelectedChange(
-      selected.includes(id)
-        ? selected.filter((userId) => userId !== id)
-        : [...selected, id]
-    );
+    onSelectedChange(selected.includes(id) ? selected.filter((userId) => userId !== id) : [...selected, id]);
   };
 
+  // Pagination handlers
   const handleChangePage = (newPage: number) => setPage(newPage);
   const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const value = event.target.value === "all" ? users.length : 10;
-    setRowsPerPage(value);
+    setRowsPerPage(event.target.value === "all" ? users.length : 10);
     setPage(0);
   };
 
+  // Click effect handler
   const handleClick = () => {
     setClicked(true);
     setTimeout(() => setClicked(false), 300);
   };
 
-  const [clicked, setClicked] = useState(false);
-
+  // Filter users based on search query
   const filteredUsers = users.filter(user =>
     `${user.first_name} ${user.last_name} ${user.grade} ${user.phone_number}`
       .toLowerCase()
       .includes(searchQuery.toLowerCase())
   );
 
+  // Format phone numbers
   const formatPhoneNumber = (phone: string | number | null): string => {
     if (!phone) return "";
-
     const cleaned = phone.toString().replace(/\D/g, "");
+    return cleaned.length === 10 ? `(${cleaned.slice(0, 3)}) ${cleaned.slice(3, 6)}-${cleaned.slice(6)}` : phone.toString();
+  };
 
-    if (cleaned.length !== 10) {
-      return phone.toString();
+  // Delete multiple users
+  const handleDeleteMultiple = async () => {
+    setUsers(prev => prev.filter(user => !selected.includes(user.id))); // Update users state
+
+    setTimeout(() => {
+      onSelectedChange([]);  // Clear selected users
+      setSelectedUsers([]);   // Reset selected users array
+      setIsDeleteMultipleModalOpen(false); // Close modal
+    }, 100);
+  };
+  
+  // Function to return the corresponding color for each grade
+  const getGradeColor = (grade: string) => {
+    switch (grade) {
+      case "Patron":
+      case "Co-Patron":
+        return "text-red-400";
+      case "RH":
+        return "text-violet-400";
+      case "Responsable":
+        return "text-yellow-400";
+      case "CDI":
+        return "text-blue-400";
+      case "CDD":
+        return "text-cyan-400";
+      default:
+        return "text-white";
     }
-
-    return `(${cleaned.slice(0, 3)}) ${cleaned.slice(3, 6)}-${cleaned.slice(6)}`;
   };
 
 
   return (
     <div className="overflow-x-auto text-[#cfd8dc] rounded-lg px-2">
+      {/* Top Bar with Search and Actions */}
       <div className="flex justify-between items-center">
-        <div className="w-full flex items-center space-x-4">
+        
+        {/* Left Section: Search + Selection Reset */}
+        <div className="flex items-center w-full space-x-4">
+          {/* Button to clear selection */}
           {selected.length > 0 && (
-            <button className="mr-4 py-2 px-4 flex items-center justify-center rounded-full bg-[#263238] font-semibold hover:bg-gray-800/50" onClick={() => onSelectedChange([])}>
+            <button
+              className="mr-4 py-2 px-4 flex items-center justify-center rounded-full bg-[#263238] font-semibold hover:bg-gray-800/50"
+              onClick={() => {
+                setSelectedUsers([]);  // Reset selection state
+                onSelectedChange([]);  // Clear selected users
+              }}
+            >
               <X size={20} />
               <span className="text-white flex items-center">
                 {selected.length} sélectionné(s)
               </span>
             </button>
           )}
+      
+          {/* Search Input */}
           <input
             type="text"
             placeholder="Rechercher..."
@@ -131,143 +173,148 @@ const UserTable = ({ users = [], selected, onSelectedChange, onDelete, onEdit, p
             className="w-[20%] p-3 border border-gray-400 rounded-lg bg-transparent text-white focus:outline-none hover:border-gray-300 transition"
           />
         </div>
-
-        <div className="text-[#cfd8dc] rounded-lg flex justify-center items-center text-center">
-          <div className="flex w-full justify-end">
-            {selected.length > 0 ? (
-              <button
-                className="bg-red-500 px-4 py-2 rounded-md transition hover:scale-105"
-                onClick={() => {
-                  setSelectedUsers(selected);
-                  setIsDeleteMultipleModalOpen(true);
-                }}
-              >
-                <Trash2 size={26} />
-              </button>
-            ) : (
-              <button
-                className="bg-blue-500 px-4 py-2 rounded-md transition hover:scale-105"
-                onClick={() => setIsAddModalOpen(true)}
-              >
-                <Plus size={26} />
-              </button>
-            )}
-          </div>
+      
+        {/* Right Section: Add / Delete Buttons */}
+        <div className="flex justify-end">
+          {selected.length > 0 ? (
+            /* Delete Multiple Users */
+            <button
+              className="bg-red-500 px-4 py-2 rounded-md transition hover:scale-105"
+              onClick={() => {
+                setSelectedUsers(selected);
+                setIsDeleteMultipleModalOpen(true);
+                onSelectedChange([...selected]);
+              }}
+            >
+              <Trash2 size={26} />
+            </button>
+          ) : (
+            /* Add New User */
+            <button
+              className="bg-blue-500 px-4 py-2 rounded-md transition hover:scale-105"
+              onClick={() => setIsAddModalOpen(true)}
+            >
+              <Plus size={26} />
+            </button>
+          )}
         </div>
       </div>
 
-      <div className="flex p-4 rounded-lg items-center text-lg font-semibold">
+      {/* Table Header */}
+      <div className="grid grid-cols-[40px_1fr_1fr_1fr_1fr_1fr_100px] gap-4 p-4 rounded-lg items-center text-lg font-semibold">
+        
+        {/* Select All Checkbox */}
         <button
           onClick={handleSelectAll}
-          className={`w-5 h-5 rounded-full border-1 transition-all flex items-center justify-center
+          className={`w-5 h-5 rounded-full border transition-all flex items-center justify-center
             ${isAllSelected ? "bg-blue-500 border-gray-700 text-white" : "bg-gray-700 border-gray-600"}
           `}
         >
-          {isAllSelected ? <Check className="text-white" size={15} /> : isPartiallySelected ? <Minus className="w-5 h-5 bg-blue-500 rounded-full text-white" size={15} /> : null}
+          {isAllSelected ? (
+            <Check className="text-white" size={15} />
+          ) : isPartiallySelected ? (
+            <Minus className="w-5 h-5 bg-blue-500 rounded-full text-white" size={15} />
+          ) : null}
         </button>
-        <div className="w-[15%] text-center">Grade</div>
-        <div className="w-[15%]">Prénom Nom</div>
-        <div className="w-[15%] text-center">Téléphone</div>
-        <div className="w-[15%] text-center">Date d'embauche</div>
-        <div className="w-[10%] text-center">Congés</div>
-        <div className="w-[10%] text-center">1er Avertissement</div>
-        <div className="w-[10%] text-center">2ème Avertissement</div>
-        <div className="w-[10%] text-center">Actions</div>
+      
+        {/* Column Headers */}
+        <div className="text-center">Grade</div>
+        <div>Prénom Nom</div>
+        <div className="text-center">Téléphone</div>
+        <div className="text-center">Date d'embauche</div>
+        <div className="text-center">Congés</div>
+        <div className="text-center">Actions</div>
       </div>
 
+      {/* Table Separator */}
       <div className="w-full border border-gray-500"></div>
-
+      
+      {/* User List */}
       <div className="flex flex-col gap-y-2 mt-2">
         {filteredUsers.length === 0 ? (
           <div className="text-center py-4">Aucun utilisateur trouvé.</div>
         ) : (
-          filteredUsers.slice(page * rowsPerPage, rowsPerPage === users.length ? users.length : page * rowsPerPage + rowsPerPage).map((user) => (
-            <div key={user.id} className="bg-[#263238] text-base border border-gray-600 p-4 rounded-lg flex items-center">
-              <button
-                onClick={() => handleSelectOne(user.id)}
-                className={`w-5 h-5 rounded-full border-1 transition-all flex items-center justify-center
-                  ${selected.includes(user.id) ? "bg-blue-500 border-gray-700 text-white" : "bg-gray-700 border-gray-600"}
-                `}
+          filteredUsers
+            .slice(page * rowsPerPage, rowsPerPage === filteredUsers.length ? filteredUsers.length : page * rowsPerPage + rowsPerPage)
+            .map((user) => (
+              <div 
+                className="grid grid-cols-[40px_1fr_1fr_1fr_1fr_1fr_100px] gap-4 bg-[#263238] text-base border border-gray-600 p-4 rounded-lg items-center"
+                key={user.id}
               >
-                {selected.includes(user.id) && <Check className="w-4 h-4 text-white" />}
-              </button>
-
-              <div className={`w-[15%] text-center font-semibold ${
-                user.grade === "Patron" || user.grade === "Co-Patron"
-                  ? "text-red-400"
-                  : user.grade === "RH"
-                  ? "text-violet-400"
-                  : user.grade === "Responsable"
-                  ? "text-yellow-400"
-                  : user.grade === "CDI"
-                  ? "text-blue-400"
-                  : user.grade === "CDD"
-                  ? "text-cyan-400"
-                  : "text-white"
-              }`}>
-                {user.grade}
-              </div>
-              <div className="w-[15%]">{`${user.first_name} ${user.last_name}`}</div>
-              <div className="w-[15%] text-center">{formatPhoneNumber(user.phone_number)}</div>
-              <div className="w-[15%] text-center">{new Date(user.hire_date).toLocaleDateString("fr-FR")}</div>
-              <div className="w-[10%] text-center">
-                <label className="flex items-center justify-center cursor-pointer">
-                  <input type="checkbox" className="hidden" checked={switchStates[user.id]?.holidays || false} onChange={() => toggleSwitch(user.id, "holidays")} />
-                  <div className={`w-12 h-6 rounded-full p-1 transition ${switchStates[user.id]?.holidays ? "bg-gradient-to-r from-blue-500 to-blue-700" : "bg-[#37474f]"}`}>
-                    <div className={`w-4 h-4 bg-[#263238] rounded-full shadow-md transform transition ${switchStates[user.id]?.holidays ? "translate-x-6" : ""}`} />
-                  </div>
-                </label>
-              </div>
-
-              <div className="w-[10%] text-center">
-                <label className="flex items-center justify-center cursor-pointer">
-                  <input type="checkbox" className="hidden" checked={switchStates[user.id]?.warning1 || false} onChange={() => toggleSwitch(user.id, "warning1")} />
-                  <div className={`w-12 h-6 rounded-full p-1 transition ${switchStates[user.id]?.warning1 ? "bg-gradient-to-r from-yellow-500 to-yellow-700" : "bg-[#37474f]"}`}>
-                    <div className={`w-4 h-4 bg-[#263238] rounded-full shadow-md transform transition ${switchStates[user.id]?.warning1 ? "translate-x-6" : ""}`} />
-                  </div>
-                </label>
-              </div>
-
-              <div className="w-[10%] text-center">
-                <label className="flex items-center justify-center cursor-pointer">
-                  <input type="checkbox" className="hidden" checked={switchStates[user.id]?.warning2 || false} onChange={() => toggleSwitch(user.id, "warning2")} />
-                  <div className={`w-12 h-6 rounded-full p-1 transition ${switchStates[user.id]?.warning2 ? "bg-gradient-to-r from-red-500 to-red-700" : "bg-[#37474f]"}`}>
-                    <div className={`w-4 h-4 bg-[#263238] rounded-full shadow-md transform transition ${switchStates[user.id]?.warning2 ? "translate-x-6" : ""}`} />
-                  </div>
-                </label>
-              </div>
-              <div className="w-[10%] text-center flex gap-2 justify-center">
-                {/* Bouton Modifier */}
+                {/* Selection Checkbox */}
                 <button
-                  className="p-1 rounded-md border border-gray-600 bg-gray-700 hover:bg-gray-600"
-                  onClick={() => {
-                    setSelectedUser(user);
-                    setIsEditModalOpen(true);
-                  }}
+                  onClick={() => handleSelectOne(user.id)}
+                  className={`w-5 h-5 rounded-full border-1 transition-all flex items-center justify-center
+                    ${selected.includes(user.id) ? "bg-blue-500 border-gray-700 text-white" : "bg-gray-700 border-gray-600"}
+                  `}
                 >
-                  <Pencil size={22} className="text-blue-400" />
+                  {selected.includes(user.id) && <Check className="w-4 h-4 text-white" />}
                 </button>
-
-                {/* Bouton Supprimer */}
-                <button
-                  className="p-1 rounded-md border border-gray-600 bg-gray-700 hover:bg-gray-600"
-                  onClick={() => {
-                    setSelectedUser(user);
-                    setIsDeleteModalOpen(true);
-                  }}
-                >
-                  <Trash2 size={22} className="text-red-400" />
-                </button>
+      
+                {/* Grade with color */}
+                <div className={`w-full text-center font-semibold ${getGradeColor(user.grade)}`}>
+                  {user.grade}
+                </div>
+      
+                {/* Name */}
+                <div className="font-semibold">{`${user.first_name} ${user.last_name}`}</div>
+      
+                {/* Phone Number */}
+                <div className="font-semibold text-center">{formatPhoneNumber(user.phone_number)}</div>
+      
+                {/* Hire Date */}
+                <div className="font-semibold text-center">{new Date(user.hire_date).toLocaleDateString("fr-FR")}</div>
+      
+                {/* Holidays Toggle */}
+                <div className="font-semibold text-center">
+                  <label className="flex items-center justify-center cursor-pointer">
+                    <input 
+                      type="checkbox" 
+                      className="hidden" 
+                      checked={switchStates[user.id]?.holidays || false} 
+                      onChange={() => toggleSwitch(user.id, "holidays")} 
+                    />
+                    <div className={`w-12 h-6 rounded-full p-1 transition ${switchStates[user.id]?.holidays ? "bg-gradient-to-r from-blue-500 to-blue-700" : "bg-[#37474f]"}`}>
+                      <div className={`w-4 h-4 bg-[#263238] rounded-full shadow-md transform transition ${switchStates[user.id]?.holidays ? "translate-x-6" : ""}`} />
+                    </div>
+                  </label>
+                </div>
+      
+                {/* Actions (Edit / Delete) */}
+                <div className="font-semibold text-center flex gap-2 justify-center">
+                  {/* Edit Button */}
+                  <button
+                    className="p-1 rounded-md border border-gray-600 bg-gray-700 hover:bg-gray-600"
+                    onClick={() => {
+                      setSelectedUser(user);
+                      setIsEditModalOpen(true);
+                    }}
+                  >
+                    <Pencil size={22} className="text-blue-400" />
+                  </button>
+      
+                  {/* Delete Button */}
+                  <button
+                    className="p-1 rounded-md border border-gray-600 bg-gray-700 hover:bg-gray-600"
+                    onClick={() => {
+                      setSelectedUser(user);
+                      setIsDeleteModalOpen(true);
+                    }}
+                  >
+                    <Trash2 size={22} className="text-red-400" />
+                  </button>
+                </div>
               </div>
-            </div>
-          ))
+            ))
         )}
       </div>
 
+      {/* Separator */}
       <div className="w-full my-6 border border-gray-500"></div>
-
+      
       {/* Pagination */}
       <div className="flex items-center justify-between mt-4">
+        {/* Previous Page Button */}
         <button
           className="bg-[#263238] px-4 py-2 rounded disabled:opacity-50"
           onClick={() => handleChangePage(page - 1)}
@@ -275,82 +322,77 @@ const UserTable = ({ users = [], selected, onSelectedChange, onDelete, onEdit, p
         >
           Précédent
         </button>
+      
+        {/* Current Page Info */}
         <span>
-          Page {page + 1} sur {Math.ceil(users.length / rowsPerPage)}
+          Page {page + 1} sur {Math.ceil(filteredUsers.length / rowsPerPage)}
         </span>
+      
+        {/* Next Page Button */}
         <button
           className="bg-[#263238] px-4 py-2 rounded disabled:opacity-50"
           onClick={() => handleChangePage(page + 1)}
-          disabled={page >= Math.ceil(users.length / rowsPerPage) - 1}
+          disabled={page >= Math.ceil(filteredUsers.length / rowsPerPage) - 1}
         >
           Suivant
         </button>
+      
+        {/* Rows per page selection */}
         <select
           className="bg-[#263238] text-white pl-2 pr-4 py-2 rounded"
-          value={rowsPerPage === users.length ? "all" : "10"}
+          value={rowsPerPage === filteredUsers.length ? "all" : rowsPerPage}
           onChange={handleChangeRowsPerPage}
         >
           <option value="10">10 par page</option>
-          <option value="all">Tous</option>
+          <option value={filteredUsers.length}>Tous</option>
         </select>
       </div>
 
-      {/* Modal Ajouter un employé */}
+      {/* Modal: Add Employee */}
       <AddUserModal
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
-        onAdd={(user) => {
-          console.log("Ajouté :", user);
-          setIsAddModalOpen(false);
-        }}
+        onAdd={() => setIsAddModalOpen(false)} // Close modal after adding
       />
-
-      {/* Modal Modifier un employé */}
+      
+      {/* Modal: Edit Employee */}
       {selectedUser && (
         <EditUserModal
           isOpen={isEditModalOpen}
           onClose={() => setIsEditModalOpen(false)}
-          onEdit={(updatedUser) => {
-            console.log("Modifié :", updatedUser);
-            setIsEditModalOpen(false);
-          }}
+          onEdit={() => setIsEditModalOpen(false)} // Close modal after editing
           userData={selectedUser}
         />
       )}
-
-      {/* Modal Supprimer un employé */}
+      
+      {/* Modal: Delete Single Employee */}
       {selectedUser && (
         <DeleteUserModal
           isOpen={isDeleteModalOpen}
           onClose={() => setIsDeleteModalOpen(false)}
-          onConfirm={() => {
-            console.log("Supprimé :", selectedUser);
-            setIsDeleteModalOpen(false);
-          }}
-          userName={`${selectedUser.first_name} ${selectedUser.last_name}`}
+          onConfirm={() => setIsDeleteModalOpen(false)} // Close modal after deletion
+          userId={selectedUser.id}
+          fullName={`${selectedUser.first_name} ${selectedUser.last_name}`}
           grade={selectedUser.grade}
         />
       )}
-
-      {/* Modal Supprimer plusieurs employés */}
-      {selectedUsers.length > 0 && (
+      
+      {/* Modal: Delete Multiple Employees */}
+      {isDeleteMultipleModalOpen && selectedUsers.length > 0 && (
         <DeleteUsersModal
           isOpen={isDeleteMultipleModalOpen}
           onClose={() => setIsDeleteMultipleModalOpen(false)}
-          onConfirm={() => {
-            console.log("Supprimés :", selectedUsers);
-            setIsDeleteMultipleModalOpen(false);
-          }}
+          onConfirm={handleDeleteMultiple} // Function to update users after deletion
           users={selectedUsers
-            .map((userId) => {
-              const user = users.find((u) => u.id === userId);
-              return user ? { grade: user.grade, name: `${user.first_name} ${user.last_name}` } : null;
+            .map(userId => {
+              const user = users.find(u => u.id === userId);
+              return user ? { id: user.id, grade: user.grade, name: `${user.first_name} ${user.last_name}` } : null;
             })
-            .filter(Boolean)} // Filtrer pour éviter les valeurs null
+            .filter(Boolean)} // Ensure no null values
         />
       )}
     </div>
   );
 };
 
-export default UserTable;
+export default UMT;

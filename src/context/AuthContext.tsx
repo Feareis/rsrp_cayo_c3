@@ -21,7 +21,7 @@ type AuthContextType = {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Test mode (set to false for normal authentication)
+// Test mode (set to `false` for normal authentication)
 const TEST_MODE = false;
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -29,13 +29,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState<User | null>(null);
 
+  // Load user from local storage or redirect to login
   useEffect(() => {
     if (TEST_MODE) {
       const testUser: User = {
         id: "test-id",
         employee_id: "test-employee",
         username: "testuser",
-        role: "Admin",
+        role: "admin",
       };
       setUser(testUser);
       setIsAuthenticated(true);
@@ -46,6 +47,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     const storedUser = localStorage.getItem("user");
     const storedAuth = localStorage.getItem("isAuthenticated");
+
     if (storedUser && storedAuth === "true") {
       setUser(JSON.parse(storedUser));
       setIsAuthenticated(true);
@@ -71,6 +73,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return;
     }
 
+    // Fetch user credentials from database
     const { data, error } = await supabase
       .from("access")
       .select("id, employee_id, role, username, password_hash, is_active")
@@ -80,10 +83,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (error || !data) throw new Error("User not found.");
     if (!data.is_active) throw new Error("Account disabled.");
 
-    // Password validation
+    // Validate password
     const isValidPassword = await bcrypt.compare(password, data.password_hash);
     if (!isValidPassword) throw new Error("Incorrect password.");
 
+    // Fetch employee data
     const { data: employeeData, error: employeeError } = await supabase
       .from("employees")
       .select("*")
@@ -92,13 +96,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     if (employeeError || !employeeData) throw new Error("Employee data not found.");
 
-    // Merge Data Access + Employees
+    // Merge Access and Employee Data
     const userData = {
-      ...data, // Access Data
-      employee: employeeData, // Employees Data
+      ...data, // Access data
+      employee: employeeData, // Employee data
     };
-    console.log(userData)
 
+    // Save user session
     setUser(userData);
     setIsAuthenticated(true);
     localStorage.setItem("user", JSON.stringify(userData));

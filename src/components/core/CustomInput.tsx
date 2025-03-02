@@ -8,16 +8,25 @@ interface CustomInputProps {
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   placeholder: string;
   width?: string;
+  type?: string;
 }
 
-const CustomInput: React.FC<CustomInputProps> = ({ label, icon: Icon, value, onChange, placeholder, width = "w-full" }) => {
+const CustomInput: React.FC<CustomInputProps> = ({
+  label,
+  icon: Icon,
+  value,
+  onChange,
+  placeholder,
+  width = "w-full",
+  type = "text"
+}) => {
   return (
     <div className="w-full">
       <p className="text-base font-semibold mb-2">{label}</p>
       <div className="relative flex items-center">
         <Icon size={22} className="absolute left-3 text-gray-400" />
         <input
-          type="text"
+          type={type}
           value={value}
           onChange={onChange}
           placeholder={placeholder}

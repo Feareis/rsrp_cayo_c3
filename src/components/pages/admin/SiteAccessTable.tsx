@@ -1,41 +1,36 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { supabase } from "../../../lib/supabaseClient";
+import { RefreshCcw } from "lucide-react";
 
-
-// Defines the structure of an AdminUser object
-interface AdminUser {
+// Interface pour les utilisateurs ayant un accès
+interface AccessUser {
   id: string;
   first_name: string;
   last_name: string;
   grade: "Patron" | "Co-Patron" | "RH" | "Responsable" | "CDI" | "CDD";
-  hire_date: string;
-  clean_export_sales: number;
-  clean_client_sales: number;
-  dirty_client_sales: number;
-  weekly_quota: boolean;
-  weekly_quota_bonus: boolean;
+  role: "admin" | "limited_admin" | "user";
+  username: string;
+  is_active: boolean;
 }
 
-// Props for the Admin Dashboard component
-type AdminDashboardProps = {
-  users: UserType[]; // Make sure UserType is properly imported if used elsewhere
-  setUsers: React.Dispatch<React.SetStateAction<UserType[]>>; // Updates the user list in the parent component
-  currentUserId: string | null; // Stores the ID of the currently logged-in user
+// Props pour le tableau
+type SiteAccessProps = {
+  users: AccessUser[];
+  setUsers: React.Dispatch<React.SetStateAction<AccessUser[]>>;
 };
 
-const AdminDashboardManagementTable: React.FC<Props> = ({ users, setUsers, currentUserId }) => {
+const SiteAccessTable: React.FC<SiteAccessProps> = ({ users, setUsers }) => {
   const [page, setPage] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const itemsPerPage = 10;
 
-  // Store the state of each user's weekly_quota and weekly_quota_bonus switches
-  const [switchStates, setSwitchStates] = useState<{ [key: string]: { weekly_quota: boolean; weekly_quota_bonus: boolean } }>(() => {
-    const initialState: { [key: string]: { weekly_quota: boolean; weekly_quota_bonus: boolean } } = {};
+  // Store the state of each user's is_active switches
+  const [switchStates, setSwitchStates] = useState<{ [key: string]: { is_active: boolean } }>(() => {
+    const initialState: { [key: string]: { is_active: boolean } } = {};
     users.forEach(user => {
       initialState[user.id] = {
-        weekly_quota: user.weekly_quota,
-        weekly_quota_bonus: user.weekly_quota_bonus
+        is_active: user.is_active,
       };
     });
     return initialState;
@@ -45,18 +40,17 @@ const AdminDashboardManagementTable: React.FC<Props> = ({ users, setUsers, curre
   useEffect(() => {
     const fetchUsers = async () => {
       const { data, error } = await supabase
-        .from("employees")
-        .select("id, weekly_quota, weekly_quota_bonus, clean_export_sales, clean_client_sales, dirty_client_sales");
+        .from("access")
+        .select("*");
 
       if (error) {
-        console.error("❌ Error fetching employees:", error.message);
+        console.error("❌ Error fetching access:", error.message);
         return;
       }
 
       setSwitchStates(
         Object.fromEntries(data.map(user => [user.id, {
-          weekly_quota: user.weekly_quota,
-          weekly_quota_bonus: user.weekly_quota_bonus
+          is_active: user.is_active
         }]))
       );
     };
@@ -65,16 +59,15 @@ const AdminDashboardManagementTable: React.FC<Props> = ({ users, setUsers, curre
   }, []);
 
   // Toggle switch state and update Supabase
-  const toggleSwitch = async (userId: string, field: "weekly_quota" | "weekly_quota_bonus") => {
-    if (userId === currentUserId) return;
+  const toggleSwitch = async (userId: string, field: "is_active") => {
 
-    // 🔥 Ensure the new state is based on the current state
+    // Ensure the new state is based on the current state
     setSwitchStates(prev => {
       const newState = !prev[userId][field];
 
       // Update Supabase
       supabase
-        .from("employees")
+        .from("access")
         .update({ [field]: newState })
         .eq("id", userId)
         .then(({ error }) => {
@@ -92,7 +85,7 @@ const AdminDashboardManagementTable: React.FC<Props> = ({ users, setUsers, curre
       };
     });
 
-    // 🔥 Update users state without affecting pagination
+    // Update users state without affecting pagination
     setUsers(prevUsers => prevUsers.map(user =>
       user.id === userId ? { ...user, [field]: !user[field] } : user
     ));
@@ -117,11 +110,6 @@ const AdminDashboardManagementTable: React.FC<Props> = ({ users, setUsers, curre
       .includes(searchQuery.toLowerCase())
   );
 
-  // Format numbers into currency format
-  const formatCurrency = (value?: number): string => {
-    return `${(value ?? 0).toLocaleString("en-EN", { minimumFractionDigits: 0 })} $`;
-  };
-
   // Assign colors to user grades
   const getGradeColor = (grade: string) => {
     return grade === "Patron" || grade === "Co-Patron"
@@ -137,19 +125,31 @@ const AdminDashboardManagementTable: React.FC<Props> = ({ users, setUsers, curre
       : "text-white";
   };
 
+  // Assign colors to user grades
+  const getRoleColor = (role: string) => {
+    return role === "Patron" || role === "Co-Patron"
+      ? "text-red-400"
+      : role === "admin"
+      ? "text-red-400"
+      : role === "limited_admin"
+      ? "text-purple-400"
+      : role === "user"
+      ? "text-blue-400"
+      : "text-white";
+  };
+
   // Real-time updates from Supabase when users' weekly_quota or bonus changes
   useEffect(() => {
     const channel = supabase
-      .channel("employees-realtime")
+      .channel("access-realtime")
       .on(
         "postgres_changes",
-        { event: "UPDATE", schema: "public", table: "employees" },
+        { event: "UPDATE", schema: "public", table: "access" },
         (payload) => {
           setSwitchStates(prev => ({
             ...prev,
             [payload.new.id]: {
-              weekly_quota: payload.new.weekly_quota,
-              weekly_quota_bonus: payload.new.weekly_quota_bonus,
+              is_active: payload.new.is_active,
             }
           }));
         }
@@ -160,6 +160,45 @@ const AdminDashboardManagementTable: React.FC<Props> = ({ users, setUsers, curre
       channel.unsubscribe();
     };
   }, []);
+
+  // Get default password
+  const fetchDefaultPassword = async () => {
+    const { data, error } = await supabase
+      .from("data")
+      .select("value")
+      .eq("key", "default_password_hash")
+      .limit(1)
+      .maybeSingle();
+
+    if (error) {
+      console.error("❌ Erreur lors de la récupération du mot de passe par défaut :", error.message);
+      return null;
+    }
+
+    if (!data) {
+      console.warn("⚠️ Aucun mot de passe par défaut trouvé.");
+      return null;
+    }
+
+    return data.value;
+  };
+
+  const handleResetPassword = async (userId: string) => {
+    const defaultPassword = await fetchDefaultPassword();
+    if (!defaultPassword) return;
+
+    const { error } = await supabase
+      .from("access")
+      .update({ password_hash: defaultPassword }) // Update password_hash
+      .eq("id", userId);
+
+    if (error) {
+      console.error("❌ Erreur lors de la réinitialisation du mot de passe :", error.message);
+      return;
+    }
+
+    console.log(`✅ Mot de passe réinitialisé pour l'utilisateur ${userId}`);
+  };
 
 
   return (
@@ -178,16 +217,13 @@ const AdminDashboardManagementTable: React.FC<Props> = ({ users, setUsers, curre
       {/* Users Table */}
       <div className="overflow-x-auto rounded-lg px-2">
         {/* Table Header */}
-        <div className="grid grid-cols-9 gap-4 p-4 text-lg font-bold">
+        <div className="grid grid-cols-6 gap-4 p-4 text-lg font-bold">
           <div className="text-center">Grade</div>
+          <div className="text-center">Rôle</div>
           <div>Prénom Nom</div>
-          <div className="text-center">Vente Export Propre</div>
-          <div className="text-center">Vente Client Propre</div>
-          <div className="text-center">Vente Client Sale</div>
-          <div className="text-center">Quota</div>
-          <div className="text-center">Quota Bonus</div>
-          <div className="text-center">Prime</div>
-          <div className="text-center">Taxe</div>
+          <div>Identifiant</div>
+          <div className="text-center">Actif ?</div>
+          <div className="text-center">Actions</div>
         </div>
 
         <div className="w-full border border-gray-500"></div>
@@ -202,79 +238,49 @@ const AdminDashboardManagementTable: React.FC<Props> = ({ users, setUsers, curre
               .map((user) => (
                 <div
                   key={user.id}
-                  className="grid grid-cols-9 gap-4 bg-[#263238] text-base border border-gray-600 p-4 rounded-lg items-center"
+                  className="grid grid-cols-6 gap-4 bg-[#263238] text-base border border-gray-600 p-4 rounded-lg items-center"
                 >
                   <div className={`font-semibold text-center ${getGradeColor(user.grade)}`}>
                     {user.grade}
                   </div>
+                  <div className={`font-semibold text-center ${getRoleColor(user.role)}`}>
+                    {user.role}
+                  </div>
                   <div className="font-semibold">{`${user.first_name} ${user.last_name}`}</div>
-                  <div className="text-center text-lg font-semibold text-green-400">
-                    {formatCurrency(user.clean_export_sales)}
-                  </div>
-                  <div className="text-center text-lg font-semibold text-green-400">
-                    {formatCurrency(user.clean_client_sales)}
-                  </div>
-                  <div className="text-center text-lg font-semibold text-red-400">
-                    {formatCurrency(user.dirty_client_sales)}
-                  </div>
-
-                  {/* Switch Quota */}
+                  <div className="font-semibold">{user.username}</div>
+                  
+                  {/* Switch Active */}
                   <div className="text-center">
                     <label className="flex items-center justify-center cursor-pointer">
                       <input
                         type="checkbox"
                         className="hidden"
-                        checked={switchStates[user.id]?.weekly_quota || false}
-                        onChange={() => toggleSwitch(user.id, "weekly_quota")}
-                        disabled={user.id === currentUserId}
+                        checked={switchStates[user.id]?.is_active || false}
+                        onChange={() => toggleSwitch(user.id, "is_active")}
                       />
                       <div
                         className={`w-12 h-6 rounded-full p-1 transition ${
-                          switchStates[user.id]?.weekly_quota
-                            ? "bg-gradient-to-r from-blue-500 to-blue-700"
-                            : "bg-[#37474f]"
+                          switchStates[user.id]?.is_active
+                            ? "bg-gradient-to-r from-green-500 to-green-700"
+                            : "bg-gradient-to-r from-red-400 to-red-600/60"
                         }`}
                       >
                         <div
                           className={`w-4 h-4 bg-[#263238] rounded-full shadow-md transform transition ${
-                            switchStates[user.id]?.weekly_quota ? "translate-x-6" : ""
+                            switchStates[user.id]?.is_active ? "translate-x-6" : ""
                           }`}
                         />
                       </div>
                     </label>
                   </div>
-
-                  {/* Switch Quota Bonus */}
-                  <div className="text-center">
-                    <label className="flex items-center justify-center cursor-pointer">
-                      <input
-                        type="checkbox"
-                        className="hidden"
-                        checked={switchStates[user.id]?.weekly_quota_bonus || false}
-                        onChange={() => toggleSwitch(user.id, "weekly_quota_bonus")}
-                        disabled={user.id === currentUserId}
-                      />
-                      <div
-                        className={`w-12 h-6 rounded-full p-1 transition ${
-                          switchStates[user.id]?.weekly_quota_bonus
-                            ? "bg-gradient-to-r from-purple-500 to-purple-700"
-                            : "bg-[#37474f]"
-                        }`}
-                      >
-                        <div
-                          className={`w-4 h-4 bg-[#263238] rounded-full shadow-md transform transition ${
-                            switchStates[user.id]?.weekly_quota_bonus ? "translate-x-6" : ""
-                          }`}
-                        />
-                      </div>
-                    </label>
-                  </div>
-
-                  <div className="text-center text-lg font-semibold text-yellow-400">
-                    {formatCurrency(user.prime)}
-                  </div>
-                  <div className="text-center text-lg font-semibold text-red-400">
-                    {formatCurrency(user.tax)}
+                  {/* Actions (Reset Password) */}
+                  <div className="font-semibold text-center flex gap-2 justify-center">
+                    <button
+                      className="p-1 rounded-md border border-gray-600 bg-gray-700 hover:bg-gray-600"
+                      onClick={() => handleResetPassword(user.id)}
+                    >
+                      <RefreshCcw size={22} className="text-blue-400" />
+                    </button>
                   </div>
                 </div>
               ))
@@ -314,4 +320,4 @@ const AdminDashboardManagementTable: React.FC<Props> = ({ users, setUsers, curre
   );
 };
 
-export default AdminDashboardManagementTable;
+export default SiteAccessTable;
