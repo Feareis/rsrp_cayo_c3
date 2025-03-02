@@ -223,7 +223,7 @@ const SiteAccessTable: React.FC<SiteAccessProps> = ({ users, setUsers }) => {
           <div>Prénom Nom</div>
           <div>Identifiant</div>
           <div className="text-center">Actif ?</div>
-          <div className="text-center">Actions</div>
+          <div className="text-center">Reset Mot de passe</div>
         </div>
 
         <div className="w-full border border-gray-500"></div>
