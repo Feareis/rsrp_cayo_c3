@@ -1,7 +1,7 @@
 import React from "react";
-import TopSales from "../components/pages/dashboard/TopSales";
-import Progress from "../components/pages/dashboard/Progress";
-import RedistributionTable from "../components/pages/dashboard/RedistributionTable";
+import TopSales from "../components/pages/statistics/TopSales";
+import Progress from "../components/pages/statistics/Progress";
+import RedistributionTable from "../components/pages/statistics/RedistributionTable";
 import TriplePoints from "../components/core/loader/TriplePoints";
 
 const Statistics: React.FC = () => {
