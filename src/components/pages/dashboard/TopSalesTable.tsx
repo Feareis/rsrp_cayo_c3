@@ -1,28 +1,55 @@
 import React from "react";
-import { BrowserWarn } from "../../../components/core/BrowserWarn";
-import { AlertCircle } from "lucide-react";
 
+// Define props interface for better TypeScript safety
 interface TopSalesTableProps {
   title: string;
-  sales: { name: string; amount: string }[];
+  sales: { name: string; grade: string; amount: string }[];
+  percentageColor: string;
 }
 
-const TopSalesTable: React.FC<TopSalesTableProps> = ({ title, sales }) => {
+const TopSalesTable: React.FC<TopSalesTableProps> = ({ title, percentageColor, sales }) => {
+  // Mapping object for grade colors
+  const gradeColors: Record<string, string> = {
+    Patron: "text-red-400",
+    "Co-Patron": "text-red-400",
+    Responsable: "text-yellow-400",
+    CDI: "text-blue-400",
+    CDD: "text-cyan-400",
+  };
+
+  // Function to get grade color with a fallback
+  const getGradeColor = (grade: string) => gradeColors[grade] || "text-gray-300/80";
+
+  // Mapping object for rate colors
+  const rateColors: Record<string, string> = {
+    propre: "text-green-400/80",
+    sale: "text-red-400/80",
+  };
+
+  // Function to get rate color with a fallback
+  const getRateColor = (percentageColor: string) => rateColors[percentageColor] || "text-white";
+
   return (
-    <div className="flex flex-col w-[50%] p-4">
-      <h3 className="text-lg text-center font-bold mb-2 text-yellow-400">{title}</h3>
-      <BrowserWarn
-        color="blue"
-        icon={<AlertCircle size={20} />}
-        message="Récompenses"
-        details={["tet / tat / tot"]}
-      />
-      <div className="grid grid-cols-2 gap-2 text-center">
-        {sales.slice(0, 3).map((sale, index) => (
-          <React.Fragment key={index}>
-            <p className="font-bold">{sale.name}</p>
-            <p className="font-semibold text-green-400">{sale.amount}</p>
-          </React.Fragment>
+    <div className="relative flex flex-col w-full gap-4 bg-[#37474f] border border-gray-500/60 p-2 py-4 rounded-xl">
+      {/* Title section */}
+      <p className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#263238] border border-gray-500 rounded-xl shadow-xl px-3 py-1 text-gray-400 text-xl font-bold">
+        {title}
+      </p>
+
+      {/* Main container */}
+      <div className="flex flex-col gap-4 w-full p-4">
+        {/* Sales data section */}
+        {sales.map((item) => (
+          <div
+            key={item.name} // Use name as key to improve stability
+            className="flex justify-between items-center bg-[#263238] border border-gray-500/70 p-4 rounded-xl shadow-xl w-full"
+          >
+            {/* Name & Grade section */}
+            <p className={`ml-16 text-lg font-bold ${getGradeColor(item.grade)}`}>{item.name}</p>
+
+            {/* Amount section */}
+            <p className={`mr-16 text-xl font-bold ${getRateColor(percentageColor)}`}>{item.amount}</p>
+          </div>
         ))}
       </div>
     </div>

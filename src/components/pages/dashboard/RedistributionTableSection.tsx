@@ -1,17 +1,58 @@
 import React from "react";
 
+// Define props interface for better TypeScript safety
+interface RedistributionTableSectionProps {
+  title: string;
+  percentageColor: string;
+  data: { grade: string; rate: string }[];
+}
 
-const RedistributionTableSection = ({ title, comment, data }: { title: string; comment: string; data: { grade: string; rate: string }[] }) => {
+const RedistributionTableSection: React.FC<RedistributionTableSectionProps> = ({
+  title,
+  percentageColor,
+  data,
+}) => {
+  // Mapping object for grade colors
+  const gradeColors: Record<string, string> = {
+    "Patron, Co-Patron": "text-red-400",
+    Responsable: "text-yellow-400",
+    CDI: "text-blue-400",
+    CDD: "text-cyan-400",
+  };
+
+  // Function to get grade color with a fallback
+  const getGradeColor = (grade: string) => gradeColors[grade] || "text-gray-300/80";
+
+  // Mapping object for rate colors
+  const rateColors: Record<string, string> = {
+    propre: "text-green-400/80",
+    sale: "text-red-400/80",
+  };
+
+  // Function to get rate color with a fallback
+  const getRateColor = (percentageColor: string) => rateColors[percentageColor] || "text-white";
+
   return (
-    <div className="flex flex-col items-center w-full mb-6">
-      <h3 className="text-2xl font-bold text-[#cfd8dc]">{title}</h3>
-      <p className="text-sm text-gray-400 mb-2">{comment}</p>
-      <div className="grid grid-cols-2 w-full bg-[#263238] border border-gray-600 rounded-md shadow-lg p-4">
-        {data.map((item, index) => (
-          <React.Fragment key={index}>
-            <div className="text-lg text-center text-[#cfd8dc] font-bold">{item.grade}</div>
-            <div className="text-lg text-center text-green-400 font-bold">{item.rate}</div>
-          </React.Fragment>
+    <div className="relative flex flex-col w-full gap-4 bg-[#37474f] border border-gray-500/60 p-2 py-4 rounded-xl">
+      {/* Title section */}
+      <p className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#263238] border border-gray-500 rounded-xl shadow-xl px-3 py-1 text-gray-400 text-xl font-bold">
+        {title}
+      </p>
+
+      {/* Main container */}
+      <div className="flex flex-col gap-4 w-full p-4 py-4">
+        {/* Redistribution rates section */}
+        {data.map((item) => (
+          <div
+            key={item.grade} // Use grade as key to improve performance
+            className="flex justify-between items-center bg-[#263238] border border-gray-500/70 p-4 rounded-xl shadow-xl w-full"
+          >
+            {/* Grade section */}
+            <p className={`ml-8 text-lg font-bold ${getGradeColor(item.grade)}`}>{item.grade}</p>
+
+            {/* Rate section */}
+            <p className={`mr-8 text-xl font-bold ${getRateColor(percentageColor)}`}>{item.rate}</p>
+          </div>
         ))}
       </div>
     </div>
