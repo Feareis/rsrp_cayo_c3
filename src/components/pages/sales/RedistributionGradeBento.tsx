@@ -82,8 +82,8 @@ const EmployeeBento: React.FC = () => {
   return (
     <div className="flex flex-row flex-1 p-6 bg-[#263238] justify-center items-center text-center border border-gray-500 rounded-xl shadow-2xl gap-8">
       {/* Employee Grade */}
-      <div className="relative flex flex-col w-full gap-4 border border-gray-600 p-2 py-2 rounded-xl">
-        <p className="absolute w-[80%] top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#263238] border-t border-x border-gray-500 rounded-xl px-3 py-0.5 text-gray-400 text-xl font-bold">
+      <div className="relative flex flex-col w-full gap-4 border border-gray-600 p-2 py-2 rounded-lg">
+        <p className="absolute w-[50%] top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#263238] border-t border-x border-gray-500 rounded-xl px-3 py-0.5 text-gray-400 text-xl font-bold">
           Grade
         </p>
         <div className={`flex flex-row text-2xl font-bold justify-center gap-8 w-full py-3 ${gradeColors[employee?.grade || ""] || "text-white"}`}>
@@ -92,8 +92,8 @@ const EmployeeBento: React.FC = () => {
       </div>
 
       {/* Taux de Redistribution */}
-      <div className="relative flex flex-col w-full gap-4 border border-gray-600 p-2 py-2 rounded-xl">
-        <p className="absolute w-[80%] top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#263238] border-t border-x border-gray-500 rounded-xl px-3 py-0.5 text-gray-400 text-xl font-bold">
+      <div className="relative flex flex-col w-full gap-4 border border-gray-600 p-2 py-2 rounded-lg">
+        <p className="absolute w-[70%] top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#263238] border-t border-x border-gray-500 rounded-xl px-3 py-0.5 text-gray-400 text-xl font-bold">
           Taux de redistribution
         </p>
         <div className="flex flex-row text-2xl font-bold justify-center gap-8 w-full py-3 text-green-500">
