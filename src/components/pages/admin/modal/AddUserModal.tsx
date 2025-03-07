@@ -12,7 +12,7 @@ interface AddUserModalProps {
 
 const AddUserModal: React.FC<AddUserModalProps> = ({ isOpen, onClose, onAdd }) => {
   const today = new Date().toISOString().split("T")[0]; // Get today's date in YYYY-MM-DD format
-  const initialUserState = { grade: "CDD", firstName: "", lastName: "", phone: "", hireDate: today }; // Default values: Grade = "CDD", Hire Date = Today
+  const initialUserState = { grade: "CDD", first_name: "", last_name: "", phone_number: "", hire_date: today }; // Default values: Grade = "CDD", Hire Date = Today
   const [user, setUser] = useState(initialUserState);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const gradeOptions = ["Patron", "Co-Patron", "RH", "Responsable", "CDI", "CDD"];
@@ -29,7 +29,7 @@ const AddUserModal: React.FC<AddUserModalProps> = ({ isOpen, onClose, onAdd }) =
   const addEmployee = async () => {
     let newErrors: { [key: string]: string } = {};
 
-    if (!user.grade || !user.firstName || !user.lastName || !user.hireDate) {
+    if (!user.grade || !user.first_name || !user.last_name || !user.hire_date) {
       newErrors.general = "All fields must be filled!";
       setErrors(newErrors);
       return;
@@ -39,10 +39,10 @@ const AddUserModal: React.FC<AddUserModalProps> = ({ isOpen, onClose, onAdd }) =
     const { error } = await supabase.from("employees").insert([
       {
         grade: user.grade,
-        first_name: user.firstName,
-        last_name: user.lastName,
-        phone_number: user.phone || null,
-        hire_date: user.hireDate,
+        first_name: user.first_name,
+        last_name: user.last_name,
+        phone_number: user.phone_number || null,
+        hire_date: user.hire_date,
       },
     ]);
 
@@ -69,10 +69,10 @@ const AddUserModal: React.FC<AddUserModalProps> = ({ isOpen, onClose, onAdd }) =
             icon={Briefcase}
             label="Grade"
             options={gradeOptions}
-            value={user.grade}
-            onChange={(value) => setUser({ ...user, grade: value })}
             bgColor="bg-[#263238]"
             textColor="text-[#cfd8dc]"
+            value={user.grade}
+            onChange={(value) => setUser({ ...user, grade: value })}
           />
 
           {/* First Name & Last Name */}
@@ -83,8 +83,8 @@ const AddUserModal: React.FC<AddUserModalProps> = ({ isOpen, onClose, onAdd }) =
               label="Prénom"
               bgColor="bg-[#263238]"
               textColor="text-[#cfd8dc]"
-              value={user.firstName}
-              onChange={(value) => setUser({ ...user, firstName: value })}
+              value={user.first_name}
+              onChange={(value) => setUser({ ...user, first_name: value })}
             />
             <DynamicInput
               type="text"
@@ -92,8 +92,8 @@ const AddUserModal: React.FC<AddUserModalProps> = ({ isOpen, onClose, onAdd }) =
               label="Nom"
               bgColor="bg-[#263238]"
               textColor="text-[#cfd8dc]"
-              value={user.lastName}
-              onChange={(value) => setUser({ ...user, lastName: value })}
+              value={user.last_name}
+              onChange={(value) => setUser({ ...user, last_name: value })}
             />
           </div>
 
@@ -105,8 +105,8 @@ const AddUserModal: React.FC<AddUserModalProps> = ({ isOpen, onClose, onAdd }) =
             placeholder="Téléphone (ex: 4809765435)"
             bgColor="bg-[#263238]"
             textColor="text-[#cfd8dc]"
-            value={user.phone}
-            onChange={(value) => setUser({ ...user, phone: value })}
+            value={user.phone_number}
+            onChange={(value) => setUser({ ...user, phone_number: value })}
           />
           <DynamicInput
             type="date"
@@ -114,8 +114,8 @@ const AddUserModal: React.FC<AddUserModalProps> = ({ isOpen, onClose, onAdd }) =
             label="Date d'embauche"
             bgColor="bg-[#263238]"
             textColor="text-[#cfd8dc]"
-            value={user.hireDate}
-            onChange={(value) => setUser({ ...user, hireDate: value })}
+            value={user.hire_date}
+            onChange={(value) => setUser({ ...user, hire_date: value })}
           />
         </div>
 

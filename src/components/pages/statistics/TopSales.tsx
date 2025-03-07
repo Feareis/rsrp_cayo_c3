@@ -34,13 +34,14 @@ const TopSales = () => {
       try {
         const { data, error } = await supabase
           .from("employees")
-          .select("first_name, last_name, grade, clean_export_sales, clean_client_sales")
-          .order("clean_export_sales", { ascending: false })
-          .order("clean_client_sales", { ascending: false });
+          .select("first_name, last_name, grade, clean_export_sales, clean_client_sales");
 
         if (error) throw error;
+        if (!data) return;
 
-        // Function to format sales data
+        const sortedExportSales = [...data].sort((a, b) => b.clean_export_sales - a.clean_export_sales);
+        const sortedClientSales = [...data].sort((a, b) => b.clean_client_sales - a.clean_client_sales);
+
         const formatData = (employees: Employee[], key: keyof Employee) =>
           employees
             .filter((emp) => emp[key] > 0)
@@ -51,8 +52,8 @@ const TopSales = () => {
               amount: formatCurrency(emp[key] as number),
             }));
 
-        setExportSales(formatData(data, "clean_export_sales"));
-        setClientSales(formatData(data, "clean_client_sales"));
+        setExportSales(formatData(sortedExportSales, "clean_export_sales"));
+        setClientSales(formatData(sortedClientSales, "clean_client_sales"));
       } catch (err) {
         console.error("Erreur SQL :", err);
       }
@@ -66,6 +67,7 @@ const TopSales = () => {
           .in("key", ["best_clean_export_sales", "best_clean_client_sales"]);
 
         if (error) throw error;
+        if (!data) return;
 
         const rewardsMap: Record<string, Rewards> = {};
         data.forEach(({ key, value }) => {
@@ -85,6 +87,32 @@ const TopSales = () => {
 
     fetchTopSales();
     fetchRewards();
+
+    // Realtime subscription for employees
+    const employeeSubscription = supabase
+      .channel("realtime-employees")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "employees" }, // Prend en compte INSERT, UPDATE, DELETE
+        () => fetchTopSales()
+      )
+      .subscribe();
+
+    // Realtime subscription for data (rewards)
+    const dataSubscription = supabase
+      .channel("realtime-data")
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "data" },
+        () => fetchRewards()
+      )
+      .subscribe();
+
+    // Cleanup function
+    return () => {
+      supabase.removeChannel(employeeSubscription);
+      supabase.removeChannel(dataSubscription);
+    };
   }, []);
 
   return (

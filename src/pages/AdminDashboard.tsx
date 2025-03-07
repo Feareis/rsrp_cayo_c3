@@ -1,5 +1,5 @@
 import React, { useMemo, useEffect, useState } from "react";
-import AdminDashboardManagementTable from "../components/pages/dashboard/AdminDashboardManagementTable.tsx";
+import QuotaManagementTable from "../components/pages/admin/QuotaManagementTable";
 import { supabase } from "../lib/supabaseClient";
 import { useAuth } from "../context/AuthContext";
 
@@ -26,7 +26,7 @@ const AdminDashboard = () => {
       totalQuotaBonusOK: users.filter(user => user.weekly_quota_bonus).length
     });
 
-    setUpdateKey(prevKey => prevKey + 1); // 🔥 Force re-render when stats update
+    setUpdateKey(prevKey => prevKey + 1); // Force re-render when stats update
   }, [users]);
 
   // Fetch employees from Supabase
@@ -114,7 +114,7 @@ const AdminDashboard = () => {
       {loading ? (
         <p className="text-center text-lg">Chargement...</p>
       ) : (
-        <AdminDashboardManagementTable
+        <QuotaManagementTable
           users={sortedUsers}
           setUsers={setUsers}
           currentUserId={currentUserId}

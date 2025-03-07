@@ -94,6 +94,7 @@ export default function SidebarBody() {
                 <SidebarLink key="admin-user-management" to="/admin/user-management" label="Gestion Employés" icon={Users} />
                 <SidebarLink key="admin-site-access" to="/admin/site-access" label="Accès Site" icon={Shield} />
 
+                {/*
                 <ExpandableSection
                   title="Stock"
                   icon={Layers}
@@ -101,10 +102,11 @@ export default function SidebarBody() {
                   openSection={openSection}
                   toggleSection={toggleSection}
                   links={[
-                    { to: "/stock/products", label: "Produits", icon: ScanBarcode },
-                    { to: "/stock/raw-materials", label: "Matières Premières", icon: Anvil }
+                    { to: "/admin/stock/product", label: "Produits", icon: ScanBarcode },
+                    { to: "/admin/stock/raw-material", label: "Matières Premières", icon: Anvil }
                   ]}
                 />
+                */}
 
                 <SidebarLink key="admin-analytics" to="/admin/analytics" label="Analytics" icon={ChartScatter} />
                 <SidebarLink key="admin-reboot-accounting" to="/admin/reboot-accounting" label="Reboot Comptabilité" icon={DatabaseZap} />

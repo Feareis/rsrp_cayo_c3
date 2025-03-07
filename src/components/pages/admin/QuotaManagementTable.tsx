@@ -2,8 +2,8 @@ import React, { useEffect, useState, useMemo } from "react";
 import { supabase } from "../../../lib/supabaseClient";
 
 
-// Defines the structure of an AdminUser object
-interface AdminUser {
+// Defines the structure of an QuotaUser object
+interface QuotaUser {
   id: string;
   first_name: string;
   last_name: string;
@@ -17,13 +17,13 @@ interface AdminUser {
 }
 
 // Props for the Admin Dashboard component
-type AdminDashboardProps = {
+type QuotaProps = {
   users: UserType[]; // Make sure UserType is properly imported if used elsewhere
   setUsers: React.Dispatch<React.SetStateAction<UserType[]>>; // Updates the user list in the parent component
   currentUserId: string | null; // Stores the ID of the currently logged-in user
 };
 
-const AdminDashboardManagementTable: React.FC<Props> = ({ users, setUsers, currentUserId }) => {
+const QuotaManagementTable: React.FC<Props> = ({ users, setUsers, currentUserId }) => {
   const [page, setPage] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -314,4 +314,4 @@ const AdminDashboardManagementTable: React.FC<Props> = ({ users, setUsers, curre
   );
 };
 
-export default AdminDashboardManagementTable;
+export default QuotaManagementTable;

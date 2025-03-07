@@ -64,7 +64,7 @@ export default function AdminStock({ type }) {
           />
         </div>
         <div className="mt-4">
-          <label className="block text-sm font-medium text-gray-300">Prix (€)</label>
+          <label className="block text-sm font-medium text-gray-300">Prix ($)</label>
           <input
             type="number"
             name="price"

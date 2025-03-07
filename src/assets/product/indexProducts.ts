@@ -1,0 +1,10 @@
+export { default as Biere } from "./biere.png";
+export { default as BierePils } from "./biere_pils.png";
+export { default as BiereRed } from "./biere_red.png";
+export { default as BiereTriple } from "./biere_triple.png";
+export { default as JusDeCerise } from "./jus_de_cerise.png";
+export { default as Cerise } from "./cerise.png";
+export { default as Houblon } from "./houblon.png";
+export { default as Eau } from "./water_brasserie.png";
+export { default as Orge } from "./orge.png";
+export { default as Mout } from "./mout.png";

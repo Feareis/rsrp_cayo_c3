@@ -41,11 +41,38 @@ const Progress = () => {
     };
 
     fetchData();
+
+    // Realtime subscription for employees
+    const employeeSubscription = supabase
+      .channel("realtime-employees")
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "employees" },
+        () => fetchData()
+      )
+      .subscribe();
+
+    // Realtime subscription for data (weekly goals)
+    const dataSubscription = supabase
+      .channel("realtime-data")
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "data" },
+        () => fetchData()
+      )
+      .subscribe();
+
+    // Cleanup function
+    return () => {
+      supabase.removeChannel(employeeSubscription);
+      supabase.removeChannel(dataSubscription);
+    };
   }, []);
+
 
   return (
     <div className="flex flex-col items-center w-full p-6 bg-[#263238] border border-gray-500 rounded-xl shadow-xl justify-center gap-12">
-      <h2 className="text-2xl font-bold text-center text-gray-400">Objectif de la semaine ($)</h2>
+      <h2 className="text-2xl font-bold text-center text-gray-400">Objectif de la semaine - ($) Entreprise</h2>
       <div className="flex flex-col w-full gap-8 pb-4">
         {loading ? (
           <p className="text-gray-400 text-center">Chargement...</p>

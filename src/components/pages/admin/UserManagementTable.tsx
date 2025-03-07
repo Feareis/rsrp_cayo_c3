@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
-import AddUserModal from "../modal/AddUserModal";
-import EditUserModal from "../modal/EditUserModal";
-import DeleteUserModal from "../modal/DeleteUserModal";
-import DeleteUsersModal from "../modal/DeleteUsersModal";
+import AddUserModal from "./modal/AddUserModal";
+import EditUserModal from "./modal/EditUserModal";
+import DeleteUserModal from "./modal/DeleteUserModal";
+import DeleteUsersModal from "./modal/DeleteUsersModal";
 import { Check, Minus, EllipsisVertical, Plus, X, Pencil, Trash2 } from "lucide-react";
-import CustomSwitch from "../../../../components/core/CustomSwitch";
-import { supabase } from "../../../../lib/supabaseClient";
+import CustomSwitch from "../../../components/core/CustomSwitch";
+import { supabase } from "../../../lib/supabaseClient";
 
 
 // Define a type for user grades

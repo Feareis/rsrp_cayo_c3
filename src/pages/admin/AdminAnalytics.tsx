@@ -27,7 +27,7 @@ const AdminAnalytics = () => {
       </div>
 
       {/* 📌 Contenu dynamique */}
-      <div className="bg-[#263238] min-h-screen p-6 rounded-lg shadow-lg transition-all duration-500">
+      <div className="bg-[#263238] p-6 rounded-lg shadow-lg transition-all duration-500">
         {activeTab === "Résumé" ? <Résumé /> : <Simulateur />}
       </div>
     </div>
@@ -39,7 +39,7 @@ const Résumé = () => {
   return (
     <div>
       <h2 className="text-xl font-bold mb-4">Résumé de l’Activité</h2>
-      <p>📊 Ici, tu peux afficher des statistiques en temps réel sur l’activité.</p>
+      <p>Afficher des statistiques en temps réel sur l’activité.</p>
       {/* Ajoute tes graphiques, KPI, et autres ici */}
     </div>
   );
@@ -50,7 +50,7 @@ const Simulateur = () => {
   return (
     <div>
       <h2 className="text-xl font-bold mb-4">Simulateur</h2>
-      <p>🛠️ Ici, tu peux proposer un outil de simulation.</p>
+      <p>Outil de simulation semaine.</p>
       {/* Ajoute ton simulateur ici */}
     </div>
   );

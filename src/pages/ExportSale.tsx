@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import EmployeeBento from "../components/pages/sales/EmployeeBento";
+import RedistributionGradeBento from "../components/pages/sales/RedistributionGradeBento";
 import CustomInput from "../components/core/CustomInput";
 import CustomButton from "../components/core/CustomButton";
 import { BrowserWarn } from "../components/core/BrowserWarn";
@@ -43,63 +45,16 @@ const ExportSales: React.FC = () => {
   const currentDate = new Date().toLocaleDateString('fr-FR');
 
   return (
-    <div className="flex flex-col items-center text-[#cfd8dc] w-full gap-6">
-
-      {/* Toast */}
-      <Toaster position="top-center" />
-
-      {/* Employee Information + Stats render */}
-      <div className="flex flex-row gap-8 w-full">
-
-        {/* Employee Information */}
-        <div className="flex flex-col w-[50%] p-4 bg-[#263238] justify-center border border-gray-600 rounded-xl shadow-lg">
-          <p className={`ml-6 text-xl font-bold`}>
-            Nom Employé : <span className={`text-purple-400`}>{user?.employee?.first_name} {user?.employee?.last_name}</span>
-          </p>
-          <p className="ml-6 text-md font-semibold text-gray-400">Date : {currentDate}</p>
-        </div>
-
-        {/* Stats render */}
-        <div className="flex flex-col w-[50%] p-4 bg-[#263238] items-center border border-gray-600 rounded-xl shadow-lg gap-2">
-          <p className="text-xl font-bold text-gray-400">
-            Grade :{" "}
-            <span
-              className={`${
-                user?.employee?.grade === "Patron" || user?.employee?.grade === "Co-Patron"
-                  ? "text-red-400"
-                  : user?.employee?.grade === "RH"
-                  ? "text-violet-400"
-                  : user?.employee?.grade === "Responsable"
-                  ? "text-yellow-400"
-                  : user?.employee?.grade === "CDI"
-                  ? "text-blue-400"
-                  : user?.employee?.grade === "CDD"
-                  ? "text-cyan-400"
-                  : "text-white"
-              }`}
-            >
-              {user?.employee?.grade}
-            </span>
-          </p>
-          <p className="text-lg font-semibold">
-            Taux de redistribution :
-            <span className="ml-2 px-1 py-0.5 text-white bg-green-700 rounded-md">
-              40 %
-            </span>
-          </p>
-        </div>
+    <div className="flex flex-col w-full gap-10">
+      {/* Employee + Date Bento */}
+      <div className="flex flex-row gap-10 w-full">
+        <EmployeeBento />
+        <RedistributionGradeBento />
       </div>
-
-      <div className="flex flex-row gap-8 w-full">
+      <div className="flex flex-row gap-10 w-full">
         {/* Formulaire */}
-        <div className="flex flex-col w-[50%] p-6 gap-8 bg-[#263238] border border-gray-600 rounded-xl shadow-lg">
-          <h2 className="text-gray-400 text-xl font-semibold text-center">Saisie des Données</h2>
-          <BrowserWarn
-            color="yellow"
-            icon={<AlertCircle size={20} />}
-            message="Niveau d'expertise :"
-            details={["Le niveau d'expertise correspond à votre niveau dans l'entreprise et est calculer comme tel : pourcentage bonus * 2."]}
-          />
+        <div className="flex flex-col flex-1 p-6 bg-[#263238] border border-gray-500 rounded-xl shadow-2xl gap-2">
+          <h2 className="text-2xl font-bold py-4 text-center text-gray-400">Saisie des données</h2>
           <CustomInput
             label="Niveau d'expertise"
             icon={ArrowUpNarrowWide}
@@ -128,26 +83,18 @@ const ExportSales: React.FC = () => {
             />
           </div>
         </div>
+        <div className="flex flex-col flex-1 p-6 bg-[#263238] border border-gray-500 rounded-xl shadow-2xl gap-2">
+          <h2 className="text-2xl font-bold py-4 text-center text-gray-400">Visualisation & Totaux</h2>
+          <div className="flex flex-row w-full gap-8">
+            <div className="w-full bg-[#37474f] p-4 rounded-lg text-center border border-gray-600">
+              <p className="text-lg font-semibold">Part Employé</p>
+              <p className="text-green-400 text-2xl font-bold mt-2">{formatCurrency(employeesTotal)}</p>
+            </div>
 
-        {/* Totaux */}
-        <div className="flex flex-col w-[50%] gap-8 p-6 bg-[#263238] border border-gray-600 rounded-xl shadow-lg">
-          <h2 className="text-gray-400 text-xl font-semibold text-center">Visualisation & Totaux</h2>
-
-          <BrowserWarn
-            color="blue"
-            icon={<CircleCheck size={20} />}
-            message="-"
-            details={["La Part employé est envoyé directement dans votre inventaire (F2).", "La Part Entreprise est envoyé directement dans le coffre de l'entreprise."]}
-          />
-
-          <div className="bg-[#37474f] p-4 rounded-lg text-center border border-gray-600">
-            <p className="text-lg font-semibold">Part Employé</p>
-            <p className="text-green-400 text-2xl font-bold mt-2">{formatCurrency(employeesTotal)}</p>
-          </div>
-
-          <div className="bg-[#37474f] p-4 rounded-lg text-center border border-gray-600">
-            <p className="text-lg font-semibold">Part Entreprise</p>
-            <p className="text-blue-400 text-2xl font-bold mt-2">{formatCurrency(companyTotal)}</p>
+            <div className="w-full bg-[#37474f] p-4 rounded-lg text-center border border-gray-600">
+              <p className="text-lg font-semibold">Part Entreprise</p>
+              <p className="text-blue-400 text-2xl font-bold mt-2">{formatCurrency(companyTotal)}</p>
+            </div>
           </div>
         </div>
       </div>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
-import UMT from "../../components/pages/admin/user-management/UserManagementTable.tsx";
+import UMT from "../../components/pages/admin/UserManagementTable.tsx";
 import { useFetchEmployees } from "../../hooks/useFetchEmployees";
 import { supabase } from "../../lib/supabaseClient";
 

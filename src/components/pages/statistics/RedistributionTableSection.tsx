@@ -4,7 +4,7 @@ import React from "react";
 interface RedistributionTableSectionProps {
   title: string;
   percentageColor: string;
-  data: { grade: string; rate: string }[];
+  data: { name: string; rate: string }[];
 }
 
 const RedistributionTableSection: React.FC<RedistributionTableSectionProps> = ({
@@ -42,13 +42,13 @@ const RedistributionTableSection: React.FC<RedistributionTableSectionProps> = ({
       {/* Main container */}
       <div className="flex flex-col gap-4 w-full p-4 py-4">
         {/* Redistribution rates section */}
-        {data.map((item) => (
+        {data.map((item, index) => (
           <div
-            key={item.grade} // Use grade as key to improve performance
+            key={`${item.name}-${index}`}
             className="flex justify-between items-center bg-[#263238] border border-gray-500/70 p-4 rounded-xl shadow-xl w-full"
           >
             {/* Grade section */}
-            <p className={`ml-8 text-lg font-bold ${getGradeColor(item.grade)}`}>{item.grade}</p>
+            <p className={`ml-8 text-lg font-bold ${getGradeColor(item.name)}`}>{item.name}</p>
 
             {/* Rate section */}
             <p className={`mr-8 text-xl font-bold ${getRateColor(percentageColor)}`}>{item.rate}</p>

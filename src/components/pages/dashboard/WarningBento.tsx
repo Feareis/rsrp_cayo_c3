@@ -15,7 +15,7 @@ const WarningBento: React.FC = () => {
     <div className="flex flex-col items-center w-full h-full p-6 bg-[#263238] border border-gray-500 rounded-xl shadow-2xl">
       <h2 className="text-2xl font-bold text-center text-gray-400">Gestion Avertissements</h2>
       <div className="flex flex-1 items-center justify-center">
-        <div className="flex flex-row w-full gap-6">
+        <div className="flex flex-row w-full gap-8">
           {warnings.map((warning, index) => (
             <div
               key={index}

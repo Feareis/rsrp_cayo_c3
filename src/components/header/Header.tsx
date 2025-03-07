@@ -14,11 +14,11 @@ export default function Header() {
     "/price": "Prix",
 
     // Admin Section
-    "/admin-dashboard": "Dashboard",
+    "/admin-dashboard": "Gestion des Quotas",
     "/admin/user-management": "Gestion des employés",
     "/admin/site-access": "Gestion des accès au site",
-    "/admin/stock/product": "Gestion Produits",
-    "/admin/stock/raw-material": "Gestion Matières Premières",
+    "/admin/stock/product": "Gestion des Produits de l'Entreprise",
+    "/admin/stock/raw-material": "Gestion des Matières Premières de l'Entreprise",
     "/admin/analytics": "Analytics",
     "/admin/reboot-accounting": "Reboot Comptabilité",
 

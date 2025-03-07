@@ -66,12 +66,9 @@ const EmployeeBento: React.FC = () => {
         </span>
       </p>
 
-      {/* Employee Grade */}
+      {/* Date du jour */}
       <p className="text-xl font-bold text-gray-400">
-        Grade :{" "}
-        <span className={gradeColors[employee?.grade || ""] || "text-white"}>
-          {employee?.grade || "Grade?"}
-        </span>
+        Date : <span className="text-gray-500">{new Date().toLocaleDateString("fr-FR")}</span>
       </p>
     </div>
   );
