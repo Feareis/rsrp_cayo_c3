@@ -4,7 +4,6 @@ import EditUserModal from "./modal/EditUserModal";
 import DeleteUserModal from "./modal/DeleteUserModal";
 import DeleteUsersModal from "./modal/DeleteUsersModal";
 import { Check, Minus, Plus, X, Pencil, Trash2 } from "lucide-react";
-import CustomSwitch from "../../../components/core/CustomSwitch";
 import { supabase } from "../../../lib/supabaseClient";
 
 
@@ -50,7 +49,7 @@ const UMT = ({ users = [], setUsers, selected, onSelectedChange, onDelete, onEdi
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isDeleteMultipleModalOpen, setIsDeleteMultipleModalOpen] = useState(false);
-  const [selectedUser, setSelectedUser] = useState(null);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
   const [clicked, setClicked] = useState(false);
   const [switchStates, setSwitchStates] = useState<{ [key: string]: { holidays: boolean } }>(() => {
@@ -178,7 +177,8 @@ const UMT = ({ users = [], setUsers, selected, onSelectedChange, onDelete, onEdi
    * Updates the number of rows per page.
    */
   const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setRowsPerPage(event.target.value === "all" ? users.length : 10);
+    const value = event.target.value === "all" ? filteredUsers.length : parseInt(event.target.value, 10);
+    setRowsPerPage(value);
     setPage(0);
   };
 
@@ -245,7 +245,7 @@ const UMT = ({ users = [], setUsers, selected, onSelectedChange, onDelete, onEdi
     <div className="overflow-x-auto text-[#cfd8dc] rounded-lg px-2">
       {/* Top Bar with Search and Actions */}
       <div className="flex justify-between items-center">
-        
+
         {/* Left Section: Search + Selection Reset */}
         <div className="flex items-center w-full space-x-4">
           {/* Button to clear selection */}
@@ -263,7 +263,7 @@ const UMT = ({ users = [], setUsers, selected, onSelectedChange, onDelete, onEdi
               </span>
             </button>
           )}
-      
+
           {/* Search Input */}
           <input
             type="text"
@@ -273,7 +273,7 @@ const UMT = ({ users = [], setUsers, selected, onSelectedChange, onDelete, onEdi
             className="w-[20%] p-3 border border-gray-400 rounded-lg bg-transparent text-white focus:outline-none hover:border-gray-300 transition"
           />
         </div>
-      
+
         {/* Right Section: Add / Delete Buttons */}
         <div className="flex justify-end">
           {selected.length > 0 ? (
@@ -302,7 +302,7 @@ const UMT = ({ users = [], setUsers, selected, onSelectedChange, onDelete, onEdi
 
       {/* Table Header */}
       <div className="grid grid-cols-[40px_1fr_1fr_1fr_1fr_1fr_100px] gap-4 p-4 rounded-lg items-center text-lg font-semibold">
-        
+
         {/* Select All Checkbox */}
         <button
           onClick={handleSelectAll}
@@ -316,7 +316,7 @@ const UMT = ({ users = [], setUsers, selected, onSelectedChange, onDelete, onEdi
             <Minus className="w-5 h-5 bg-blue-500 rounded-full text-white" size={15} />
           ) : null}
         </button>
-      
+
         {/* Column Headers */}
         <div className="text-center">Grade</div>
         <div>Prénom Nom</div>
@@ -328,7 +328,7 @@ const UMT = ({ users = [], setUsers, selected, onSelectedChange, onDelete, onEdi
 
       {/* Table Separator */}
       <div className="w-full border border-gray-500"></div>
-      
+
       {/* User List */}
       <div className="flex flex-col gap-y-2 mt-2">
         {filteredUsers.length === 0 ? (
@@ -337,7 +337,7 @@ const UMT = ({ users = [], setUsers, selected, onSelectedChange, onDelete, onEdi
           filteredUsers
             .slice(page * rowsPerPage, rowsPerPage === filteredUsers.length ? filteredUsers.length : page * rowsPerPage + rowsPerPage)
             .map((user) => (
-              <div 
+              <div
                 className="grid grid-cols-[40px_1fr_1fr_1fr_1fr_1fr_100px] gap-4 bg-[#263238] text-base border border-gray-600 p-4 rounded-lg items-center"
                 key={user.id}
               >
@@ -350,21 +350,21 @@ const UMT = ({ users = [], setUsers, selected, onSelectedChange, onDelete, onEdi
                 >
                   {selected.includes(user.id) && <Check className="w-4 h-4 text-white" />}
                 </button>
-      
+
                 {/* Grade with color */}
                 <div className={`w-full text-center font-semibold ${getGradeColor(user.grade)}`}>
                   {user.grade}
                 </div>
-      
+
                 {/* Name */}
                 <div className="font-semibold">{`${user.first_name} ${user.last_name}`}</div>
-      
+
                 {/* Phone Number */}
                 <div className="font-semibold text-center">{formatPhoneNumber(user.phone_number)}</div>
-      
+
                 {/* Hire Date */}
                 <div className="font-semibold text-center">{new Date(user.hire_date).toLocaleDateString("fr-FR")}</div>
-      
+
                 {/* Holidays Switch */}
                 <div className="text-center">
                   <label className="flex items-center justify-center cursor-pointer">
@@ -389,7 +389,7 @@ const UMT = ({ users = [], setUsers, selected, onSelectedChange, onDelete, onEdi
                     </div>
                   </label>
                 </div>
-      
+
                 {/* Actions (Edit / Delete) */}
                 <div className="font-semibold text-center flex gap-2 justify-center">
                   {/* Edit Button */}
@@ -402,7 +402,7 @@ const UMT = ({ users = [], setUsers, selected, onSelectedChange, onDelete, onEdi
                   >
                     <Pencil size={22} className="text-blue-400" />
                   </button>
-      
+
                   {/* Delete Button */}
                   <button
                     className="p-1 rounded-md border border-gray-600 bg-gray-700 hover:bg-gray-600"
@@ -421,7 +421,7 @@ const UMT = ({ users = [], setUsers, selected, onSelectedChange, onDelete, onEdi
 
       {/* Separator */}
       <div className="w-full my-6 border border-gray-500"></div>
-      
+
       {/* Pagination */}
       <div className="flex items-center justify-between mt-4">
         {/* Previous Page Button */}
@@ -432,12 +432,12 @@ const UMT = ({ users = [], setUsers, selected, onSelectedChange, onDelete, onEdi
         >
           Précédent
         </button>
-      
+
         {/* Current Page Info */}
         <span>
           Page {page + 1} sur {Math.ceil(filteredUsers.length / rowsPerPage)}
         </span>
-      
+
         {/* Next Page Button */}
         <button
           className="bg-[#263238] px-4 py-2 rounded disabled:opacity-50"
@@ -446,15 +446,15 @@ const UMT = ({ users = [], setUsers, selected, onSelectedChange, onDelete, onEdi
         >
           Suivant
         </button>
-      
+
         {/* Rows per page selection */}
         <select
           className="bg-[#263238] text-white pl-2 pr-4 py-2 rounded"
-          value={rowsPerPage === filteredUsers.length ? "all" : rowsPerPage}
+          value={rowsPerPage === filteredUsers.length ? "all" : rowsPerPage.toString()}
           onChange={handleChangeRowsPerPage}
         >
           <option value="10">10 par page</option>
-          <option value={filteredUsers.length}>Tous</option>
+          <option value="all">Tous</option>
         </select>
       </div>
 
@@ -464,7 +464,7 @@ const UMT = ({ users = [], setUsers, selected, onSelectedChange, onDelete, onEdi
         onClose={() => setIsAddModalOpen(false)}
         onAdd={() => setIsAddModalOpen(false)} // Close modal after adding
       />
-      
+
       {/* Modal: Edit Employee */}
       {selectedUser && (
         <EditUserModal
@@ -474,7 +474,7 @@ const UMT = ({ users = [], setUsers, selected, onSelectedChange, onDelete, onEdi
           userData={selectedUser}
         />
       )}
-      
+
       {/* Modal: Delete Single Employee */}
       {selectedUser && (
         <DeleteUserModal
@@ -486,7 +486,7 @@ const UMT = ({ users = [], setUsers, selected, onSelectedChange, onDelete, onEdi
           grade={selectedUser.grade}
         />
       )}
-      
+
       {/* Modal: Delete Multiple Employees */}
       {isDeleteMultipleModalOpen && selectedUsers.length > 0 && (
         <DeleteUsersModal
