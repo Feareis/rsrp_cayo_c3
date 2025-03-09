@@ -53,7 +53,7 @@ const DataEntry: React.FC<DataEntryProps> = ({ handleSaleSubmit, resetAll }) => 
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`py-2 rounded-md transition-all duration-300
+              className={`py-2 px-4 rounded-md transition-all duration-300
               ${activeTab === tab ? "bg-[#37474f] text-white" : "text-gray-400 hover:text-white"}`}
             >
               {tab}

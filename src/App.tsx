@@ -73,16 +73,16 @@ export default function AppRouter() {
             <Route path="/statistics" element={<ProtectedRoute element={<Statistics />} />} />
             <Route path="/calculator" element={<ProtectedRoute element={<Calculator />} />} />
             <Route path="/sale/export" element={<ProtectedRoute element={<ExportSale />} />} />
-            <Route path="/sale/client" element={<ProtectedRoute element={<OnConstruction><ClientsSale /></OnConstruction>} />} />
-            <Route path="/pricing" element={<ProtectedRoute element={<OnConstruction><Pricing /></OnConstruction>} />} />
+            <Route path="/sale/client" element={<ProtectedRoute element={<ClientsSale />} />} />
+            <Route path="/pricing" element={<ProtectedRoute element={<Pricing />} />} />
 
             {/* Admin Pages */}
             <Route path="/admin/sales-logs" element={<ProtectedRoute element={<SalesLogs />} />} />
             <Route path="/admin/quota-management" element={<ProtectedRoute element={<QuotaManagement />} />} />
             <Route path="/admin/user-management" element={<ProtectedRoute element={<UserManagement />} />} />
             <Route path="/admin/site-access" element={<ProtectedRoute element={<SiteAccess />} />} />
-            <Route path="/admin/analytics" element={<ProtectedRoute element={<OnConstruction><AdminAnalytics /></OnConstruction>} />} />
-            <Route path="/admin/reboot-accounting" element={<ProtectedRoute element={<OnConstruction><AdminRebooting /></OnConstruction>} />} />
+            <Route path="/admin/analytics" element={<ProtectedRoute element={<AdminAnalytics />} />} />
+            <Route path="/admin/reboot-accounting" element={<ProtectedRoute element={<AdminRebooting />} />} />
 
             {/* Help Section Pages */}
             <Route path="/help-center" element={<HelpCenter />} />
