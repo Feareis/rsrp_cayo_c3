@@ -83,7 +83,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Fetch user credentials from database
     const { data, error } = await supabase
       .from("access")
-      .select("id, employee_id, role, username, password_hash, is_active")
+      .select("id, employee_id, role, first_name, last_name, username, password_hash, is_active")
       .eq("username", username)
       .single();
 

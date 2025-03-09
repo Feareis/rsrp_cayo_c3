@@ -1,7 +1,7 @@
 import React, { useMemo, useEffect, useState } from "react";
-import QuotaManagementTable from "../components/pages/admin/QuotaManagementTable";
-import { supabase } from "../lib/supabaseClient";
-import { useAuth } from "../context/AuthContext";
+import QuotaManagementTable from "../../components/pages/admin/QuotaManagementTable";
+import { supabase } from "../../lib/supabaseClient";
+import { useAuth } from "../../context/AuthContext";
 
 
 const AdminDashboard = () => {

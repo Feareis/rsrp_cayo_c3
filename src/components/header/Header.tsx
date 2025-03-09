@@ -14,7 +14,8 @@ export default function Header() {
     "/price": "Prix",
 
     // Admin Section
-    "/admin-dashboard": "Gestion des Quotas",
+    "/admin/quota-management": "Gestion des Quotas",
+    "/admin/sales-logs": "Gestion des Logs",
     "/admin/user-management": "Gestion des employés",
     "/admin/site-access": "Gestion des accès au site",
     "/admin/stock/product": "Gestion des Produits de l'Entreprise",
@@ -35,7 +36,7 @@ export default function Header() {
   const isAdminPage = location.pathname.startsWith("/admin/");
 
   return (
-    <header className="h-21 flex items-center justify-between bg-[#37474f] text-[#cfd8dc] px-6">
+    <header className="h-21 flex items-center justify-between bg-[#37474f] text-[#cfd8dc] px-8">
       <h2 className="text-2xl font-bold">{pageTitle}</h2>
       {!isAdminPage && location.pathname !== "/profile" && <ProfileRedirect />}
     </header>

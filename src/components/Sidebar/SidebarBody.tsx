@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
-  Home, Calculator, Tag, ShoppingCart, Package, Layers, ScanBarcode, Anvil, Users, Shield, ChartArea, ChartScatter, DatabaseZap, BookHeart, ChevronDown, ChevronRight
+  Home, Calculator, Tag, ShoppingCart, Package, Layers, ScanBarcode, Anvil, Users, Shield, ChartArea, ChartScatter, DatabaseZap, BookHeart, ChevronDown, ChevronRight, Logs
 } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 
@@ -72,6 +72,12 @@ export default function SidebarBody() {
           ]}
         />
 
+        {user?.role === "admin" && (
+          <>
+            <SidebarLink key="admin-sales-logs" to="/admin/sales-logs" label="Logs" icon={Logs} />
+          </>
+        )}
+
         <SidebarLink key="price" to="/price" label="Prix" icon={Tag} />
 
         {/* Admin Role Only */}
@@ -86,7 +92,7 @@ export default function SidebarBody() {
             </div>
 
             {/* Gestion Quota accessible aux admins et limited_admin */}
-            <SidebarLink key="admin-dashboard" to="/admin-dashboard" label="Gestion Quota" icon={Layers} />
+            <SidebarLink key="quota-management" to="/admin/quota-management" label="Gestion Quota" icon={Layers} />
 
             {/* Les autres liens sont accessibles uniquement aux admins */}
             {user?.role === "admin" && (

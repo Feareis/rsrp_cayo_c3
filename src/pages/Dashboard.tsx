@@ -186,8 +186,10 @@ export default function Dashboard() {
 
     if (employeeData.weekly_quota) {
       if (employeeData.weekly_quota_bonus) {
+        console.log("new prime :", quotaValue + quotaBonusValue + totalSales * trpg);
         return quotaValue + quotaBonusValue + totalSales * trpg;
       }
+      console.log("new prime :", quotaValue + totalSales * trpg);
       return quotaValue + totalSales * trpg;
     }
 
@@ -262,7 +264,7 @@ export default function Dashboard() {
                   {/* Totals */}
                   <div className="flex flex-row justify-between gap-6 w-full">
                     <InfoCard label="Total Généré - Entreprise" value={totalCleanMoneyEnterprise} textColor="text-green-500/80" />
-                    <InfoCard label="Total Empoché - Employé(e)" value={totalCleanMoneyEmployee} textColor="text-green-500/80" />
+                    <InfoCard label="Total Empoché - Employé(e)" value={totalCleanMoneyEmployee} textColor="text-teal-500/90" />
                   </div>
                 </div>
               </div>

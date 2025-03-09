@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import EmployeeBento from "../components/pages/sales/EmployeeBento";
+import RedistributionGradeBento from "../components/pages/sales/RedistributionGradeBento";
 import CustomButton from "../components/core/CustomButton";
 import { BadgeDollarSign, RefreshCw, ArrowUpNarrowWide, Salad, AlertCircle, CircleCheck, CircleAlert } from "lucide-react";
 import { BrowserWarn } from "../components/core/BrowserWarn";
@@ -28,13 +30,51 @@ const ClientsSales: React.FC = () => {
     return acc + (item ? item.price * (quantities[product] || 0) : 0);
   }, 0);
 
-  const handleSale = () => {
-    if (total > 0) {
-      showToast("error", "Une erreur est survenue !");
-      resetAll();
-    } else {
-      showToast("success", "Opération réussie !");
+  const handleSale = async () => {
+    if (!expertise || !nbBiere) {
+      toast.error("Erreur : vérifier vos entrées !");
+      return;
     }
+
+    const cleanSaleData = {
+      employee_id: user?.employee_id,
+      first_name: user?.first_name,
+      last_name: user?.last_name,
+      type: "client",
+      sale_type: "clean",
+      discount: discount,
+      total_employee_money: employeesTotal,
+      total_company_money: companyTotal,
+    };
+
+    const dirtySaleData = {
+      employee_id: user?.employee_id,
+      first_name: user?.first_name,
+      last_name: user?.last_name,
+      type: "client",
+      sale_type: "dirty",
+      discount: discount,
+      total_employee_money: employeesTotal,
+      total_company_money: companyTotal,
+    };
+
+    const { error } = await supabase.from("sales_logs").insert([saleData]);
+
+    if (error) {
+      console.error("Erreur lors de l'ajout de la vente:", error);
+      toast.error("Erreur lors de l'ajout de la vente.");
+      return;
+    }
+
+    toast.success(
+      <div>
+        <p>Vente ajoutée avec succès !</p>
+        <p>Part Employé : {formatCurrency(employeesTotal)}</p>
+        <p>Part Entreprise : {formatCurrency(companyTotal)}</p>
+      </div>,
+      { duration: 4000 }
+    );
+    resetAll();
   };
 
   useEffect(() => {
@@ -66,49 +106,11 @@ const ClientsSales: React.FC = () => {
   const currentDate = new Date().toLocaleDateString('fr-FR');
 
   return (
-    <div className="flex flex-col items-center text-[#cfd8dc] w-full gap-6">
-      <Toaster position="top-center" />
-
-      {/* Employee Information + Stats render */}
-      <div className="flex flex-row gap-8 w-full">
-
-        {/* Employee Information */}
-        <div className="flex flex-col w-1/2 p-4 bg-[#263238] justify-center border border-gray-600 rounded-xl shadow-lg">
-          <p className={`ml-6 text-xl font-bold`}>
-            Nom Employé : <span className={`text-purple-400`}>{user?.employee?.first_name} {user?.employee?.last_name}</span>
-          </p>
-          <p className="ml-6 text-md font-semibold text-gray-400">Date : {currentDate}</p>
-        </div>
-
-        {/* Stats render */}
-        <div className="flex flex-col w-1/2 p-4 bg-[#263238] items-center border border-gray-600 rounded-xl shadow-lg gap-2">
-          <p className="text-xl font-bold text-gray-400">
-            Grade :{" "}
-            <span
-              className={`${
-                user?.employee?.grade === "Patron" || user?.employee?.grade === "Co-Patron"
-                  ? "text-red-400"
-                  : user?.employee?.grade === "RH"
-                  ? "text-violet-400"
-                  : user?.employee?.grade === "Responsable"
-                  ? "text-yellow-400"
-                  : user?.employee?.grade === "CDI"
-                  ? "text-blue-400"
-                  : user?.employee?.grade === "CDD"
-                  ? "text-cyan-400"
-                  : "text-white"
-              }`}
-            >
-              {user?.employee?.grade}
-            </span>
-          </p>
-          <p className="text-lg font-semibold">
-            Taux de redistribution :
-            <span className="ml-2 px-1 py-0.5 text-white bg-green-700 rounded-md">
-              {redistributionRate !== null ? `${redistributionRate} %` : "..."}
-            </span>
-          </p>
-        </div>
+    <div className="flex flex-col w-full gap-10">
+      {/* Employee + Date Bento */}
+      <div className="flex flex-row gap-10 w-full">
+        <EmployeeBento />
+        <RedistributionGradeBento />
       </div>
 
       <div className="flex flex-row gap-8 w-full">

@@ -61,6 +61,7 @@ const UserManagement = () => {
   const totalResponsables = users.filter(user => user.grade === "Responsable").length;
   const totalCDI = users.filter(user => user.grade === "CDI").length;
   const totalCDD = users.filter(user => user.grade === "CDD").length;
+  const totalHolidays = users.filter(user => user.holidays === true).length;
 
   // Handle selection changes
   const handleSelectedChange = (selected: string[]) => {
@@ -84,11 +85,12 @@ const UserManagement = () => {
     <div className="text-[#cfd8dc]">
       
       {/* Employee Stats */}
-      <div className="flex justify-between mb-6 gap-4">
+      <div className="flex justify-between mb-8 gap-6">
         <StatCard title="Total Employés" value={totalEmployees} color="text-green-400" />
         <StatCard title="Total Responsables" value={totalResponsables} color="text-yellow-400" />
         <StatCard title="Total CDI" value={totalCDI} color="text-blue-400" />
         <StatCard title="Total CDD" value={totalCDD} color="text-blue-300" />
+        <StatCard title="En Vacances" value={totalHolidays} color="text-teal-300" />
       </div>
 
       {/* User Table */}
