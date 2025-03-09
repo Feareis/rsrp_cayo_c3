@@ -3,7 +3,7 @@ import PriceCard from "../components/pages/pricing/PriceCard";
 import { Biere, BierePils, BiereRed, BiereTriple, JusDeCerise } from "../assets/product/indexProducts.ts";
 
 const products = [
-  { id: 1, name: "Jus de Cerise", image: JusDeCerise, priceClean: 5, priceDirty: 8, calories: 50 },
+  { id: 1, name: "Jus de Cerise", image: JusDeCerise, priceClean: 50, priceDirty: 65, calories: 50 },
   { id: 2, name: "Bière", image: Biere, priceClean: 100, priceDirty: 150, calories: 25 },
   { id: 3, name: "Bière Pils", image: BierePils, priceClean: 130, priceDirty: 180, calories: 25 },
   { id: 4, name: "Bière Red", image: BiereRed, priceClean: 230, priceDirty: 350, calories: 25 },
