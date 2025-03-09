@@ -8,9 +8,11 @@ import React, { useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 
+
 // Import Core Pages
 import Layout from "./components/Layout";
 import Profile from "./pages/Profile";
+import OnConstruction from "./pages/core/OnConstruction";
 import NotFound from "./pages/core/NotFound";
 
 // Import Auth Pages
@@ -22,6 +24,7 @@ import Statistics from "./pages/Statistics";
 import Calculator from "./pages/Calculator";
 import ExportSale from "./pages/ExportSale";
 import ClientsSale from "./pages/ClientsSale";
+import Pricing from "./pages/Pricing";
 
 // Import Admin Pages
 import SalesLogs from "./pages/admin/SalesLogs";
@@ -29,6 +32,7 @@ import QuotaManagement from "./pages/admin/QuotaManagement";
 import UserManagement from "./pages/admin/UserManagement";
 import SiteAccess from "./pages/admin/SiteAccess";
 import AdminAnalytics from "./pages/admin/AdminAnalytics";
+import AdminRebooting from "./pages/admin/AdminRebooting";
 
 // Import Help Section Pages
 import HelpCenter from "./pages/help-center/HelpCenter";
@@ -69,14 +73,16 @@ export default function AppRouter() {
             <Route path="/statistics" element={<ProtectedRoute element={<Statistics />} />} />
             <Route path="/calculator" element={<ProtectedRoute element={<Calculator />} />} />
             <Route path="/sale/export" element={<ProtectedRoute element={<ExportSale />} />} />
-            <Route path="/sale/client" element={<ProtectedRoute element={<ClientsSale />} />} />
+            <Route path="/sale/client" element={<ProtectedRoute element={<OnConstruction><ClientsSale /></OnConstruction>} />} />
+            <Route path="/pricing" element={<ProtectedRoute element={<OnConstruction><Pricing /></OnConstruction>} />} />
 
             {/* Admin Pages */}
             <Route path="/admin/sales-logs" element={<ProtectedRoute element={<SalesLogs />} />} />
             <Route path="/admin/quota-management" element={<ProtectedRoute element={<QuotaManagement />} />} />
             <Route path="/admin/user-management" element={<ProtectedRoute element={<UserManagement />} />} />
             <Route path="/admin/site-access" element={<ProtectedRoute element={<SiteAccess />} />} />
-            <Route path="/admin/analytics" element={<ProtectedRoute element={<AdminAnalytics />} />} />
+            <Route path="/admin/analytics" element={<ProtectedRoute element={<OnConstruction><AdminAnalytics /></OnConstruction>} />} />
+            <Route path="/admin/reboot-accounting" element={<ProtectedRoute element={<OnConstruction><AdminRebooting /></OnConstruction>} />} />
 
             {/* Help Section Pages */}
             <Route path="/help-center" element={<HelpCenter />} />

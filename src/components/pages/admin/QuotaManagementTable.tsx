@@ -1,8 +1,9 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo, useCallback } from "react";
 import { supabase } from "../../../lib/supabaseClient";
 
-
-// Defines the structure of an QuotaUser object
+/**
+ * Defines the structure of a QuotaUser object.
+ */
 interface QuotaUser {
   id: string;
   first_name: string;
@@ -16,32 +17,24 @@ interface QuotaUser {
   weekly_quota_bonus: boolean;
 }
 
-// Props for the Admin Dashboard component
-type QuotaProps = {
-  users: UserType[]; // Make sure UserType is properly imported if used elsewhere
-  setUsers: React.Dispatch<React.SetStateAction<UserType[]>>; // Updates the user list in the parent component
-  currentUserId: string | null; // Stores the ID of the currently logged-in user
-};
+/**
+ * Props for the QuotaManagementTable component.
+ */
+interface QuotaManagementTableProps {
+  users: QuotaUser[];
+  setUsers: React.Dispatch<React.SetStateAction<QuotaUser[]>>;
+  currentUserId: string | null;
+}
 
-const QuotaManagementTable: React.FC<Props> = ({ users, setUsers, currentUserId }) => {
+const QuotaManagementTable: React.FC<QuotaManagementTableProps> = ({ users, setUsers, currentUserId }) => {
   const [page, setPage] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const itemsPerPage = 10;
 
-  // Store the state of each user's weekly_quota and weekly_quota_bonus switches
-  const [switchStates, setSwitchStates] = useState<{ [key: string]: { weekly_quota: boolean; weekly_quota_bonus: boolean } }>(() => {
-    const initialState: { [key: string]: { weekly_quota: boolean; weekly_quota_bonus: boolean } } = {};
-    users.forEach(user => {
-      initialState[user.id] = {
-        weekly_quota: user.weekly_quota,
-        weekly_quota_bonus: user.weekly_quota_bonus
-      };
-    });
-    return initialState;
-  });
+  // State for tracking switch statuses
+  const [switchStates, setSwitchStates] = useState<{ [key: string]: { weekly_quota: boolean; weekly_quota_bonus: boolean } }>({});
 
-  // Fetch users' switch states from Supabase on mount
+  // Fetch users' switch states from Supabase when the component mounts
   useEffect(() => {
     const fetchUsers = async () => {
       const { data, error } = await supabase
@@ -64,11 +57,12 @@ const QuotaManagementTable: React.FC<Props> = ({ users, setUsers, currentUserId 
     fetchUsers();
   }, []);
 
-  // Toggle switch state and update Supabase
-  const toggleSwitch = async (userId: string, field: "weekly_quota" | "weekly_quota_bonus") => {
+  /**
+   * Handles toggling of weekly_quota and weekly_quota_bonus switches.
+   */
+  const toggleSwitch = useCallback(async (userId: string, field: "weekly_quota" | "weekly_quota_bonus") => {
     if (userId === currentUserId) return;
 
-    // 🔥 Ensure the new state is based on the current state
     setSwitchStates(prev => {
       const newState = !prev[userId][field];
 
@@ -92,37 +86,22 @@ const QuotaManagementTable: React.FC<Props> = ({ users, setUsers, currentUserId 
       };
     });
 
-    // 🔥 Update users state without affecting pagination
+    // Update users state without affecting pagination
     setUsers(prevUsers => prevUsers.map(user =>
       user.id === userId ? { ...user, [field]: !user[field] } : user
     ));
-  };
+  }, [currentUserId, setUsers]);
 
-  // Handle page change in pagination
-  const handleChangePage = (newPage: number) => {
-    setPage(newPage);
-  };
-
-  // Handle rows per page selection
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const value = event.target.value === "all" ? users.length : 10;
-    setRowsPerPage(value);
-    setPage(0);
-  };
-
-  // Filter users based on search query
-  const filteredUsers = users.filter(user =>
-    `${user.first_name} ${user.last_name} ${user.grade}`
-      .toLowerCase()
-      .includes(searchQuery.toLowerCase())
-  );
-
-  // Format numbers into currency format
+  /**
+   * Formats numbers into a currency format.
+   */
   const formatCurrency = (value?: number): string => {
     return `${(value ?? 0).toLocaleString("en-EN", { minimumFractionDigits: 0 })} $`;
   };
 
-  // Assign colors to user grades
+  /**
+   * Assigns colors to user grades.
+   */
   const getGradeColor = (grade: string) => {
     return grade === "Patron" || grade === "Co-Patron"
       ? "text-red-400"
@@ -137,30 +116,30 @@ const QuotaManagementTable: React.FC<Props> = ({ users, setUsers, currentUserId 
       : "text-white";
   };
 
-  // Real-time updates from Supabase when users' weekly_quota or bonus changes
-  useEffect(() => {
-    const channel = supabase
-      .channel("employees-realtime")
-      .on(
-        "postgres_changes",
-        { event: "UPDATE", schema: "public", table: "employees" },
-        (payload) => {
-          setSwitchStates(prev => ({
-            ...prev,
-            [payload.new.id]: {
-              weekly_quota: payload.new.weekly_quota,
-              weekly_quota_bonus: payload.new.weekly_quota_bonus,
-            }
-          }));
-        }
-      )
-      .subscribe();
+  /**
+   * Filters users based on search query.
+   */
+  const filteredUsers = useMemo(() => {
+    return users.filter(user =>
+      `${user.first_name} ${user.last_name} ${user.grade}`
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase())
+    );
+  }, [users, searchQuery]);
 
-    return () => {
-      channel.unsubscribe();
-    };
-  }, []);
+  /**
+   * Handles pagination changes.
+   */
+  const handleChangePage = (newPage: number) => setPage(newPage);
 
+  /**
+   * Handles rows per page selection.
+   */
+  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = event.target.value === "all" ? users.length : 10;
+    setRowsPerPage(value);
+    setPage(0);
+  };
 
   return (
     <div className="text-[#cfd8dc]">

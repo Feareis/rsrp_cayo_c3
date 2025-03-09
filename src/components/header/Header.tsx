@@ -1,9 +1,15 @@
 import { useLocation } from "react-router-dom";
 import ProfileRedirect from "./ProfileRedirect";
 
+/**
+ * Header component displaying the page title and profile redirect button.
+ */
 export default function Header() {
   const location = useLocation();
 
+  /**
+   * Mapping of route paths to their respective page titles.
+   */
   const pageNames: Record<string, string> = {
     // Root Section
     "/": "Dashboard",
@@ -11,7 +17,7 @@ export default function Header() {
     "/calculator": "Calculateur",
     "/sale/export": "Vente Exportateur",
     "/sale/client": "Vente Client",
-    "/price": "Prix",
+    "/pricing": "Prix",
 
     // Admin Section
     "/admin/quota-management": "Gestion des Quotas",
@@ -32,12 +38,16 @@ export default function Header() {
     "/profile": "Profil",
   };
 
+  // Get the current page title based on the route
   const pageTitle = pageNames[location.pathname] || "Page Inconnue";
+
+  // Check if the current page belongs to the admin section
   const isAdminPage = location.pathname.startsWith("/admin/");
 
   return (
     <header className="h-21 flex items-center justify-between bg-[#37474f] text-[#cfd8dc] px-8">
       <h2 className="text-2xl font-bold">{pageTitle}</h2>
+      {/* Hide ProfileRedirect on admin pages and profile page */}
       {!isAdminPage && location.pathname !== "/profile" && <ProfileRedirect />}
     </header>
   );

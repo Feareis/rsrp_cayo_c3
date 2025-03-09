@@ -3,7 +3,9 @@ import QuotaCard from "./QuotaCard";
 import { useAuth } from "../../../context/AuthContext";
 import { supabase } from "../../../lib/supabaseClient";
 
-// Define the type for quota data
+/**
+ * Type definitions for quota data.
+ */
 interface Quota {
   value: number;
   description: Record<string, number>;
@@ -14,38 +16,53 @@ interface QuotaData {
   quota_bonus: Quota;
 }
 
+interface Employee {
+  weekly_quota?: boolean;
+  weekly_quota_bonus?: boolean;
+}
+
+/**
+ * QuotaBento component displays employee quotas and bonuses.
+ */
 const QuotaBento: React.FC = () => {
   const { user } = useAuth();
   const [quotaData, setQuotaData] = useState<QuotaData | null>(null);
-  const [employee, setEmployee] = useState<any>(null);
+  const [employee, setEmployee] = useState<Employee | null>(null);
 
-  // Fetch data employee from "employees" table
-  useEffect(() => {
+  /**
+   * Fetch employee data from the "employees" table.
+   */
+  const fetchEmployeeData = async () => {
     if (!user?.employee_id) return;
 
-    const fetchEmployeeData = async () => {
-      const { data, error } = await supabase
-        .from("employees")
-        .select("*")
-        .eq("id", user.employee_id)
-        .single();
+    const { data, error } = await supabase
+      .from("employees")
+      .select("weekly_quota, weekly_quota_bonus")
+      .eq("id", user.employee_id)
+      .single();
 
-      if (error) {
-        console.error("Erreur lors de la récupération de l'employé:", error);
-        return;
-      }
+    if (error) {
+      console.error("Error fetching employee data:", error);
+      return;
+    }
 
-      setEmployee(data);
-    };
+    setEmployee(data);
+  };
 
+  useEffect(() => {
     fetchEmployeeData();
 
-    // Realtime listener
+    // Realtime listener for employee updates
     const employeeSubscription = supabase
       .channel("realtime-employee")
       .on(
         "postgres_changes",
-        { event: "UPDATE", schema: "public", table: "employees", filter: `id=eq.${user.employee_id}` },
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "employees",
+          filter: `id=eq.${user?.employee_id}`,
+        },
         (payload) => {
           console.log("Employee updated:", payload.new);
           setEmployee(payload.new);
@@ -58,7 +75,9 @@ const QuotaBento: React.FC = () => {
     };
   }, [user?.employee_id]);
 
-  // Function to fetch quota data
+  /**
+   * Fetch quota data from the "data" table.
+   */
   const fetchQuotaData = async () => {
     try {
       const { data, error } = await supabase
@@ -77,70 +96,69 @@ const QuotaBento: React.FC = () => {
   useEffect(() => {
     fetchQuotaData();
 
-    // Realtime subscription for `data` table
+    // Realtime subscription for `data` and `employees` table
     const dataSubscription = supabase
-      .channel("realtime-data")
+      .channel("realtime-updates")
       .on(
         "postgres_changes",
         { event: "UPDATE", schema: "public", table: "data" },
-        (payload) => {
-          console.log("Data updated:", payload);
-          fetchQuotaData();
-        }
+        fetchQuotaData
       )
-      .subscribe();
-
-    // Realtime subscription for `employees` table
-    const employeeSubscription = supabase
-      .channel("realtime-employees")
       .on(
         "postgres_changes",
         { event: "UPDATE", schema: "public", table: "employees" },
-        (payload) => {
-          console.log("Employee data updated:", payload);
-          fetchQuotaData();
-        }
+        fetchQuotaData
       )
       .subscribe();
 
-    // Cleanup function
     return () => {
       supabase.removeChannel(dataSubscription);
-      supabase.removeChannel(employeeSubscription);
     };
   }, []);
 
-  // Format numbers into currency format
+  /**
+   * Formats a number as a currency string.
+   */
   const formatCurrency = (value?: number): string =>
-    value && value > 0 ? `${value.toLocaleString("en-EN", { minimumFractionDigits: 0 })} $` : "-";
+    value && value > 0
+      ? `${value.toLocaleString("en-EN", { minimumFractionDigits: 0 })} $`
+      : "-";
 
-  // Map for format quota description
+  /**
+   * Mapping of quota description keys to display names.
+   */
   const nameMap: Record<string, string> = {
-    "biere": "Bières",
-    "biere_red": "Bières Red",
-    "biere_pils": "Bières Pils",
-    "biere_triple": "Bières Triple",
-    "jus_de_cerise": "Jus de Cerises",
-    "houblon": "Houblons",
-    "eau": "Eaux",
-    "orge": "Orges",
-    "mout": "Mouts"
+    biere: "Bières",
+    biere_red: "Bières Red",
+    biere_pils: "Bières Pils",
+    biere_triple: "Bières Triple",
+    jus_de_cerise: "Jus de Cerises",
+    houblon: "Houblons",
+    eau: "Eaux",
+    orge: "Orges",
+    mout: "Mouts",
   };
 
-  // Function to format quota description
+  /**
+   * Formats quota descriptions into a readable string.
+   */
   const formatDescription = (description: Record<string, number>): string =>
     Object.entries(description)
       .filter(([_, value]) => value > 0)
-      .map(([key, value]) => `${value} ${nameMap[key] || key.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase())}`)
+      .map(([key, value]) => `${value} ${nameMap[key] || key.replace(/_/g, " ")}`)
       .join(", ") || "-";
 
-  // Check if all values in the description are zero
+  /**
+   * Checks if all values in a quota description are zero.
+   */
   const areAllDescriptionsZero = (description: Record<string, number>): boolean =>
     Object.values(description).every((v) => v === 0);
 
-
   return (
-    <div className="flex flex-col items-center w-full p-6 bg-[#263238] border border-gray-500 rounded-xl shadow-2xl gap-12">
+    <div
+      className="flex flex-col items-center w-full p-6 bg-[#263238]
+      border border-gray-500 rounded-xl shadow-2xl gap-12"
+    >
       <h2 className="text-2xl font-bold text-center text-gray-400">Gestion Quota</h2>
       <div className="flex flex-row w-full justify-center gap-8">
         {quotaData && (

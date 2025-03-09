@@ -1,8 +1,10 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo, useCallback } from "react";
 import { supabase } from "../../../lib/supabaseClient";
 import { RefreshCcw } from "lucide-react";
 
-// Interface pour les utilisateurs ayant un accès
+/**
+ * Interface defining the structure of an access user.
+ */
 interface AccessUser {
   id: string;
   first_name: string;
@@ -13,7 +15,9 @@ interface AccessUser {
   is_active: boolean;
 }
 
-// Props pour le tableau
+/**
+ * Props for the SiteAccessTable component.
+ */
 type SiteAccessProps = {
   users: AccessUser[];
   setUsers: React.Dispatch<React.SetStateAction<AccessUser[]>>;
@@ -23,94 +27,111 @@ const SiteAccessTable: React.FC<SiteAccessProps> = ({ users, setUsers }) => {
   const [page, setPage] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const itemsPerPage = 10;
 
-  // Store the state of each user's is_active switches
-  const [switchStates, setSwitchStates] = useState<{ [key: string]: { is_active: boolean } }>(() => {
-    const initialState: { [key: string]: { is_active: boolean } } = {};
-    users.forEach(user => {
-      initialState[user.id] = {
-        is_active: user.is_active,
-      };
-    });
-    return initialState;
-  });
+  // State for tracking switch statuses
+  const [switchStates, setSwitchStates] = useState<{ [key: string]: { is_active: boolean } }>({});
 
-  // Fetch users' switch states from Supabase on mount
+  /**
+   * Fetches user access states from Supabase on component mount.
+   */
   useEffect(() => {
     const fetchUsers = async () => {
-      const { data, error } = await supabase
-        .from("access")
-        .select("*");
+      try {
+        const { data, error } = await supabase.from("access").select("*");
+        if (error) throw error;
 
-      if (error) {
+        setSwitchStates(
+          Object.fromEntries(data.map(user => [user.id, { is_active: user.is_active }]))
+        );
+      } catch (error: any) {
         console.error("❌ Error fetching access:", error.message);
-        return;
       }
-
-      setSwitchStates(
-        Object.fromEntries(data.map(user => [user.id, {
-          is_active: user.is_active
-        }]))
-      );
     };
 
     fetchUsers();
   }, []);
 
-  // Toggle switch state and update Supabase
-  const toggleSwitch = async (userId: string, field: "is_active") => {
+  /**
+   * Toggles the is_active state of a user and updates Supabase.
+   */
+  const toggleSwitch = useCallback(async (userId: string) => {
+    try {
+      setSwitchStates(prev => {
+        const newState = !prev[userId].is_active;
 
-    // Ensure the new state is based on the current state
-    setSwitchStates(prev => {
-      const newState = !prev[userId][field];
+        // Update Supabase
+        supabase
+          .from("access")
+          .update({ is_active: newState })
+          .eq("id", userId)
+          .then(({ error }) => {
+            if (error) console.error("❌ Error updating switch:", error.message);
+          });
 
-      // Update Supabase
-      supabase
-        .from("access")
-        .update({ [field]: newState })
-        .eq("id", userId)
-        .then(({ error }) => {
-          if (error) {
-            console.error("❌ Error updating switch:", error.message);
-          }
-        });
+        return { ...prev, [userId]: { is_active: newState } };
+      });
 
-      return {
-        ...prev,
-        [userId]: {
-          ...prev[userId],
-          [field]: newState
-        }
-      };
-    });
+      // Update users state without affecting pagination
+      setUsers(prevUsers =>
+        prevUsers.map(user => (user.id === userId ? { ...user, is_active: !user.is_active } : user))
+      );
+    } catch (error: any) {
+      console.error("❌ Error toggling switch:", error.message);
+    }
+  }, [setUsers]);
 
-    // Update users state without affecting pagination
-    setUsers(prevUsers => prevUsers.map(user =>
-      user.id === userId ? { ...user, [field]: !user[field] } : user
-    ));
+  /**
+   * Fetches the default password from Supabase.
+   */
+  const fetchDefaultPassword = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("data")
+        .select("value")
+        .eq("key", "default_password_hash")
+        .limit(1)
+        .maybeSingle();
+
+      if (error) throw error;
+      if (!data) return null;
+
+      return data.value;
+    } catch (error: any) {
+      console.error("❌ Error fetching default password:", error.message);
+      return null;
+    }
   };
 
-  // Handle page change in pagination
-  const handleChangePage = (newPage: number) => {
-    setPage(newPage);
-  };
+  /**
+   * Resets a user's password to the default value stored in Supabase.
+   */
+  const handleResetPassword = useCallback(async (userId: string) => {
+    try {
+      const defaultPassword = await fetchDefaultPassword();
+      if (!defaultPassword) return;
 
-  // Handle rows per page selection
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const value = event.target.value === "all" ? users.length : 10;
-    setRowsPerPage(value);
-    setPage(0);
-  };
+      const { error } = await supabase.from("access").update({ password_hash: defaultPassword }).eq("id", userId);
+      if (error) throw error;
 
-  // Filter users based on search query
-  const filteredUsers = users.filter(user =>
-    `${user.first_name} ${user.last_name} ${user.grade}`
-      .toLowerCase()
-      .includes(searchQuery.toLowerCase())
-  );
+    } catch (error: any) {
+      console.error("❌ Error resetting password:", error.message);
+    }
+  }, []);
 
-  // Assign colors to user grades
+  /**
+   * Filters users based on the search query.
+   */
+  const filteredUsers = useMemo(() => {
+    return users.filter(user =>
+      `${user.first_name} ${user.last_name} ${user.grade}`
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase())
+    );
+  }, [users, searchQuery]);
+
+  /**
+   * Assigns colors based on user grades.
+   */
   const getGradeColor = (grade: string) => {
     return grade === "Patron" || grade === "Co-Patron"
       ? "text-red-400"
@@ -125,81 +146,30 @@ const SiteAccessTable: React.FC<SiteAccessProps> = ({ users, setUsers }) => {
       : "text-white";
   };
 
-  // Assign colors to user grades
+  /**
+   * Assigns colors based on user roles.
+   */
   const getRoleColor = (role: string) => {
-    return role === "Patron" || role === "Co-Patron"
-      ? "text-red-400"
-      : role === "admin"
+    return role === "admin"
       ? "text-red-400"
       : role === "limited_admin"
       ? "text-purple-400"
-      : role === "user"
-      ? "text-blue-400"
-      : "text-white";
+      : "text-blue-400";
   };
 
-  // Real-time updates from Supabase when users' is_active changes
-  useEffect(() => {
-    const channel = supabase
-      .channel("access-realtime")
-      .on(
-        "postgres_changes",
-        { event: "UPDATE", schema: "public", table: "access" },
-        (payload) => {
-          setSwitchStates(prev => ({
-            ...prev,
-            [payload.new.id]: {
-              is_active: payload.new.is_active,
-            }
-          }));
-        }
-      )
-      .subscribe();
+  /**
+   * Handles pagination.
+   */
+  const handleChangePage = (newPage: number) => setPage(newPage);
 
-    return () => {
-      channel.unsubscribe();
-    };
-  }, []);
-
-  // Get default password
-  const fetchDefaultPassword = async () => {
-    const { data, error } = await supabase
-      .from("data")
-      .select("value")
-      .eq("key", "default_password_hash")
-      .limit(1)
-      .maybeSingle();
-
-    if (error) {
-      console.error("❌ Erreur lors de la récupération du mot de passe par défaut :", error.message);
-      return null;
-    }
-
-    if (!data) {
-      console.warn("⚠️ Aucun mot de passe par défaut trouvé.");
-      return null;
-    }
-
-    return data.value;
+  /**
+   * Updates the number of rows per page.
+   */
+  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = event.target.value === "all" ? users.length : 10;
+    setRowsPerPage(value);
+    setPage(0);
   };
-
-  const handleResetPassword = async (userId: string) => {
-    const defaultPassword = await fetchDefaultPassword();
-    if (!defaultPassword) return;
-
-    const { error } = await supabase
-      .from("access")
-      .update({ password_hash: defaultPassword }) // Update password_hash
-      .eq("id", userId);
-
-    if (error) {
-      console.error("❌ Erreur lors de la réinitialisation du mot de passe :", error.message);
-      return;
-    }
-
-    console.log(`✅ Mot de passe réinitialisé pour l'utilisateur ${userId}`);
-  };
-
 
   return (
     <div className="text-[#cfd8dc]">

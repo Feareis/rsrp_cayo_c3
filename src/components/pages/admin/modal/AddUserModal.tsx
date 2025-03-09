@@ -10,11 +10,25 @@ interface AddUserModalProps {
   onAdd: (user: any) => void;
 }
 
+/**
+ * Modal component for adding a new employee.
+ */
 const AddUserModal: React.FC<AddUserModalProps> = ({ isOpen, onClose, onAdd }) => {
   const today = new Date().toISOString().split("T")[0]; // Get today's date in YYYY-MM-DD format
-  const initialUserState = { grade: "CDD", first_name: "", last_name: "", phone_number: "", hire_date: today }; // Default values: Grade = "CDD", Hire Date = Today
+
+  // Default state for a new employee
+  const initialUserState = {
+    grade: "CDD",
+    first_name: "",
+    last_name: "",
+    phone_number: "",
+    hire_date: today,
+  };
+
   const [user, setUser] = useState(initialUserState);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
+
+  // Available grade options
   const gradeOptions = ["Patron", "Co-Patron", "RH", "Responsable", "CDI", "CDD"];
 
   // Reset form fields when modal is closed
@@ -25,22 +39,25 @@ const AddUserModal: React.FC<AddUserModalProps> = ({ isOpen, onClose, onAdd }) =
     }
   }, [isOpen]);
 
-  // Handle adding a new employee
+  /**
+   * Handles the employee addition process.
+   */
   const addEmployee = async () => {
     let newErrors: { [key: string]: string } = {};
 
-    if (!user.grade || !user.first_name || !user.last_name || !user.hire_date) {
+    // Validate required fields
+    if (!user.grade || !user.first_name.trim() || !user.last_name.trim() || !user.hire_date) {
       newErrors.general = "All fields must be filled!";
       setErrors(newErrors);
       return;
     }
 
-    // Insert employee into database
+    // Insert employee into the database
     const { error } = await supabase.from("employees").insert([
       {
         grade: user.grade,
-        first_name: user.first_name,
-        last_name: user.last_name,
+        first_name: user.first_name.trim(),
+        last_name: user.last_name.trim(),
         phone_number: user.phone_number || null,
         hire_date: user.hire_date,
       },
@@ -51,6 +68,7 @@ const AddUserModal: React.FC<AddUserModalProps> = ({ isOpen, onClose, onAdd }) =
       return;
     }
 
+    // Clear errors and close modal
     setErrors({});
     onAdd(user);
     onClose(user);
@@ -60,7 +78,8 @@ const AddUserModal: React.FC<AddUserModalProps> = ({ isOpen, onClose, onAdd }) =
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-opacity-20 backdrop-blur-xs">
-      <div className="bg-[#263238] text-[#cfd8dc] flex flex-col justify-between border border-gray-500 p-6 rounded-xl w-[25%] h-[50%] shadow-xl">
+      <div className="bg-[#263238] text-[#cfd8dc] flex flex-col justify-between border border-gray-500
+                      p-6 rounded-xl w-[25%] h-[50%] shadow-xl">
         <h2 className="text-2xl font-bold">Ajouter un employé</h2>
 
         {/* Form Inputs */}

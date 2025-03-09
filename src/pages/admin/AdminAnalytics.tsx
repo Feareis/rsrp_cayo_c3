@@ -5,7 +5,7 @@ const AdminAnalytics = () => {
 
   return (
     <div className="text-[#cfd8dc]">
-      {/* 📌 Tabs */}
+      {/* Tabs */}
       <div className="flex gap-8 mb-6">
         <button
           onClick={() => setActiveTab("Résumé")}
@@ -26,7 +26,7 @@ const AdminAnalytics = () => {
         </button>
       </div>
 
-      {/* 📌 Contenu dynamique */}
+      {/* Contenu dynamique */}
       <div className="bg-[#263238] p-6 rounded-lg shadow-lg transition-all duration-500">
         {activeTab === "Résumé" ? <Résumé /> : <Simulateur />}
       </div>
@@ -34,7 +34,7 @@ const AdminAnalytics = () => {
   );
 };
 
-/* 🔹 Composant Résumé */
+/* Composant Résumé */
 const Résumé = () => {
   return (
     <div>
@@ -45,7 +45,7 @@ const Résumé = () => {
   );
 };
 
-/* 🔹 Composant Simulateur */
+/* Composant Simulateur */
 const Simulateur = () => {
   return (
     <div>

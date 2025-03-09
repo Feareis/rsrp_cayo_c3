@@ -1,17 +1,21 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import AddUserModal from "./modal/AddUserModal";
 import EditUserModal from "./modal/EditUserModal";
 import DeleteUserModal from "./modal/DeleteUserModal";
 import DeleteUsersModal from "./modal/DeleteUsersModal";
-import { Check, Minus, EllipsisVertical, Plus, X, Pencil, Trash2 } from "lucide-react";
+import { Check, Minus, Plus, X, Pencil, Trash2 } from "lucide-react";
 import CustomSwitch from "../../../components/core/CustomSwitch";
 import { supabase } from "../../../lib/supabaseClient";
 
 
-// Define a type for user grades
+/**
+ * Define user grades.
+ */
 type Grade = "Patron" | "Co-Patron" | "RH" | "Responsable" | "CDI" | "CDD";
 
-// User Interface
+/**
+ * Interface for user data.
+ */
 interface User {
   id: string;
   first_name: string;
@@ -24,7 +28,9 @@ interface User {
   warning2: boolean;
 }
 
-// Props for UserManagementTable
+/**
+ * Props for UserManagementTable.
+ */
 type UMTProps = {
   users: User[];
   setUsers: React.Dispatch<React.SetStateAction<User[]>>;
@@ -47,8 +53,6 @@ const UMT = ({ users = [], setUsers, selected, onSelectedChange, onDelete, onEdi
   const [selectedUser, setSelectedUser] = useState(null);
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
   const [clicked, setClicked] = useState(false);
-
-  // Store the state of each user's holidays switches
   const [switchStates, setSwitchStates] = useState<{ [key: string]: { holidays: boolean } }>(() => {
     const initialState: { [key: string]: { holidays: boolean } } = {};
     users.forEach(user => {
@@ -59,39 +63,43 @@ const UMT = ({ users = [], setUsers, selected, onSelectedChange, onDelete, onEdi
     return initialState;
   });
 
-  // Global statistics
+  /**
+   * Global statistics.
+   */
   const totalEmployees = users.length;
   const totalManagers = users.filter(user => user.grade === "Responsable").length;
   const totalCDI = users.filter(user => user.grade === "CDI").length;
   const totalCDD = users.filter(user => user.grade === "CDD").length;
 
-  // Selection management
+  /**
+   * Checks if all users are selected.
+   */
   const isAllSelected = selected.length === users.length && users.length > 0;
   const isPartiallySelected = selected.length > 0 && !isAllSelected;
 
-  // Fetch users' switch states from Supabase on mount
+  /**
+   * Fetches users' holidays states from Supabase on mount.
+   */
   useEffect(() => {
     const fetchUsers = async () => {
-      const { data, error } = await supabase
-        .from("employees")
-        .select("*");
+      try {
+        const { data, error } = await supabase.from("employees").select("*");
+        if (error) throw error;
 
-      if (error) {
-        console.error("❌ Error fetching access:", error.message);
-        return;
+        setSwitchStates(
+          Object.fromEntries(data.map(user => [user.id, { holidays: user.holidays }]))
+        );
+      } catch (error: any) {
+        console.error("❌ Error fetching users:", error.message);
       }
-
-      setSwitchStates(
-        Object.fromEntries(data.map(user => [user.id, {
-          holidays: user.holidays
-        }]))
-      );
     };
 
     fetchUsers();
   }, []);
 
-  // Toggle switch state and update Supabase
+  /**
+   * Toggles the holidays state of a user and updates Supabase.
+   */
   const toggleSwitch = async (userId: string, field: "holidays") => {
 
     // Ensure the new state is based on the current state
@@ -123,8 +131,10 @@ const UMT = ({ users = [], setUsers, selected, onSelectedChange, onDelete, onEdi
       user.id === userId ? { ...user, [field]: !user[field] } : user
     ));
   };
-  
-  // Real-time updates from Supabase when users' holidays changes
+
+  /**
+   * Real-time updates from Supabase when users' holidays state changes.
+   */
   useEffect(() => {
     const channel = supabase
       .channel("employees-realtime")
@@ -134,9 +144,7 @@ const UMT = ({ users = [], setUsers, selected, onSelectedChange, onDelete, onEdi
         (payload) => {
           setSwitchStates(prev => ({
             ...prev,
-            [payload.new.id]: {
-              holidays: payload.new.holidays,
-            }
+            [payload.new.id]: { holidays: payload.new.holidays }
           }));
         }
       )
@@ -147,18 +155,28 @@ const UMT = ({ users = [], setUsers, selected, onSelectedChange, onDelete, onEdi
     };
   }, []);
 
-  // Select all users
+  /**
+   * Selects all users.
+   */
   const handleSelectAll = () => {
     onSelectedChange(isAllSelected ? [] : users.map((u) => u.id));
   };
 
-  // Select a single user
+  /**
+   * Selects a single user.
+   */
   const handleSelectOne = (id: string) => {
-    onSelectedChange(selected.includes(id) ? selected.filter((userId) => userId !== id) : [...selected, id]);
+    onSelectedChange(selected.includes(id) ? selected.filter(userId => userId !== id) : [...selected, id]);
   };
 
-  // Pagination handlers
+  /**
+   * Handles pagination.
+   */
   const handleChangePage = (newPage: number) => setPage(newPage);
+
+  /**
+   * Updates the number of rows per page.
+   */
   const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setRowsPerPage(event.target.value === "all" ? users.length : 10);
     setPage(0);
@@ -170,32 +188,41 @@ const UMT = ({ users = [], setUsers, selected, onSelectedChange, onDelete, onEdi
     setTimeout(() => setClicked(false), 300);
   };
 
-  // Filter users based on search query
-  const filteredUsers = users.filter(user =>
-    `${user.first_name} ${user.last_name} ${user.grade} ${user.phone_number}`
-      .toLowerCase()
-      .includes(searchQuery.toLowerCase())
-  );
+  /**
+   * Filters users based on the search query.
+   */
+  const filteredUsers = useMemo(() => {
+    return users.filter(user =>
+      `${user.first_name} ${user.last_name} ${user.grade} ${user.phone_number}`
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase())
+    );
+  }, [users, searchQuery]);
 
-  // Format phone numbers
+  /**
+   * Format Numbers
+   */
   const formatPhoneNumber = (phone: string | number | null): string => {
     if (!phone) return "";
     const cleaned = phone.toString().replace(/\D/g, "");
     return cleaned.length === 10 ? `(${cleaned.slice(0, 3)}) ${cleaned.slice(3, 6)}-${cleaned.slice(6)}` : phone.toString();
   };
 
-  // Delete multiple users
+  /**
+   * Deletes multiple selected users.
+   */
   const handleDeleteMultiple = async () => {
     setUsers(prev => prev.filter(user => !selected.includes(user.id))); // Update users state
-
     setTimeout(() => {
       onSelectedChange([]);  // Clear selected users
       setSelectedUsers([]);   // Reset selected users array
       setIsDeleteMultipleModalOpen(false); // Close modal
     }, 100);
   };
-  
-  // Function to return the corresponding color for each grade
+
+  /**
+   * Returns the corresponding color for each grade.
+   */
   const getGradeColor = (grade: string) => {
     switch (grade) {
       case "Patron":
@@ -213,7 +240,6 @@ const UMT = ({ users = [], setUsers, selected, onSelectedChange, onDelete, onEdi
         return "text-white";
     }
   };
-
 
   return (
     <div className="overflow-x-auto text-[#cfd8dc] rounded-lg px-2">

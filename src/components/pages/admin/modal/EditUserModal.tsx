@@ -11,6 +11,9 @@ interface EditUserModalProps {
   userData: any; // Selected user data for editing
 }
 
+/**
+ * Modal component for editing user details.
+ */
 const EditUserModal: React.FC<EditUserModalProps> = ({ isOpen, onClose, onEdit, userData }) => {
   const gradeOptions = ["Patron", "Co-Patron", "RH", "Responsable", "CDI", "CDD"];
   const [editedUser, setEditedUser] = useState(userData);
@@ -25,40 +28,46 @@ const EditUserModal: React.FC<EditUserModalProps> = ({ isOpen, onClose, onEdit, 
 
   if (!isOpen) return null;
 
-  // Handle user update
+  /**
+   * Handles updating the user in the database.
+   */
   const handleEdit = async () => {
-    let newErrors: { [key: string]: string } = {};
+    try {
+      let newErrors: { [key: string]: string } = {};
 
-    if (!editedUser.grade || !editedUser.first_name || !editedUser.last_name || !editedUser.hire_date) {
-      newErrors.general = "All fields must be filled!";
-      setErrors(newErrors);
-      return;
-    }
+      // Validate required fields
+      if (!editedUser.grade || !editedUser.first_name.trim() || !editedUser.last_name.trim() || !editedUser.hire_date) {
+        newErrors.general = "All fields must be filled!";
+        setErrors(newErrors);
+        return;
+      }
 
-    const { error } = await supabase
-      .from("employees")
-      .update({
-        grade: editedUser.grade,
-        first_name: editedUser.first_name,
-        last_name: editedUser.last_name,
-        phone_number: editedUser.phone_number || null,
-        hire_date: editedUser.hire_date,
-      })
-      .eq("id", editedUser.id);
+      // Update the user in the database
+      const { error } = await supabase
+        .from("employees")
+        .update({
+          grade: editedUser.grade,
+          first_name: editedUser.first_name.trim(),
+          last_name: editedUser.last_name.trim(),
+          phone_number: editedUser.phone_number || null,
+          hire_date: editedUser.hire_date,
+        })
+        .eq("id", editedUser.id);
 
-    if (error) {
+      if (error) throw error;
+
+      setErrors({});
+      onEdit(editedUser);
+      onClose();
+    } catch (error: any) {
       setErrors({ general: "Error updating user: " + error.message });
-      return;
     }
-
-    setErrors({});
-    onEdit(editedUser);
-    onClose();
   };
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-opacity-20 backdrop-blur-xs">
-      <div className="bg-[#263238] text-[#cfd8dc] flex flex-col justify-between border border-gray-500 p-6 rounded-xl w-[25%] h-[50%] shadow-xl">
+      <div className="bg-[#263238] text-[#cfd8dc] flex flex-col justify-between border border-gray-500
+                      p-6 rounded-xl w-[25%] h-[50%] shadow-xl">
         <h2 className="text-2xl font-bold">Modifier l'employé</h2>
 
         {/* Form Inputs */}
@@ -100,7 +109,7 @@ const EditUserModal: React.FC<EditUserModalProps> = ({ isOpen, onClose, onEdit, 
             type="text"
             icon={Phone}
             label="Téléphone"
-            placeholder="Téléphone (eg. 4809765435)"
+            placeholder="Téléphone (ex: 4809765435)"
             bgColor="bg-[#263238]"
             textColor="text-[#cfd8dc]"
             value={editedUser?.phone_number || ""}

@@ -10,7 +10,9 @@ interface DeleteUserModalProps {
   fullName: string;
 }
 
-// Function to determine grade color
+/**
+ * Determines the text color based on the user's grade.
+ */
 const getGradeColor = (grade: string) => {
   return grade === "Patron" || grade === "Co-Patron"
     ? "text-red-400"
@@ -25,24 +27,29 @@ const getGradeColor = (grade: string) => {
     : "text-white";
 };
 
+/**
+ * Modal component for confirming user deletion.
+ */
 const DeleteUserModal: React.FC<DeleteUserModalProps> = ({ isOpen, onClose, onConfirm, userId, grade, fullName }) => {
   if (!isOpen) return null;
 
-  // Handles user deletion from database
+  /**
+   * Handles user deletion from the database.
+   */
   const handleDelete = async () => {
-    const { error } = await supabase.from("employees").delete().eq("id", userId);
-
-    if (error) {
+    try {
+      const { error } = await supabase.from("employees").delete().eq("id", userId);
+      if (error) throw error;
+      onConfirm();
+    } catch (error: any) {
       console.error("❌ Error deleting user:", error.message);
-      return;
     }
-
-    onConfirm();
   };
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-opacity-20 backdrop-blur-xs">
-      <div className="bg-[#263238] text-[#cfd8dc] flex flex-col justify-between text-center border border-gray-500 p-6 rounded-xl w-[20%] shadow-xl gap-6">
+      <div className="bg-[#263238] text-[#cfd8dc] flex flex-col justify-between text-center
+                      border border-gray-500 p-6 rounded-xl w-[20%] shadow-xl gap-6">
         <h2 className="text-xl font-bold">Confirmation</h2>
 
         {/* Display user info with dynamic grade color */}
@@ -54,8 +61,12 @@ const DeleteUserModal: React.FC<DeleteUserModalProps> = ({ isOpen, onClose, onCo
 
         {/* Modal actions */}
         <div className="flex justify-end gap-2 mt-4">
-          <button className="px-4 py-2 bg-gray-500 rounded" onClick={onClose}>Annuler</button>
-          <button className="px-4 py-2 bg-red-500 rounded" onClick={handleDelete}>Confirmer</button>
+          <button className="px-4 py-2 bg-gray-500 rounded" onClick={onClose}>
+            Annuler
+          </button>
+          <button className="px-4 py-2 bg-red-500 rounded" onClick={handleDelete}>
+            Confirmer
+          </button>
         </div>
       </div>
     </div>

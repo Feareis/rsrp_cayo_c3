@@ -3,16 +3,22 @@ import { useAuth } from "../../../context/AuthContext";
 import { supabase } from "../../../lib/supabaseClient";
 import { ChevronRight } from "lucide-react";
 
+/**
+ * RedistributionGradeBento component displays the employee's grade
+ * and corresponding redistribution rate.
+ */
 const RedistributionGradeBento: React.FC = () => {
   const { user } = useAuth();
   const [employee, setEmployee] = useState<any>(null);
-  const [redistributionRates, setRedistributionRates] = useState<any>(null);
+  const [redistributionRates, setRedistributionRates] = useState<Record<string, number> | null>(null);
   const [loadingRates, setLoadingRates] = useState(true);
 
   useEffect(() => {
     if (!user?.employee_id) return;
 
-    // Fetch data employee from "employees" table
+    /**
+     * Fetch employee data and listen for real-time updates.
+     */
     const fetchEmployeeData = async () => {
       const { data, error } = await supabase
         .from("employees")
@@ -21,7 +27,7 @@ const RedistributionGradeBento: React.FC = () => {
         .single();
 
       if (error) {
-        console.error("Erreur lors de la récupération de l'employé:", error);
+        console.error("Error fetching employee data:", error);
         return;
       }
 
@@ -30,12 +36,16 @@ const RedistributionGradeBento: React.FC = () => {
 
     fetchEmployeeData();
 
-    // Realtime listener
     const employeeSubscription = supabase
       .channel("realtime-employee")
       .on(
         "postgres_changes",
-        { event: "UPDATE", schema: "public", table: "employees", filter: `id=eq.${user.employee_id}` },
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "employees",
+          filter: `id=eq.${user.employee_id}`,
+        },
         (payload) => {
           console.log("Employee updated:", payload.new);
           setEmployee(payload.new);
@@ -48,8 +58,10 @@ const RedistributionGradeBento: React.FC = () => {
     };
   }, [user?.employee_id]);
 
-  // Fetch redistribution rates from "data" table
   useEffect(() => {
+    /**
+     * Fetch redistribution rates from "data" table.
+     */
     const fetchRates = async () => {
       try {
         const { data, error } = await supabase
@@ -70,7 +82,9 @@ const RedistributionGradeBento: React.FC = () => {
     fetchRates();
   }, []);
 
-  // Mapping object for grade colors
+  /**
+   * Mapping of grade names to corresponding text colors.
+   */
   const gradeColors: Record<string, string> = {
     Patron: "text-red-400",
     "Co-Patron": "text-red-400",
@@ -80,15 +94,30 @@ const RedistributionGradeBento: React.FC = () => {
     CDD: "text-cyan-400",
   };
 
+  const employeeGrade = employee?.grade || "Non défini";
+  const redistributionRate = redistributionRates?.[employeeGrade] ? `${redistributionRates[employeeGrade] * 100}%` : "Non défini";
+
   return (
-    <div className="flex flex-row flex-1 p-6 bg-[#263238] justify-center items-center text-center border border-gray-500 rounded-xl shadow-2xl gap-4">
+    <div
+      className="flex flex-row flex-1 p-6 bg-[#263238] justify-center items-center
+      text-center border border-gray-500 rounded-xl shadow-2xl gap-4"
+    >
       {/* Employee Grade */}
-      <div className="relative flex flex-col w-full gap-4 bg-gray-800/10 border border-gray-600 p-2 py-2 rounded-lg shadow-xl">
-        <p className="absolute -top-1 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#263238] px-4 py-0.5 text-gray-400 text-xl font-bold">
+      <div
+        className="relative flex flex-col w-full gap-4 bg-gray-800/10
+        border border-gray-600 p-2 py-2 rounded-lg shadow-xl"
+      >
+        <p
+          className="absolute -top-1 left-1/2 -translate-x-1/2 -translate-y-1/2
+          bg-[#263238] px-4 py-0.5 text-gray-400 text-xl font-bold"
+        >
           Grade
         </p>
-        <div className={`flex flex-row text-2xl font-bold justify-center gap-8 w-full py-3 ${gradeColors[employee?.grade || "..."] || "text-gray-400"}`}>
-          {employee?.grade || "..."}
+        <div
+          className={`flex flex-row text-2xl font-bold justify-center gap-8 w-full py-3
+          ${gradeColors[employeeGrade] || "text-gray-400"}`}
+        >
+          {employeeGrade}
         </div>
       </div>
 
@@ -96,13 +125,19 @@ const RedistributionGradeBento: React.FC = () => {
         <ChevronRight size={32} />
       </div>
 
-      {/* Taux de Redistribution */}
-      <div className="relative flex flex-col w-full gap-4 bg-gray-800/10 border border-gray-600 p-2 py-2 rounded-lg shadow-xl">
-        <p className="absolute -top-1 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#263238] px-3 py-0.5 text-gray-400 text-xl font-bold whitespace-nowrap">
+      {/* Redistribution Rate */}
+      <div
+        className="relative flex flex-col w-full gap-4 bg-gray-800/10
+        border border-gray-600 p-2 py-2 rounded-lg shadow-xl"
+      >
+        <p
+          className="absolute -top-1 left-1/2 -translate-x-1/2 -translate-y-1/2
+          bg-[#263238] px-3 py-0.5 text-gray-400 text-xl font-bold whitespace-nowrap"
+        >
           Taux de redistribution
         </p>
         <div className="flex flex-row text-2xl font-bold justify-center gap-8 w-full py-3 text-green-500">
-          {loadingRates ? "..." : `${redistributionRates?.[employee?.grade] * 100 || "..."}%`}
+          {loadingRates ? "..." : redistributionRate}
         </div>
       </div>
     </div>

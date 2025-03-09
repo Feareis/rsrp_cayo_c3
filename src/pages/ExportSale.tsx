@@ -8,6 +8,7 @@ import toast from 'react-hot-toast';
 import { useAuth } from "../context/AuthContext";
 import { supabase } from "../lib/supabaseClient";
 
+
 const ExportSales: React.FC = () => {
   const { user } = useAuth();
   const [expertise, setExpertise] = useState<number | "">("");
@@ -71,7 +72,6 @@ const ExportSales: React.FC = () => {
     setExpertise("");
     setNbBiere("");
   };
-
 
   return (
     <div className="flex flex-col w-full gap-10">

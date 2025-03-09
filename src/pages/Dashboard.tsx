@@ -78,7 +78,6 @@ export default function Dashboard() {
         "postgres_changes",
         { event: "UPDATE", schema: "public", table: "employees", filter: `id=eq.${user.employee_id}` },
         (payload) => {
-          console.log("Employee updated:", payload.new);
           setEmployeeData(payload.new);
         }
       )
@@ -186,10 +185,8 @@ export default function Dashboard() {
 
     if (employeeData.weekly_quota) {
       if (employeeData.weekly_quota_bonus) {
-        console.log("new prime :", quotaValue + quotaBonusValue + totalSales * trpg);
         return quotaValue + quotaBonusValue + totalSales * trpg;
       }
-      console.log("new prime :", quotaValue + totalSales * trpg);
       return quotaValue + totalSales * trpg;
     }
 
@@ -238,7 +235,7 @@ export default function Dashboard() {
             <div className="flex flex-col items-center gap-16 p-4">
               {/* Section des Totaux & Quotas */}
               <div className="relative flex flex-col w-full gap-4 bg-[#37474f] border border-gray-500/60 p-2 py-4 rounded-xl">
-                <p className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#263238] border border-gray-500 rounded-xl shadow-xl px-3 py-1 text-gray-400 text-xl font-bold">
+                <p className="absolute -top-1 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#263238] border border-gray-500 rounded-xl shadow-xl px-3 py-1 text-gray-400 text-xl font-bold">
                   Paye
                 </p>
                 {/* Section Prime & Taxe */}
@@ -250,7 +247,7 @@ export default function Dashboard() {
 
               {/* Section Détails & Totaux */}
               <div className="relative flex flex-col flex-1 w-full gap-4 bg-[#37474f] border border-gray-500/60 p-2 py-4 rounded-xl">
-                <p className="absolute top-0 left-1/8 -translate-x-1/2 -translate-y-1/2 bg-[#263238] border border-gray-500 rounded-xl shadow-xl px-3 py-1 text-gray-400 text-xl font-bold">
+                <p className="absolute -top-1 left-1/8 -translate-x-1/2 -translate-y-1/2 bg-[#263238] border border-gray-500 rounded-xl shadow-xl px-3 py-1 text-gray-400 text-xl font-bold">
                   Détails & Totaux
                 </p>
                 <div className="flex flex-col gap-16 justify-around w-full p-8">
@@ -275,7 +272,7 @@ export default function Dashboard() {
           {activeTab === "Semaine passée" && (
             <div className="flex flex-col justify-around items-center gap-16 p-4">
               <div className="relative flex flex-col w-full gap-4 bg-[#37474f] border border-gray-500/60 p-2 py-4 rounded-xl">
-                <p className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#263238] border border-gray-500 rounded-xl shadow-xl px-3 py-1 text-gray-400 text-xl font-bold">
+                <p className="absolute -top-1 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#263238] border border-gray-500 rounded-xl shadow-xl px-3 py-1 text-gray-400 text-xl font-bold">
                   Paye
                 </p>
                 <div className="flex flex-row justify-between gap-8 w-full p-4 py-4">

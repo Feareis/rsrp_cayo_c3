@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo, useCallback } from "react";
 import { supabase } from "../../../lib/supabaseClient";
 import { Trash2 } from "lucide-react";
 import toast from "react-hot-toast";
 
-// Interface pour les logs de ventes
+/**
+ * Interface defining the structure of a sales log.
+ */
 interface SalesLog {
   uuid: string;
   created_at: string;
@@ -23,18 +25,19 @@ const SalesLogsTable: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
-  // Récupérer les logs de ventes avec le grade des employés
+  /**
+   * Fetches sales logs from Supabase on component mount.
+   */
   useEffect(() => {
     const fetchSalesLogs = async () => {
-      const { data, error } = await supabase
-        .from("sales_logs")
-        .select("uuid, created_at, first_name, last_name, type, sale_type, discount, total_employee_money, total_company_money, employees(grade)")
-        .order("created_at", { ascending: false });
+      try {
+        const { data, error } = await supabase
+          .from("sales_logs")
+          .select("uuid, created_at, first_name, last_name, type, sale_type, discount, total_employee_money, total_company_money, employees(grade)")
+          .order("created_at", { ascending: false });
 
-      if (error) {
-        console.error("Erreur lors de la récupération des logs de ventes :", error);
-        toast.error("Impossible de charger les logs.");
-      } else {
+        if (error) throw error;
+
         const formattedData = data.map((log) => ({
           uuid: log.uuid,
           created_at: new Date(log.created_at).toLocaleString("fr-FR"),
@@ -47,27 +50,36 @@ const SalesLogsTable: React.FC = () => {
           total_employee_money: log.total_employee_money,
           total_company_money: log.total_company_money,
         }));
+
         setSalesLogs(formattedData);
+      } catch (error: any) {
+        console.error("❌ Error fetching sales logs:", error.message);
+        toast.error("Impossible de charger les logs.");
       }
     };
 
     fetchSalesLogs();
   }, []);
 
-  // Supprimer une vente
-  const handleDelete = async (uuid: string) => {
-    const { error } = await supabase.from("sales_logs").delete().eq("uuid", uuid);
+  /**
+   * Deletes a sale log from the database.
+   */
+  const handleDelete = useCallback(async (uuid: string) => {
+    try {
+      const { error } = await supabase.from("sales_logs").delete().eq("uuid", uuid);
+      if (error) throw error;
 
-    if (error) {
-      console.error("Erreur lors de la suppression :", error);
-      toast.error("Échec de la suppression.");
-    } else {
       setSalesLogs((prev) => prev.filter((log) => log.uuid !== uuid));
       toast.success("Vente supprimée !");
+    } catch (error: any) {
+      console.error("❌ Error deleting sale:", error.message);
+      toast.error("Échec de la suppression.");
     }
-  };
+  }, []);
 
-  // Définir les couleurs en fonction du grade
+  /**
+   * Returns the corresponding color for a given employee grade.
+   */
   const getGradeColor = (grade: string) => {
     return grade === "Patron" || grade === "Co-Patron"
       ? "text-red-400"
@@ -82,41 +94,59 @@ const SalesLogsTable: React.FC = () => {
       : "text-white";
   };
 
-  // Filtrer les ventes en fonction de la recherche
-  const filteredSales = salesLogs.filter((data) =>
-    `${data.first_name} ${data.last_name} ${data.grade}`
-      .toLowerCase()
-      .includes(searchQuery.toLowerCase())
-  );
+  /**
+   * Filters sales logs based on the search query.
+   */
+  const filteredSales = useMemo(() => {
+    return salesLogs.filter((data) =>
+      `${data.first_name} ${data.last_name} ${data.grade}`
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase())
+    );
+  }, [salesLogs, searchQuery]);
 
-  // Gérer la pagination
+  /**
+   * Handles pagination.
+   */
   const totalPages = Math.ceil(filteredSales.length / rowsPerPage);
-  const paginatedSales = filteredSales.slice(page * rowsPerPage, (page + 1) * rowsPerPage);
+  const paginatedSales = useMemo(() => {
+    return filteredSales.slice(page * rowsPerPage, (page + 1) * rowsPerPage);
+  }, [filteredSales, page, rowsPerPage]);
 
+  /**
+   * Updates the current page.
+   */
   const handleChangePage = (newPage: number) => {
     if (newPage >= 0 && newPage < totalPages) {
       setPage(newPage);
     }
   };
 
+  /**
+   * Updates the number of rows per page.
+   */
   const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const value = event.target.value === "all" ? filteredSales.length : parseInt(event.target.value);
     setRowsPerPage(value);
-    setPage(0); // Reset à la première page
+    setPage(0); // Reset to first page
   };
 
-  // Définir la couleur en fonction du type et du sale_type
+  /**
+   * Returns the corresponding color for a sale type.
+   */
   const getSaleColor = (type: string, saleType: string) => {
     if (type === "export" && saleType === "clean") return "text-green-400";
     if (type === "client" && saleType === "clean") return "text-green-400";
     if (type === "client" && saleType === "dirty") return "text-red-400";
-    return "text-gray-400"; // Par défaut
+    return "text-gray-400"; // Default
   };
 
+  /**
+   * Formats a number into a currency string.
+   */
   const formatCurrency = (value: number): string => {
     return `${value.toLocaleString("en-EN")} $`;
   };
-
 
   return (
     <div className="text-[#cfd8dc]">

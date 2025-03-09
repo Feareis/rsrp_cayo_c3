@@ -4,39 +4,60 @@ import { ShieldHalf, User, Phone, CalendarFold } from "lucide-react";
 import { useAuth } from "../../../context/AuthContext";
 import { supabase } from "../../../lib/supabaseClient";
 
+/**
+ * Interface for employee data.
+ */
+interface Employee {
+  first_name?: string;
+  last_name?: string;
+  grade?: string;
+  hire_date?: string;
+  phone_number?: string;
+}
+
+/**
+ * InformationBento component displays user information such as name, grade, seniority, and phone number.
+ */
 const InformationBento: React.FC = () => {
   const { user } = useAuth();
-  const [employee, setEmployee] = useState<any>(null);
+  const [employee, setEmployee] = useState<Employee | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+  /**
+   * Fetch employee data from the "employees" table.
+   */
+  const fetchEmployeeData = async () => {
     if (!user?.employee_id) return;
 
-    // Fetch data employee from "employees" table
-    const fetchEmployeeData = async () => {
-      const { data, error } = await supabase
-        .from("employees")
-        .select("*")
-        .eq("id", user.employee_id)
-        .single();
+    const { data, error } = await supabase
+      .from("employees")
+      .select("first_name, last_name, grade, hire_date, phone_number")
+      .eq("id", user.employee_id)
+      .single();
 
-      if (error) {
-        console.error("Erreur lors de la récupération de l'employé:", error);
-        return;
-      }
-
+    if (error) {
+      console.error("Error fetching employee data:", error);
+    } else {
       setEmployee(data);
-      setLoading(false);
-    };
+    }
 
+    setLoading(false);
+  };
+
+  useEffect(() => {
     fetchEmployeeData();
 
-    // Realtime listener
+    // Realtime listener for employee updates
     const employeeSubscription = supabase
       .channel("realtime-employee")
       .on(
         "postgres_changes",
-        { event: "UPDATE", schema: "public", table: "employees", filter: `id=eq.${user.employee_id}` },
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "employees",
+          filter: `id=eq.${user?.employee_id}`,
+        },
         (payload) => {
           console.log("Employee updated:", payload.new);
           setEmployee(payload.new);
@@ -49,7 +70,9 @@ const InformationBento: React.FC = () => {
     };
   }, [user?.employee_id]);
 
-  // Mapping object for grade colors
+  /**
+   * Mapping of grade names to corresponding text colors.
+   */
   const gradeColors: Record<string, string> = {
     Patron: "text-red-400",
     "Co-Patron": "text-red-400",
@@ -59,23 +82,34 @@ const InformationBento: React.FC = () => {
     CDD: "text-cyan-400",
   };
 
-  // Seniority calculation
-  const calculateSeniority = (hireDate: string) => {
+  /**
+   * Calculates seniority based on hire date.
+   */
+  const calculateSeniority = (hireDate?: string): string => {
     if (!hireDate) return "Non spécifié";
+
     const hireDateObj = new Date(hireDate);
     const today = new Date();
-    const diffTime = Math.abs(today.getTime() - hireDateObj.getTime());
-    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    const diffDays = Math.floor((today.getTime() - hireDateObj.getTime()) / (1000 * 60 * 60 * 24));
 
     const months = Math.floor(diffDays / 30);
     const weeks = Math.floor((diffDays % 30) / 7);
     const days = (diffDays % 30) % 7;
 
-    return `${months > 0 ? `${months} mois, ` : ""}${weeks > 0 ? `${weeks} semaine${weeks > 1 ? "s" : ""}, ` : ""}${days > 0 ? `${days} jour${days > 1 ? "s" : ""}` : ""}`.replace(/, $/, "");
+    return [
+      months > 0 ? `${months} mois` : "",
+      weeks > 0 ? `${weeks} semaine${weeks > 1 ? "s" : ""}` : "",
+      days > 0 ? `${days} jour${days > 1 ? "s" : ""}` : "",
+    ]
+      .filter(Boolean)
+      .join(", ") || "-";
   };
 
   return (
-    <div className="flex flex-col items-center w-full p-8 bg-[#263238] border border-gray-500 rounded-xl shadow-2xl gap-12">
+    <div
+      className="flex flex-col items-center w-full p-8 bg-[#263238] border
+      border-gray-500 rounded-xl shadow-2xl gap-12"
+    >
       <h2 className="text-2xl font-bold text-center text-gray-400">Vos Informations</h2>
       <div className="flex flex-col w-full justify-center gap-8">
         <InformationCard
@@ -88,8 +122,8 @@ const InformationBento: React.FC = () => {
           <InformationCard
             title="Grade"
             icon={ShieldHalf}
-            text={loading ? "..." : employee.grade}
-            className={gradeColors[employee?.grade] ?? "text-white"}
+            text={loading ? "..." : employee?.grade ?? "Non spécifié"}
+            className={gradeColors[employee?.grade || ""] ?? "text-white"}
           />
           <InformationCard
             title="Ancienneté"

@@ -26,11 +26,11 @@ const DataSalesInput: React.FC<DataSalesInputProps> = ({
   return (
     <div
       className="relative w-full bg-gray-800/10 border border-gray-600
-      pt-4 pb-2 rounded-lg shadow-lg text-gray-300/70"
+      pt-4 pb-2 rounded-lg shadow-xl text-gray-300/70"
     >
       {/* Floating label */}
       <div
-        className="absolute -top-1 left-6 -translate-y-1/2 bg-[#263238]
+        className="absolute top-0 left-6 -translate-y-1/2 bg-[#263238]
         px-2 text-lg font-bold"
       >
         {title}
@@ -40,7 +40,7 @@ const DataSalesInput: React.FC<DataSalesInputProps> = ({
       <div className="relative flex items-center text-lg text-gray-500 px-8 py-2">
         <Icon size={24} className="text-gray-500" />
         <input
-          type="text"
+          type="number"
           value={value}
           onChange={onChange}
           placeholder={placeholder}
@@ -53,7 +53,7 @@ const DataSalesInput: React.FC<DataSalesInputProps> = ({
             className="absolute right-4 top-1/2 -translate-y-1/2 h-[90%] px-3
             bg-[#263238] hover:bg-gray-600/40 border border-gray-600
             text-gray-400 font-bold rounded-md shadow-xl text-base
-            transform scale-100 hover:scale-102 transition duration-200"
+            transform scale-100 hover:scale-105 transition duration-200"
             aria-label="Set maximum value"
           >
             Max

@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import EmployeeBento from "../components/pages/sales/EmployeeBento";
 import RedistributionGradeBento from "../components/pages/sales/RedistributionGradeBento";
+import DataEntry from "../components/pages/sales/client-sales/DataEntry";
+import TotalSales from "../components/pages/sales/client-sales/TotalSales";
 import CustomButton from "../components/core/CustomButton";
 import { BadgeDollarSign, RefreshCw, ArrowUpNarrowWide, Salad, AlertCircle, CircleCheck, CircleAlert } from "lucide-react";
 import { BrowserWarn } from "../components/core/BrowserWarn";
@@ -113,52 +115,13 @@ const ClientsSales: React.FC = () => {
         <RedistributionGradeBento />
       </div>
 
-      <div className="flex flex-row gap-8 w-full">
-        {/* Formulaire */}
-        <div className="flex flex-col w-[70%] p-6 gap-6 bg-[#263238] border border-gray-600 rounded-xl shadow-lg">
-          <h2 className="text-gray-400 text-xl font-semibold text-center">Saisie des Données</h2>
-
-          {/* Tabs */}
-          <div className="flex flex-row items-center gap-8 mb-6">
-            {["Boisson", "Alcool"].map((tab) => (
-              <button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
-                className={`px-4 py-2 rounded-full transition-all duration-300 ${
-                  activeTab === tab ? "bg-[#37474f] text-white" : "text-gray-400 hover:text-white"
-                }`}
-              >
-                {tab}
-              </button>
-            ))}
-          </div>
-          <div className="flex flex-col items-center justify-center mt-4">
-            <p>tet</p>
-            <p>tot</p>
-          </div>
+      <div className="flex flex-row gap-10 w-full">
+        <div className="w-[70%]">
+          <DataEntry />
         </div>
-
-        {/* Totaux */}
-        <div className="flex flex-col w-[30%] gap-6 p-6 bg-[#263238] border border-gray-600 rounded-xl shadow-lg">
-          <h2 className="text-gray-400 text-xl font-semibold text-center">Visualisation & Totaux</h2>
-
-          <BrowserWarn
-            color="green"
-            icon={<CircleCheck size={20} />}
-            message="Vente en Propre"
-            details={["Faites une facture (F6)"]}
-          />
-
-          <div className="bg-[#37474f] p-4 rounded-lg text-center border border-gray-600">
-            <p className="text-lg font-semibold">Part Entreprise</p>
-            <p className="text-blue-400 text-2xl font-bold mt-2">0$</p>
-          </div>
+        <div className="flex w-[30%]">
+          <TotalSales />
         </div>
-      </div>
-
-      <div className="mt-6 flex gap-4">
-        <CustomButton label="Ajouter Vente" onClick={handleSale} className="bg-green-500 text-white px-4 py-2 rounded" icon={BadgeDollarSign} />
-        <CustomButton label="Reset" onClick={resetAll} className="bg-red-500 text-white px-4 py-2 rounded" icon={RefreshCw} />
       </div>
     </div>
   );

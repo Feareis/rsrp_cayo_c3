@@ -7,14 +7,28 @@ interface CustomButtonProps {
   icon: LucideIcon;
   onClick: () => void;
   className?: string;
-  setCounter?: boolean; // Option pour afficher ou masquer le compteur
+  setCounter?: boolean;
 }
 
-const CustomButton: React.FC<CustomButtonProps> = ({ title, count, icon: Icon, onClick, className, setCounter = true }) => {
+/**
+ * Reusable button component with optional counter display.
+ */
+const CustomButton: React.FC<CustomButtonProps> = ({
+  title,
+  count,
+  icon: Icon,
+  onClick,
+  className,
+  setCounter = true,
+}) => {
   return (
     <button
       onClick={onClick}
-      className={`flex items-center ${setCounter ? "justify-around" : "justify-center gap-4"} px-4 ${setCounter ? "py-2" : "py-3"} rounded-lg shadow-2xl border border-gray-500 w-full transition-transform duration-200 ease-in-out hover:scale-102 ${className}`}
+      className={`flex items-center ${
+        setCounter ? "justify-around" : "justify-center"
+      } px-4 ${setCounter ? "py-2" : "py-3"} rounded-lg shadow-2xl
+      border border-gray-500 w-full transition-transform duration-200
+      ease-in-out hover:scale-102 ${className}`}
     >
       <Icon size={28} />
       <span className="text-xl font-bold">{title}</span>
