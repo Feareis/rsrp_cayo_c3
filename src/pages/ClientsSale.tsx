@@ -5,9 +5,6 @@ import DataEntry from "../components/pages/sales/client-sales/DataEntry";
 import TotalSales from "../components/pages/sales/client-sales/TotalSales";
 import CustomButton from "../components/core/CustomButton";
 import { BadgeDollarSign, RefreshCw, ArrowUpNarrowWide, Salad, AlertCircle, CircleCheck, CircleAlert } from "lucide-react";
-import { BrowserWarn } from "../components/core/BrowserWarn";
-import { showToast } from "../components/core/toast/CustomToast";
-import toast, { Toaster } from 'react-hot-toast';
 import { useAuth } from "../context/AuthContext";
 import { supabase } from "../lib/supabaseClient";
 

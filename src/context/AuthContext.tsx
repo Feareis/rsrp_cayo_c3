@@ -22,7 +22,7 @@ type AuthContextType = {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 // Test mode (set to `false` for normal authentication)
-const TEST_MODE = true;
+const TEST_MODE = false;
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const navigate = useNavigate();
