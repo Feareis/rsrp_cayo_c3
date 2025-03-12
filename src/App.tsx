@@ -7,6 +7,7 @@
 import React, { useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "./context/AuthContext";
+import CustomToaster from "./components/core/toast/CustomToaster";
 
 
 // Import Core Pages
@@ -66,6 +67,7 @@ export default function AppRouter() {
   return (
     <Router>
       <AuthProvider>
+        <CustomToaster />
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/" element={<Layout />}>

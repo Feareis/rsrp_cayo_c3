@@ -1,8 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import CustomInput from "../../components/core/CustomInput";
 import { User, KeyRound } from "lucide-react";
+import toast from 'react-hot-toast';
+
 
 const Login: React.FC = () => {
   const { login } = useAuth();
@@ -18,9 +20,10 @@ const Login: React.FC = () => {
       await login(username, password);
       navigate("/");
     } catch (err: any) {
-      setError(err.message);
+      toast.error(err.message);
     }
   };
+
 
   return (
     <div className="bg-[#37474f] h-screen w-full flex items-center justify-center">
@@ -32,7 +35,6 @@ const Login: React.FC = () => {
           <CustomInput type="text" icon={User} value={username} onChange={(e) => setUsername(e.target.value)} placeholder="Nom d'utilisateur" />
           <CustomInput type="password" icon={KeyRound} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Mot de passe" />
         </form>
-        {error && <p className="text-red-500 text-sm">{error}</p>}
         {/* FOOTER */}
         <button type="submit" onClick={handleSubmit} className="w-full mt-6 py-3 bg-gradient-to-r from-blue-400 to-blue-600 text-white font-bold rounded-lg transition-transform duration-200 hover:scale-102">
           SE CONNECTER

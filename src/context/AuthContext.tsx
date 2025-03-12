@@ -22,7 +22,7 @@ type AuthContextType = {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 // Test mode (set to `false` for normal authentication)
-const TEST_MODE = false;
+const TEST_MODE = true;
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const navigate = useNavigate();
@@ -36,7 +36,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const { data, error } = await supabase
           .from("access")
           .select("id, employee_id, role, first_name, last_name, username, password_hash, is_active")
-          .eq("username", "tp")
+          .eq("username", "oscar.k")
           .single();
 
         if (error || !data) {
@@ -77,30 +77,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // Login function
   const login = async (username: string, password: string) => {
     if (TEST_MODE) {
-      username = "tp";
+      username = "oscar.k";
     }
 
-    // Fetch user credentials from database
     const { data, error } = await supabase
       .from("access")
       .select("id, employee_id, role, first_name, last_name, username, password_hash, is_active")
       .eq("username", username)
       .single();
 
-    if (error || !data) throw new Error("User not found.");
-    if (!data.is_active) throw new Error("Account disabled.");
+    if (error || !data) return Promise.reject(new Error("Votre compte n'éxiste pas."));
+    if (!data.is_active) return Promise.reject(new Error("Compte désactivé."));
 
-    // Normal Mode, check password
     if (!TEST_MODE) {
       const isValidPassword = await bcrypt.compare(password, data.password_hash);
-      if (!isValidPassword) throw new Error("Incorrect password.");
+      if (!isValidPassword) return Promise.reject(new Error("Mot de passe incorrect."));
     }
 
-    // Fetch employee data
     const userData = { ...data, employee_id: data.employee_id };
 
-    // Save user session
-    console.log(userData)
     setUser(userData);
     setIsAuthenticated(true);
     localStorage.setItem("user", JSON.stringify(userData));
