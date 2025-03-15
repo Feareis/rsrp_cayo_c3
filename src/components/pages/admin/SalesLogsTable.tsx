@@ -14,7 +14,7 @@ interface SalesLog {
   grade: string;
   type: string;
   sale_type: string;
-  discount: number | null;
+  discount: string;
   total_employee_money: number;
   total_company_money: number;
 }
@@ -187,7 +187,7 @@ const SalesLogsTable: React.FC = () => {
                 {log.first_name} {log.last_name}
               </div>
               <div className={`text-center font-bold ${getSaleColor(log.type, log.sale_type)}`}>{log.type === "export" ? "Export" : "Client"} {log.sale_type === "clean" ? "Propre" : "Sale"}</div>
-              <div className="text-center">{log.discount ?? ""}</div>
+              <div className="text-center font-semibold text-lg text-purple-400">{log.discount ?? ""}</div>
               <div className="text-center text-lg text-green-400 font-bold">{formatCurrency(log.total_employee_money)}</div>
               <div className="text-center text-lg text-blue-400 font-bold">{formatCurrency(log.total_company_money)}</div>
               <div className="font-semibold text-center flex gap-2 justify-center">

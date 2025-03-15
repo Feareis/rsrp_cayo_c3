@@ -1,51 +1,60 @@
 import React, { useState } from "react";
 import ProductCard from "./ProductCard";
+import DiscountSelect from "./DiscountSelect";
 import { Biere, BierePils, BiereRed, BiereTriple, JusDeCerise } from "../../../../assets/product/indexProducts.ts";
-import { CheckCircle, XCircle } from "lucide-react";
+import { Percent, XCircle, CheckCircle } from "lucide-react";
+
 
 type DataEntryProps = {
-  expertise: number | "";
-  setExpertise: (value: number | "") => void;
-  nbBiere: number | "";
-  setNbBiere: (value: number | "") => void;
+  quantities: Record<string, number>;
+  setQuantities: (quantities: Record<string, number>) => void;
+  selectedDiscount: string;
+  setSelectedDiscount: (discount: string) => void;
   handleSaleSubmit: () => void;
-  resetAll: () => void;
 };
 
 /**
- * List of available products categorized into tabs.
+ * Available products categorized into tabs.
  */
 const products = {
-  Boisson: [{ id: 1, name: "Jus de Cerise", image: JusDeCerise }],
+  Boisson: [{ id: "Jus de Cerise", name: "Jus de Cerise", image: JusDeCerise }],
   Alcool: [
-    { id: 2, name: "Bière", image: Biere },
-    { id: 3, name: "Bière Pils", image: BierePils },
-    { id: 4, name: "Bière Red", image: BiereRed },
-    { id: 5, name: "Bière Triple", image: BiereTriple },
+    { id: "Bière", name: "Bière", image: Biere },
+    { id: "Bière Pils", name: "Bière Pils", image: BierePils },
+    { id: "Bière Red", name: "Bière Red", image: BiereRed },
+    { id: "Bière Triple", name: "Bière Triple", image: BiereTriple },
   ],
 };
 
-/**
- * DataEntry component handles product quantity input and sales submission.
- */
-const DataEntry: React.FC<DataEntryProps> = ({ handleSaleSubmit, resetAll }) => {
+const DataEntry: React.FC<DataEntryProps> = ({ quantities, setQuantities, selectedDiscount, setSelectedDiscount, handleSaleSubmit }) => {
   const [activeTab, setActiveTab] = useState<"Boisson" | "Alcool">("Boisson");
-  const [quantities, setQuantities] = useState<Record<number, number>>({});
+
+  /**
+   * Default display value for DiscountSelect.
+   */
+  const defaultDiscountLabel = "Remise ?";
 
   /**
    * Updates the quantity of a specific product.
    */
-  const setProductQuantity = (id: number, value: number) => {
+  const setProductQuantity = (id: string, value: number) => {
     setQuantities((prev) => ({ ...prev, [id]: value }));
   };
 
+  /**
+   * Resets all product quantities to 0 and resets the selected discount.
+   */
+  const resetAll = () => {
+    setQuantities({});
+    setSelectedDiscount(defaultDiscountLabel);
+  };
+
+
   return (
     <div className="flex flex-row gap-8 w-full">
-      <div
-        className="flex flex-col w-full p-6 gap-8 bg-[#263238] border
-        border-gray-500 rounded-xl shadow-lg"
-      >
-        <h2 className="text-2xl font-bold text-center text-gray-400">Saisie des Données</h2>
+      <div className="flex flex-col w-full p-6 gap-8 bg-[#263238] border border-gray-500 rounded-xl shadow-lg">
+        {/* Header */}
+        <h2 className="text-2xl font-bold text-center text-gray-400">Saisie des données</h2>
 
         {/* Tabs for product selection */}
         <div className="flex flex-row justify-between gap-4 mb-6">
@@ -61,6 +70,11 @@ const DataEntry: React.FC<DataEntryProps> = ({ handleSaleSubmit, resetAll }) => 
               </button>
             ))}
           </div>
+
+          {/* Discount selection */}
+          <div className="flex flex-row items-center gap-4 mx-4">
+            <DiscountSelect icon={Percent} options={["Milice", "EMS Cayo", "Repairico", "Aucune"]} value={selectedDiscount} onChange={setSelectedDiscount} />
+          </div>
         </div>
 
         {/* Display products based on active tab */}
@@ -71,33 +85,36 @@ const DataEntry: React.FC<DataEntryProps> = ({ handleSaleSubmit, resetAll }) => 
               name={product.name}
               image={product.image}
               quantity={quantities[product.id] || 0}
-              setQuantity={(value) => setProductQuantity(product.id, value)}
+              onInputChange={(e) => setProductQuantity(product.id, Number(e.target.value))}
             />
           ))}
         </div>
 
         {/* Action buttons */}
         <div className="flex flex-1 justify-end gap-4">
+          {/* Reset Button */}
           <button
             onClick={resetAll}
             className="flex items-center gap-2 bg-red-400 hover:bg-red-400/80
             border border-gray-500 text-gray-700 px-6 py-2 rounded-lg font-bold
             transition transform scale-100 hover:scale-105 disabled:bg-gray-500"
-            aria-label="Réinitialiser les données"
+            aria-label="Reset data"
           >
             <XCircle size={24} />
             <p className="text-lg">Reset</p>
           </button>
+
+          {/* Submit Sale Button */}
           <button
             onClick={handleSaleSubmit}
             disabled={!Object.values(quantities).some((q) => q > 0)}
             className="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-500/80
             border border-gray-500 text-gray-700 px-6 py-2 rounded-lg font-bold
             transition transform scale-100 hover:scale-105 disabled:bg-gray-500"
-            aria-label="Ajouter la vente"
+            aria-label="Submit sale"
           >
             <CheckCircle size={24} />
-            <p className="text-lg">Ajouter la vente</p>
+            <p className="text-lg">Ajouter une vente</p>
           </button>
         </div>
       </div>

@@ -51,7 +51,7 @@ export default function AppRouter() {
     function applyZoom() {
       const width = window.innerWidth;
       const height = window.innerHeight;
-      let zoom = 1; // Zoom par défaut
+      let zoom = 1; // Default Zoom
 
       if (width === 1920 && height === 1080) zoom = 0.8; // 80%
       if (width === 2560 && height === 1440) zoom = 1;   // 100%

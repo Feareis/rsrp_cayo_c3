@@ -1,112 +1,150 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
+import { supabase } from "../lib/supabaseClient";
 import EmployeeBento from "../components/pages/sales/EmployeeBento";
 import RedistributionGradeBento from "../components/pages/sales/RedistributionGradeBento";
 import DataEntry from "../components/pages/sales/client-sales/DataEntry";
 import TotalSales from "../components/pages/sales/client-sales/TotalSales";
-import CustomButton from "../components/core/CustomButton";
-import { BadgeDollarSign, RefreshCw, ArrowUpNarrowWide, Salad, AlertCircle, CircleCheck, CircleAlert } from "lucide-react";
+import toast from "react-hot-toast";
 import { useAuth } from "../context/AuthContext";
-import { supabase } from "../lib/supabaseClient";
+
+/**
+ * Special discounts applied only on "Jus de Cerise" for specific groups/companies.
+ */
+const specialDiscounts: Record<string, number> = {
+  Milice: 20,
+  "EMS Cayo": 20,
+  Repairico: 20,
+};
+
+/**
+ * Returns the price per unit for "Jus de Cerise" based on quantity purchased.
+ */
+const getJusDeCerisePrice = (quantity: number): number => {
+  if (quantity > 800) return 50;
+  if (quantity > 400) return 55;
+  if (quantity > 200) return 60;
+  return 65;
+};
 
 const ClientsSales: React.FC = () => {
   const { user } = useAuth();
-  const [activeTab, setActiveTab] = useState("Boisson");
   const [quantities, setQuantities] = useState<{ [key: string]: number }>({});
-  const [selectedCategory, setSelectedCategory] = useState("Food");
-  const [redistributionRate, setRedistributionRate] = useState<number | null>(null);
+  const [selectedDiscount, setSelectedDiscount] = useState<string | null>(null);
+  const [productPrices, setProductPrices] = useState<Record<string, number>>({});
 
-  const resetAll = () => setQuantities({});
+  /**
+   * Fetch product prices from the database.
+   */
+  const fetchProductPrices = async () => {
+    const { data, error } = await supabase
+      .from("data")
+      .select("value")
+      .eq("key", "product_price")
+      .single();
 
-  const handleInputChange = (product: string, value: number) => {
-    setQuantities((prev) => ({
-      ...prev,
-      [product]: Math.max(0, value),
-    }));
-  };
-
-  const total = Object.keys(quantities).reduce((acc, product) => {
-    const item = staticProducts.find(p => p.name === product);
-    return acc + (item ? item.price * (quantities[product] || 0) : 0);
-  }, 0);
-
-  const handleSale = async () => {
-    if (!expertise || !nbBiere) {
-      toast.error("Erreur : vérifier vos entrées !");
+    if (error) {
+      console.error("Error fetching product prices:", error);
       return;
     }
 
-    const cleanSaleData = {
+    if (data?.value) {
+      // Convert JSON keys to match frontend names
+      const formattedPrices: Record<string, number> = {
+        "Bière": data.value.biere.priceClean,
+        "Bière Pils": data.value.biere_pils.priceClean,
+        "Bière Red": data.value.biere_red.priceClean,
+        "Bière Triple": data.value.biere_triple.priceClean,
+      };
+
+      setProductPrices(formattedPrices);
+    }
+  };
+
+  /**
+   * Fetch prices on mount and subscribe to real-time updates.
+   */
+  useEffect(() => {
+    fetchProductPrices();
+    const subscription = supabase
+      .channel("realtime-product-prices")
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "data", filter: "key=eq.product_price" },
+        (payload) => {
+          fetchProductPrices();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(subscription);
+    };
+  }, []);
+
+  /**
+   * Calculates the total sales amount and generates an order summary.
+   */
+  let totalSales = 0;
+  let orderSummary: { name: string; quantity: number; unitPrice: number; totalPrice: number }[] = [];
+
+  Object.entries(quantities).forEach(([product, quantity]) => {
+    if (quantity <= 0) return;
+
+    let unitPrice = productPrices[product] || 0;
+
+    if (product === "Jus de Cerise") {
+      if (selectedDiscount && selectedDiscount in specialDiscounts) {
+        unitPrice = specialDiscounts[selectedDiscount];
+      } else {
+        unitPrice = getJusDeCerisePrice(quantity);
+      }
+    }
+
+    const totalPrice = unitPrice * quantity;
+    totalSales += totalPrice;
+
+    orderSummary.push({ name: product, quantity, unitPrice, totalPrice });
+  });
+
+  /**
+   * Handles the sale submission and stores it in the database.
+   */
+  const handleSale = async () => {
+    const discountValue = selectedDiscount === "Remise ?" ? null : selectedDiscount;
+
+    const saleData = {
       employee_id: user?.employee_id,
       first_name: user?.first_name,
       last_name: user?.last_name,
       type: "client",
       sale_type: "clean",
-      discount: discount,
-      total_employee_money: employeesTotal,
-      total_company_money: companyTotal,
-    };
-
-    const dirtySaleData = {
-      employee_id: user?.employee_id,
-      first_name: user?.first_name,
-      last_name: user?.last_name,
-      type: "client",
-      sale_type: "dirty",
-      discount: discount,
-      total_employee_money: employeesTotal,
-      total_company_money: companyTotal,
+      discount: discountValue,
+      total_employee_money: 0,
+      total_company_money: totalSales,
     };
 
     const { error } = await supabase.from("sales_logs").insert([saleData]);
 
     if (error) {
-      console.error("Erreur lors de l'ajout de la vente:", error);
-      toast.error("Erreur lors de l'ajout de la vente.");
+      console.error("Error adding sale:", error);
+      toast.error("Erreur lors de l'ajout de la vente");
       return;
     }
 
     toast.success(
       <div>
-        <p>Vente ajoutée avec succès !</p>
-        <p>Part Employé : {formatCurrency(employeesTotal)}</p>
-        <p>Part Entreprise : {formatCurrency(companyTotal)}</p>
+        <p>Vente ajoutée</p>
+        <p>Total: {totalSales} $</p>
       </div>,
       { duration: 4000 }
     );
-    resetAll();
+
+    setQuantities({});
+    setSelectedDiscount(null);
   };
-
-  useEffect(() => {
-    const fetchRedistributionRate = async () => {
-      if (!user?.employee?.grade) return;
-
-      // Récupère les taux de redistribution depuis la table `data`
-      const { data, error } = await supabase
-        .from("data")
-        .select("value")
-        .eq("key", "redistribution_rates")
-        .single();
-
-      if (error) {
-        console.error("Erreur lors de la récupération des taux :", error);
-        return;
-      }
-
-      // Récupérer le taux correspondant au grade de l'utilisateur
-      const rates = data?.value;
-      if (rates && rates[user.employee.grade]) {
-        setRedistributionRate(rates[user.employee.grade] * 100); // Convertit 0.40 → 40%
-      }
-    };
-
-    fetchRedistributionRate();
-  }, [user?.employee?.grade]);
-
-  const currentDate = new Date().toLocaleDateString('fr-FR');
 
   return (
     <div className="flex flex-col w-full gap-10">
-      {/* Employee + Date Bento */}
       <div className="flex flex-row gap-10 w-full">
         <EmployeeBento />
         <RedistributionGradeBento />
@@ -114,10 +152,17 @@ const ClientsSales: React.FC = () => {
 
       <div className="flex flex-row gap-10 w-full">
         <div className="w-[70%]">
-          <DataEntry />
+          <DataEntry
+            quantities={quantities}
+            setQuantities={setQuantities}
+            selectedDiscount={selectedDiscount || "Remise ?"}
+            setSelectedDiscount={setSelectedDiscount}
+            handleSaleSubmit={handleSale}
+          />
         </div>
+
         <div className="flex w-[30%]">
-          <TotalSales />
+          <TotalSales totalAmount={totalSales} selectedDiscount={selectedDiscount || "Pas de réduction"} orderSummary={orderSummary} />
         </div>
       </div>
     </div>

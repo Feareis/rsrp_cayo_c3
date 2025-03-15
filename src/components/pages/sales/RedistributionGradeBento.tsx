@@ -27,7 +27,6 @@ const RedistributionGradeBento: React.FC = () => {
         .single();
 
       if (error) {
-        console.error("Error fetching employee data:", error);
         return;
       }
 
@@ -47,7 +46,6 @@ const RedistributionGradeBento: React.FC = () => {
           filter: `id=eq.${user.employee_id}`,
         },
         (payload) => {
-          console.log("Employee updated:", payload.new);
           setEmployee(payload.new);
         }
       )

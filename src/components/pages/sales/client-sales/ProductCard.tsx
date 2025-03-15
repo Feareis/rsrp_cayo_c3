@@ -25,7 +25,12 @@ const ProductCard: React.FC<ProductCardProps> = ({ name, image, quantity, onInpu
         <input
           type="text"
           value={quantity}
-          onChange={onInputChange}
+          onChange={(e) => {
+            let value = Number(e.target.value);
+            if (value > 99999) value = 99999;
+            if (value < 0) value = 0;
+            onInputChange({ target: { value } });
+          }}
           className="w-[33%] text-center border border-gray-500 font-bold text-xl text-gray-200 bg-[#263238] rounded-lg p-2 focus:outline-none focus:ring-0 focus:border-gray-400"
           placeholder="0"
         />
