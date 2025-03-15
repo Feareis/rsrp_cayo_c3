@@ -5,7 +5,7 @@ import { supabase } from "../../../lib/supabaseClient";
 /**
  * Defines the grade order for sorting.
  */
-const gradeOrder = ["Patron, Co-Patron", "Responsable", "CDI", "CDD"];
+const gradeOrder = ["Patron", "Co-Patron", "Responsable", "CDI", "CDD"];
 
 /**
  * Props type for RedistributionTable component.
@@ -107,11 +107,6 @@ const RedistributionTable: React.FC<RedistributionTableProps> = ({ onLoadingComp
           title="Propre"
           percentageColor="propre"
           data={redistributionRatesData}
-        />
-        <RedistributionTableSection
-          title="Taxe Sale"
-          percentageColor="sale"
-          data={redistributionTaxData}
         />
       </div>
     </div>

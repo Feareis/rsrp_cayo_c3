@@ -21,7 +21,8 @@ const RedistributionTableSection: React.FC<RedistributionTableSectionProps> = ({
    * Mapping of grade names to corresponding text colors.
    */
   const gradeColors: Record<string, string> = {
-    "Patron, Co-Patron": "text-red-400",
+    Patron: "text-red-400",
+    "Co-Patron": "text-red-400",
     Responsable: "text-yellow-400",
     CDI: "text-blue-400",
     CDD: "text-cyan-400",
@@ -45,6 +46,17 @@ const RedistributionTableSection: React.FC<RedistributionTableSectionProps> = ({
    */
   const getRateColor = (percentageColor: string) => rateColors[percentageColor] || "text-white";
 
+  /**
+   * Groups grades by their rate to avoid duplicate entries.
+   */
+  const groupedData = data.reduce<Record<string, string[]>>((acc, { name, rate }) => {
+    if (!acc[rate]) {
+      acc[rate] = [];
+    }
+    acc[rate].push(name);
+    return acc;
+  }, {});
+
   return (
     <div
       className="relative flex flex-col w-full gap-4 bg-[#37474f]
@@ -61,20 +73,25 @@ const RedistributionTableSection: React.FC<RedistributionTableSectionProps> = ({
 
       {/* Redistribution list */}
       <div className="flex flex-col gap-4 w-full p-4 py-4">
-        {data.map((item, index) => (
+        {Object.entries(groupedData).map(([rate, names], index) => (
           <div
-            key={`${item.name}-${index}`}
+            key={`${rate}-${index}`}
             className="flex justify-between items-center bg-[#263238]
             border border-gray-500/70 p-4 rounded-xl shadow-xl w-full"
           >
-            {/* Grade name */}
-            <p className={`ml-8 text-lg font-bold ${getGradeColor(item.name)}`}>
-              {item.name}
+            {/* Grade names grouped together */}
+            <p className="ml-8 text-lg font-bold">
+              {names.map((name, i) => (
+                <span key={i} className={`${getGradeColor(name)}`}>
+                  {name}
+                  {i !== names.length - 1 && ", "}
+                </span>
+              ))}
             </p>
 
             {/* Rate percentage */}
             <p className={`mr-8 text-xl font-bold ${getRateColor(percentageColor)}`}>
-              {item.rate}
+              {rate}
             </p>
           </div>
         ))}
