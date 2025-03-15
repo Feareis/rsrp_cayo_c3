@@ -95,7 +95,7 @@ const RedistributionGradeBento: React.FC = () => {
   };
 
   const employeeGrade = employee?.grade || "Non défini";
-  const redistributionRate = redistributionRates?.[employeeGrade] ? `${redistributionRates[employeeGrade] * 100}%` : "Non défini";
+  const redistributionRate = redistributionRates?.[employeeGrade] ? `${(redistributionRates[employeeGrade] * 100).toFixed(0)}%` : "Non défini";
 
   return (
     <div

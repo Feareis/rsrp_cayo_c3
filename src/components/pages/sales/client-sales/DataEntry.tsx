@@ -48,17 +48,19 @@ const DataEntry: React.FC<DataEntryProps> = ({ handleSaleSubmit, resetAll }) => 
         <h2 className="text-2xl font-bold text-center text-gray-400">Saisie des Données</h2>
 
         {/* Tabs for product selection */}
-        <div className="flex flex-row items-center gap-4 mb-6">
-          {(["Boisson", "Alcool"] as const).map((tab) => (
-            <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              className={`py-2 px-4 rounded-md transition-all duration-300
-              ${activeTab === tab ? "bg-[#37474f] text-white" : "text-gray-400 hover:text-white"}`}
-            >
-              {tab}
-            </button>
-          ))}
+        <div className="flex flex-row justify-between gap-4 mb-6">
+          <div className="flex flex-row items-center gap-4 mx-4">
+            {(["Boisson", "Alcool"] as const).map((tab) => (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                className={`py-2 px-4 rounded-md transition-all duration-300
+                ${activeTab === tab ? "bg-[#37474f] text-white" : "text-gray-400 hover:text-white"}`}
+              >
+                {tab}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Display products based on active tab */}
@@ -75,7 +77,7 @@ const DataEntry: React.FC<DataEntryProps> = ({ handleSaleSubmit, resetAll }) => 
         </div>
 
         {/* Action buttons */}
-        <div className="flex w-full justify-end gap-4">
+        <div className="flex flex-1 justify-end gap-4">
           <button
             onClick={resetAll}
             className="flex items-center gap-2 bg-red-400 hover:bg-red-400/80
