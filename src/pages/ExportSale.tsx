@@ -44,7 +44,7 @@ const ExportSales: React.FC = () => {
       last_name: user?.last_name,
       type: "export",
       sale_type: "clean",
-      discount: null,
+      discount: "",
       total_employee_money: employeesTotal,
       total_company_money: companyTotal,
     };
